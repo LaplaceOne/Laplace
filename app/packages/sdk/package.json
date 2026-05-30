@@ -32,6 +32,7 @@
   "dependencies": {
     "@laplace/registry": "*",
     "@noble/hashes": "^1.8.0",
+    "@solana-program/compute-budget": "^0.15.0",
     "@solana-program/token": "^0.13.0",
     "@solana/kit": "^6.0.0"
   },

@@ -30,6 +30,10 @@ export type HashlockFulfill = { secret: ReadonlyUint8Array };
 export type ValidityFulfill = { proof: ReadonlyUint8Array; publicInputsSuffix: ReadonlyUint8Array };
 export type CustomFulfill = FulfillmentParts;
 
+// Compute-unit limit for a validity/SP1 fulfill. On-chain Groth16 verification is ~270-350k CU,
+// over the 200k default; 400k leaves headroom and stays well under the 1.4M tx max.
+export const VALIDITY_FULFILL_COMPUTE_UNITS = 400_000;
+
 export class Laplace {
   #rpc; #subs; readonly cluster: Cluster;
   constructor(opts: { rpc: any; rpcSubscriptions: any; cluster: Cluster }) {
@@ -63,7 +67,11 @@ export class Laplace {
 
   async fulfillIntent(intent: ResolvedIntent, fulfillArgs: HashlockFulfill | ValidityFulfill | CustomFulfill, opts: { fulfiller: TransactionSigner }) {
     const fulfillment = await this.#resolveFulfillment(intent, fulfillArgs);
-    const built = await buildFulfillIntent({ fulfiller: opts.fulfiller, intent: intent.data, intentAddress: intent.address, fulfillment });
+    // Validity/SP1 fulfillment runs Groth16 verification on-chain (~270-350k CU > the 200k default),
+    // so raise the compute-unit limit for that criterion. Hashlock/custom stay on the default.
+    const isValidity = intent.data.criterionProgram === address(getCluster(this.cluster).programs.validity);
+    const computeUnitLimit = isValidity ? VALIDITY_FULFILL_COMPUTE_UNITS : undefined;
+    const built = await buildFulfillIntent({ fulfiller: opts.fulfiller, intent: intent.data, intentAddress: intent.address, fulfillment, computeUnitLimit });
     return { signature: await this.#send(built.instructions, opts.fulfiller) };
   }
 

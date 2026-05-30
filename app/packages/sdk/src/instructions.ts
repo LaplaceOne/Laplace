@@ -5,6 +5,7 @@ import {
   type TransactionSigner,
 } from '@solana/kit';
 import { findAssociatedTokenPda, getCreateAssociatedTokenIdempotentInstructionAsync } from '@solana-program/token';
+import { getSetComputeUnitLimitInstruction } from '@solana-program/compute-budget';
 import {
   getCreateIntentInstruction,
   getFulfillWithCriterionInstruction,
@@ -76,8 +77,12 @@ export async function buildCreateIntent(args: {
 // No 'fulfiller' signer account — the instruction only has intent, receiver, criterionProgram.
 export async function buildFulfillIntent(args: {
   fulfiller: TransactionSigner; intent: Intent; intentAddress: Address; fulfillment: FulfillmentParts;
+  computeUnitLimit?: number;
 }): Promise<BuiltTx> {
   const settlement: Meta[] = []; const pre: Instruction[] = [];
+  // A validity/SP1 fulfill runs on-chain Groth16 verification (~270-350k CU), over the 200k default,
+  // so the caller passes a raised limit; placed first in the tx.
+  if (args.computeUnitLimit) pre.push(getSetComputeUnitLimitInstruction({ units: args.computeUnitLimit }));
   if (args.intent.asset.__kind === 'SplToken') {
     const { mint, tokenProgram, vault } = args.intent.asset;
     const [receiverAta] = await findAssociatedTokenPda({ owner: args.intent.receiver, mint, tokenProgram });

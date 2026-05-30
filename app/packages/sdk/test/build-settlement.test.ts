@@ -5,11 +5,11 @@ import { hashlockFulfillment } from '../src/criteria/index.js';
 import type { Intent } from '../src/generated/laplace/index.js';
 
 const intentAddress = address('9fYLFVoVqwH37C3dyPi6cpeobfbQ2jtLpN5HgAYDDdkm');
-const receiver = address('Bkb7WhLQcnz52gYrSdExPoxZUs8b2fzwjzQwrhcv8ACG');
+const receiver = address('5ozBamUtiAHCkiipAVL9E8v8r54HqZsHMDbkHdczpidu');
 
 function solIntent(over: Partial<Intent> = {}): Intent {
   return { id: new Uint8Array(32), maker: intentAddress, receiver, refundRecipient: intentAddress,
-    criterionProgram: address('9FWQGf16ZB5wdrwg3gDCmUcpRJNVuzp1uG12C6z5RVTw'),
+    criterionProgram: address('DNotXVWh1ifzp9MHSd5H4F78SRHptF9p8vGfMmjtuWX2'),
     asset: { __kind: 'NativeSol' } as any, amount: 5n, expirySlot: 1000n, createdSlot: 1n,
     criterionDataHash: new Uint8Array(32), criterionInterfaceVersion: 2, status: 0 as any, bump: 255,
     discriminator: new Uint8Array(8),
@@ -17,11 +17,19 @@ function solIntent(over: Partial<Intent> = {}): Intent {
 }
 
 describe('settlement builders (SOL)', () => {
-  it('fulfill: 3 fixed + 0 settlement for hashlock SOL', async () => {
+  it('fulfill: 3 fixed + 0 settlement for hashlock SOL, no compute-budget ix by default', async () => {
     const fulfiller = await generateKeyPairSigner();
     const f = hashlockFulfillment({ secret: new Uint8Array([1, 2, 3]) });
     const { instructions } = await buildFulfillIntent({ fulfiller, intent: solIntent(), intentAddress, fulfillment: f });
+    expect(instructions).toHaveLength(1);
     expect(instructions[0]!.accounts).toHaveLength(3);
+  });
+  it('fulfill: prepends a ComputeBudget SetComputeUnitLimit when computeUnitLimit is set (validity path)', async () => {
+    const fulfiller = await generateKeyPairSigner();
+    const f = hashlockFulfillment({ secret: new Uint8Array([1, 2, 3]) });
+    const { instructions } = await buildFulfillIntent({ fulfiller, intent: solIntent(), intentAddress, fulfillment: f, computeUnitLimit: 400_000 });
+    expect(instructions).toHaveLength(2);
+    expect(instructions[0]!.programAddress).toBe('ComputeBudget111111111111111111111111111111'); // SetComputeUnitLimit first
   });
   it('refund: 2 fixed, no remaining for SOL', async () => {
     const cranker = await generateKeyPairSigner();
