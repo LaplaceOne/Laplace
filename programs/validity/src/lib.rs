@@ -11,7 +11,7 @@ pub use create_validity::*;
 pub use state::*;
 pub use verify_criterion::*;
 
-declare_id!("CuSVyvxRCfnsvvDWWqP8xRw8fNbGRwTdam5iKsqY3Kq1");
+declare_id!("EQfH4VFdxcFYh8prdAsB4XwKCZiiR5uta594bfiwhLsB");
 
 #[program]
 pub mod validity {

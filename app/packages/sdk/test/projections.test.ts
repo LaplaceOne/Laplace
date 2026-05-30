@@ -4,7 +4,7 @@ import { effectiveStatus, actionFor } from '../src/projections.js';
 import type { Intent } from '../src/generated/laplace/index.js';
 
 const me = address('9fYLFVoVqwH37C3dyPi6cpeobfbQ2jtLpN5HgAYDDdkm');
-const other = address('Bkb7WhLQcnz52gYrSdExPoxZUs8b2fzwjzQwrhcv8ACG');
+const other = address('5ozBamUtiAHCkiipAVL9E8v8r54HqZsHMDbkHdczpidu');
 function intent(over: Partial<Intent>): Intent {
   return { id: new Uint8Array(32), maker: me, receiver: other, refundRecipient: me,
     criterionProgram: other, asset: { __kind: 'NativeSol' } as any, amount: 5n, expirySlot: 1000n, createdSlot: 1n,

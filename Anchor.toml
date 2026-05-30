@@ -6,9 +6,21 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-laplace = "Bkb7WhLQcnz52gYrSdExPoxZUs8b2fzwjzQwrhcv8ACG"
-hashlock = "9FWQGf16ZB5wdrwg3gDCmUcpRJNVuzp1uG12C6z5RVTw"
-validity = "CuSVyvxRCfnsvvDWWqP8xRw8fNbGRwTdam5iKsqY3Kq1"
+hashlock = "DNotXVWh1ifzp9MHSd5H4F78SRHptF9p8vGfMmjtuWX2"
+laplace = "5ozBamUtiAHCkiipAVL9E8v8r54HqZsHMDbkHdczpidu"
+validity = "EQfH4VFdxcFYh8prdAsB4XwKCZiiR5uta594bfiwhLsB"
+
+# Program IDs are identical across clusters (the program keypair fixes the address). To deploy at
+# DIFFERENT production addresses, replace target/deploy/<name>-keypair.json and re-run `anchor keys sync`.
+[programs.devnet]
+hashlock = "DNotXVWh1ifzp9MHSd5H4F78SRHptF9p8vGfMmjtuWX2"
+laplace = "5ozBamUtiAHCkiipAVL9E8v8r54HqZsHMDbkHdczpidu"
+validity = "EQfH4VFdxcFYh8prdAsB4XwKCZiiR5uta594bfiwhLsB"
+
+[programs.mainnet]
+hashlock = "DNotXVWh1ifzp9MHSd5H4F78SRHptF9p8vGfMmjtuWX2"
+laplace = "5ozBamUtiAHCkiipAVL9E8v8r54HqZsHMDbkHdczpidu"
+validity = "EQfH4VFdxcFYh8prdAsB4XwKCZiiR5uta594bfiwhLsB"
 
 [provider]
 cluster = "localnet"

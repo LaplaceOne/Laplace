@@ -57,7 +57,7 @@ import {
 } from "../instructions";
 
 export const LAPLACE_PROGRAM_ADDRESS =
-  "Bkb7WhLQcnz52gYrSdExPoxZUs8b2fzwjzQwrhcv8ACG" as Address<"Bkb7WhLQcnz52gYrSdExPoxZUs8b2fzwjzQwrhcv8ACG">;
+  "5ozBamUtiAHCkiipAVL9E8v8r54HqZsHMDbkHdczpidu" as Address<"5ozBamUtiAHCkiipAVL9E8v8r54HqZsHMDbkHdczpidu">;
 
 export enum LaplaceAccount {
   Intent,
@@ -158,7 +158,7 @@ export function identifyLaplaceInstruction(
 }
 
 export type ParsedLaplaceInstruction<
-  TProgram extends string = "Bkb7WhLQcnz52gYrSdExPoxZUs8b2fzwjzQwrhcv8ACG",
+  TProgram extends string = "5ozBamUtiAHCkiipAVL9E8v8r54HqZsHMDbkHdczpidu",
 > =
   | ({
       instructionType: LaplaceInstruction.CloseIntent;

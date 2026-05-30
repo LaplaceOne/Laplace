@@ -33,7 +33,7 @@ import {
 } from "../instructions";
 
 export const HASHLOCK_PROGRAM_ADDRESS =
-  "9FWQGf16ZB5wdrwg3gDCmUcpRJNVuzp1uG12C6z5RVTw" as Address<"9FWQGf16ZB5wdrwg3gDCmUcpRJNVuzp1uG12C6z5RVTw">;
+  "DNotXVWh1ifzp9MHSd5H4F78SRHptF9p8vGfMmjtuWX2" as Address<"DNotXVWh1ifzp9MHSd5H4F78SRHptF9p8vGfMmjtuWX2">;
 
 export enum HashlockInstruction {
   VerifyCriterion,
@@ -61,7 +61,7 @@ export function identifyHashlockInstruction(
 }
 
 export type ParsedHashlockInstruction<
-  TProgram extends string = "9FWQGf16ZB5wdrwg3gDCmUcpRJNVuzp1uG12C6z5RVTw",
+  TProgram extends string = "DNotXVWh1ifzp9MHSd5H4F78SRHptF9p8vGfMmjtuWX2",
 > = {
   instructionType: HashlockInstruction.VerifyCriterion;
 } & ParsedVerifyCriterionInstruction<TProgram>;

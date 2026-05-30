@@ -24,7 +24,7 @@ anchor-lang = "1.0.2"
 hex = "0.4.3"
 laplace = { path = "../laplace", features = ["no-entrypoint"] }
 solana-sha256-hasher = { version = "3.1.0", features = ["sha2"] }
-sp1-solana = { git = "https://github.com/succinctlabs/sp1-solana", package = "sp1-solana" }
+sp1-solana = { git = "https://github.com/succinctlabs/sp1-solana", rev = "4181cae00d7493ede8a33066cb56683acb1dca72", package = "sp1-solana" }
 
 [dev-dependencies]
 encrypted-disclosure = { path = "../../guests/encrypted-disclosure" }

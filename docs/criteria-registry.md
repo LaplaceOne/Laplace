@@ -43,7 +43,7 @@ accounts (intent, receiver, SPL vault) to the criterion.
 
 ## 3. Official criteria
 
-### Hashlock (`9FWQGf16ZB5wdrwg3gDCmUcpRJNVuzp1uG12C6z5RVTw`)
+### Hashlock (`DNotXVWh1ifzp9MHSd5H4F78SRHptF9p8vGfMmjtuWX2`)
 - **Stateful?** No. **`criterion_account_count`:** 0.
 - **Commitment:** `criterion_data_hash = SHA256(secret)`.
 - **Fulfillment:** `fulfillment_data = secret` (non-empty, ≤1024 bytes); adapter
@@ -52,7 +52,7 @@ accounts (intent, receiver, SPL vault) to the criterion.
   bind to intent fields. Secrets must be unique + high-entropy. The richer
   "criterion commitment" hash in `conditional-escrow.md` is not yet implemented.
 
-### Validity / SP1 (`CuSVyvxRCfnsvvDWWqP8xRw8fNbGRwTdam5iKsqY3Kq1`)
+### Validity / SP1 (`EQfH4VFdxcFYh8prdAsB4XwKCZiiR5uta594bfiwhLsB`)
 - **Stateful?** Yes — `ValidityConfig` PDA. **`criterion_account_count`:** 1 (the
   config account).
 - **Config:** `config_hash = hash_config(guest_elf_hash, sp1_vkey_hash,
@@ -120,9 +120,9 @@ Declared in `Anchor.toml` (localnet). Devnet addresses are filled in after deplo
 and committed to the registry per cluster:
 
 ```
-laplace  = Bkb7WhLQcnz52gYrSdExPoxZUs8b2fzwjzQwrhcv8ACG
-hashlock = 9FWQGf16ZB5wdrwg3gDCmUcpRJNVuzp1uG12C6z5RVTw
-validity = CuSVyvxRCfnsvvDWWqP8xRw8fNbGRwTdam5iKsqY3Kq1
+laplace  = 5ozBamUtiAHCkiipAVL9E8v8r54HqZsHMDbkHdczpidu
+hashlock = DNotXVWh1ifzp9MHSd5H4F78SRHptF9p8vGfMmjtuWX2
+validity = EQfH4VFdxcFYh8prdAsB4XwKCZiiR5uta594bfiwhLsB
 ```
 
 > Action item: deploy the three programs to devnet and record the resulting

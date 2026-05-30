@@ -3,7 +3,7 @@ import { address, getProgramDerivedAddress, getAddressEncoder } from '@solana/ki
 import { intentPda, validityConfigPda } from '../src/pdas.js';
 import { INTENT_SEED, VALIDITY_SEED } from '../src/constants.js';
 
-const LAPLACE = address('Bkb7WhLQcnz52gYrSdExPoxZUs8b2fzwjzQwrhcv8ACG');
+const LAPLACE = address('5ozBamUtiAHCkiipAVL9E8v8r54HqZsHMDbkHdczpidu');
 const maker = address('9fYLFVoVqwH37C3dyPi6cpeobfbQ2jtLpN5HgAYDDdkm');
 
 describe('PDAs', () => {

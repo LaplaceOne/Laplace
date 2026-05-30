@@ -9,7 +9,7 @@ pub use constants::*;
 pub use instructions::*;
 pub use state::*;
 
-declare_id!("Bkb7WhLQcnz52gYrSdExPoxZUs8b2fzwjzQwrhcv8ACG");
+declare_id!("5ozBamUtiAHCkiipAVL9E8v8r54HqZsHMDbkHdczpidu");
 
 #[program]
 pub mod laplace {

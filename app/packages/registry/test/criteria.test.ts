@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { criteria, getCriteria, getCriterion, isOfficial, tierOf } from '../src/index.js';
 
-const HASHLOCK = '9FWQGf16ZB5wdrwg3gDCmUcpRJNVuzp1uG12C6z5RVTw';
+const HASHLOCK = 'DNotXVWh1ifzp9MHSd5H4F78SRHptF9p8vGfMmjtuWX2';
 
 describe('criteria', () => {
   it('ships exactly the two official criteria this round', () => {

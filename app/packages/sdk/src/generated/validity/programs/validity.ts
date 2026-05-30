@@ -50,7 +50,7 @@ import {
 } from "../instructions";
 
 export const VALIDITY_PROGRAM_ADDRESS =
-  "CuSVyvxRCfnsvvDWWqP8xRw8fNbGRwTdam5iKsqY3Kq1" as Address<"CuSVyvxRCfnsvvDWWqP8xRw8fNbGRwTdam5iKsqY3Kq1">;
+  "EQfH4VFdxcFYh8prdAsB4XwKCZiiR5uta594bfiwhLsB" as Address<"EQfH4VFdxcFYh8prdAsB4XwKCZiiR5uta594bfiwhLsB">;
 
 export enum ValidityAccount {
   ValidityConfig,
@@ -115,7 +115,7 @@ export function identifyValidityInstruction(
 }
 
 export type ParsedValidityInstruction<
-  TProgram extends string = "CuSVyvxRCfnsvvDWWqP8xRw8fNbGRwTdam5iKsqY3Kq1",
+  TProgram extends string = "EQfH4VFdxcFYh8prdAsB4XwKCZiiR5uta594bfiwhLsB",
 > =
   | ({
       instructionType: ValidityInstruction.CreateValidity;

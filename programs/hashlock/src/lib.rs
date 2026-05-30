@@ -5,7 +5,7 @@ use anchor_lang::prelude::*;
 
 pub use constants::*;
 
-declare_id!("9FWQGf16ZB5wdrwg3gDCmUcpRJNVuzp1uG12C6z5RVTw");
+declare_id!("DNotXVWh1ifzp9MHSd5H4F78SRHptF9p8vGfMmjtuWX2");
 
 #[program]
 pub mod hashlock {

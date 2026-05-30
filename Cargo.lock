@@ -4254,7 +4254,7 @@ dependencies = [
 [[package]]
 name = "sp1-solana"
 version = "0.1.0"
-source = "git+https://github.com/succinctlabs/sp1-solana#4181cae00d7493ede8a33066cb56683acb1dca72"
+source = "git+https://github.com/succinctlabs/sp1-solana?rev=4181cae00d7493ede8a33066cb56683acb1dca72#4181cae00d7493ede8a33066cb56683acb1dca72"
 dependencies = [
  "ark-bn254 0.4.0",
  "ark-ff 0.4.2",

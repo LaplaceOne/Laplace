@@ -4,7 +4,7 @@ import { address, AccountRole } from '@solana/kit';
 import { Condition, hashlockFulfillment, validityFulfillment } from '../src/criteria/index.js';
 import { hashConfig } from '../src/criteria/hash-config.js';
 
-const HASHLOCK = '9FWQGf16ZB5wdrwg3gDCmUcpRJNVuzp1uG12C6z5RVTw';
+const HASHLOCK = 'DNotXVWh1ifzp9MHSd5H4F78SRHptF9p8vGfMmjtuWX2';
 
 describe('Condition', () => {
   it('hashlock with explicit secret commits sha256(secret) and returns the secret', () => {
@@ -37,7 +37,7 @@ describe('Condition', () => {
     expect(f.criterionAccounts).toEqual([]);
   });
   it('validity fulfillment passes the config PDA as the single readonly criterion account', () => {
-    const configPda = address('CuSVyvxRCfnsvvDWWqP8xRw8fNbGRwTdam5iKsqY3Kq1');
+    const configPda = address('EQfH4VFdxcFYh8prdAsB4XwKCZiiR5uta594bfiwhLsB');
     const f = validityFulfillment({ proof: new Uint8Array(260), publicInputsSuffix: new Uint8Array([1]), configPda });
     expect(f.criterionAccountCount).toBe(1);
     expect(f.criterionAccounts).toEqual([{ address: configPda, role: AccountRole.READONLY }]);

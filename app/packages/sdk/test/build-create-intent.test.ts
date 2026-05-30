@@ -4,7 +4,7 @@ import { buildCreateIntent } from '../src/instructions.js';
 import { nativeSol, splToken } from '../src/asset.js';
 import { Condition } from '../src/criteria/index.js';
 
-const LAPLACE = 'Bkb7WhLQcnz52gYrSdExPoxZUs8b2fzwjzQwrhcv8ACG';
+const LAPLACE = '5ozBamUtiAHCkiipAVL9E8v8r54HqZsHMDbkHdczpidu';
 const receiver = address('9fYLFVoVqwH37C3dyPi6cpeobfbQ2jtLpN5HgAYDDdkm');
 
 describe('buildCreateIntent', () => {
