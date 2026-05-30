@@ -16,8 +16,10 @@ import {
 } from './generated/laplace/index.js';
 import { getCreateValidityInstruction } from './generated/validity/index.js';
 import { intentPda, validityConfigPda } from './pdas.js';
-import { hashConfig, type FulfillmentParts, type PreparedCriterion } from './criteria/index.js';
+import { hashConfig, type FulfillmentParts, type CriterionSpec } from './criteria/index.js';
 import type { EscrowAssetInput } from './asset.js';
+import { CRITERION_INTERFACE_VERSION } from './constants.js';
+import type { Cluster } from '@laplace/registry';
 import { withRemaining, W, R, type Meta } from './internal/remaining.js';
 
 export interface BuiltTx { instructions: Instruction[]; }
@@ -30,11 +32,12 @@ function randomId(): Uint8Array { const b = new Uint8Array(32); crypto.getRandom
 // systemProgram is optional and auto-defaults to 11111111111111111111111111111111.
 export async function buildCreateIntent(args: {
   maker: TransactionSigner; receiver: Address; refundRecipient?: Address;
-  asset: EscrowAssetInput; amount: bigint; expirySlot: bigint; criterion: PreparedCriterion;
+  asset: EscrowAssetInput; amount: bigint; expirySlot: bigint; criterion: CriterionSpec; cluster: Cluster;
   id?: ReadonlyUint8Array;
 }): Promise<BuiltTx & { intentPda: Address; id: Uint8Array; secret?: Uint8Array }> {
   const id = (args.id ? Uint8Array.from(args.id) : randomId());
   const [intent] = await intentPda(args.maker.address, id);
+  const refundRecipient = args.refundRecipient ?? args.maker.address;
 
   let assetArg: EscrowAssetArgs; let remaining: Meta[] = []; const pre: Instruction[] = [];
   if ('sol' in args.asset) {
@@ -51,24 +54,40 @@ export async function buildCreateIntent(args: {
     remaining = [{ address: makerAta, role: W }, { address: vault, role: W }, { address: mint, role: R }, { address: tokenProgram, role: R }];
   }
 
+  // Bind the criterion to this intent's fields. Hashlock recomputes its intent-bound commitment from
+  // these; validity/custom ignore the context.
+  const programId = args.criterion.programId(args.cluster);
+  const prepared = args.criterion.prepare({
+    cluster: args.cluster,
+    criterionProgram: programId,
+    interfaceVersion: CRITERION_INTERFACE_VERSION,
+    intentId: id,
+    maker: args.maker.address,
+    receiver: args.receiver,
+    refundRecipient,
+    asset: args.asset,
+    amount: args.amount,
+    expirySlot: args.expirySlot,
+  });
+
   // Flat input — no 'args' nesting. systemProgram auto-defaults.
   const ix = getCreateIntentInstruction({
     maker: args.maker,
     intent,
     id: Uint8Array.from(id),
     receiver: args.receiver,
-    refundRecipient: args.refundRecipient ?? args.maker.address,
-    criterionProgram: args.criterion.programId,
+    refundRecipient,
+    criterionProgram: programId,
     asset: assetArg,
     amount: args.amount,
     expirySlot: args.expirySlot,
-    criterionDataHash: Uint8Array.from(args.criterion.criterionDataHash),
+    criterionDataHash: Uint8Array.from(prepared.criterionDataHash),
   });
   return {
     instructions: [...pre, withRemaining(ix, remaining)],
     intentPda: intent,
     id,
-    secret: args.criterion.secret ? Uint8Array.from(args.criterion.secret) : undefined,
+    secret: prepared.secret ? Uint8Array.from(prepared.secret) : undefined,
   };
 }
 

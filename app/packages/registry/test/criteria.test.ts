@@ -8,8 +8,8 @@ describe('criteria', () => {
     expect(criteria.map((c) => c.key).sort()).toEqual(['hashlock', 'validity']);
     expect(criteria.every((c) => c.tier === 'official')).toBe(true);
   });
-  it('hashlock conformance binds partial, 0 accounts; validity binds full, 1 account', () => {
-    expect(getCriterion('hashlock')!.conformance).toMatchObject({ binds: 'partial', accounts: 0, interfaceVersion: 2 });
+  it('both official criteria are intent-bound: hashlock binds full / 0 accounts; validity binds full / 1 account', () => {
+    expect(getCriterion('hashlock')!.conformance).toMatchObject({ binds: 'full', accounts: 0, interfaceVersion: 2 });
     expect(getCriterion('validity')!.conformance).toMatchObject({ binds: 'full', accounts: 1, interfaceVersion: 2 });
   });
   it('isOfficial true for the hashlock program on localnet', () => {

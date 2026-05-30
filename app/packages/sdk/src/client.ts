@@ -59,8 +59,7 @@ export class Laplace {
     maker: TransactionSigner; receiver: Address; refundRecipient?: Address;
     asset: EscrowAssetInput; amount: bigint; expirySlot: bigint; criterion: CriterionSpec; id?: ReadonlyUint8Array;
   }) {
-    const prepared = args.criterion.resolve(this.cluster);
-    const built = await buildCreateIntent({ ...args, criterion: prepared });
+    const built = await buildCreateIntent({ ...args, cluster: this.cluster });
     const signature = await this.#send(built.instructions, args.maker);
     return { signature, intentPda: built.intentPda, id: built.id, secret: built.secret };
   }

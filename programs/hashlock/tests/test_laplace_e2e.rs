@@ -73,6 +73,37 @@ fn try_send_ix(
     svm.send_transaction(tx).is_ok()
 }
 
+// Recompute the intent-bound hashlock commitment the adapter will check at fulfill time.
+#[allow(clippy::too_many_arguments)]
+fn commitment(
+    intent_id: &[u8; 32],
+    maker: &Pubkey,
+    receiver: &Pubkey,
+    refund_recipient: &Pubkey,
+    asset: laplace::EscrowAsset,
+    amount: u64,
+    expiry_slot: u64,
+    preimage: &[u8],
+) -> [u8; 32] {
+    let request = laplace::CriterionVerificationRequest {
+        interface_version: laplace::CRITERION_INTERFACE_VERSION,
+        protocol_program: laplace::id(),
+        intent: Pubkey::default(),
+        intent_id: *intent_id,
+        maker: *maker,
+        receiver: *receiver,
+        refund_recipient: *refund_recipient,
+        asset,
+        amount,
+        expiry_slot,
+        created_slot: 0,
+        criterion_program: hashlock::id(),
+        criterion_data_hash: [0; 32],
+        fulfillment_data: vec![],
+    };
+    hashlock::hash_hashlock_commitment(&request, &hashlock::hash_preimage(preimage))
+}
+
 fn create_intent_ix(
     maker: &Pubkey,
     receiver: &Pubkey,
@@ -87,7 +118,16 @@ fn create_intent_ix(
         asset: laplace::EscrowAsset::NativeSol,
         amount: ESCROW_AMOUNT,
         expiry_slot: 1_000,
-        criterion_data_hash: hashlock::hash_preimage(preimage),
+        criterion_data_hash: commitment(
+            &INTENT_ID,
+            maker,
+            receiver,
+            maker,
+            laplace::EscrowAsset::NativeSol,
+            ESCROW_AMOUNT,
+            1_000,
+            preimage,
+        ),
     };
 
     anchor_lang::solana_program::instruction::Instruction::new_with_bytes(
@@ -123,7 +163,20 @@ fn create_spl_intent_ix(
         },
         amount: ESCROW_AMOUNT,
         expiry_slot: 1_000,
-        criterion_data_hash: hashlock::hash_preimage(preimage),
+        criterion_data_hash: commitment(
+            &INTENT_ID,
+            maker,
+            receiver,
+            maker,
+            laplace::EscrowAsset::SplToken {
+                mint: *mint,
+                token_program: spl_token_interface::ID,
+                vault: *vault_token,
+            },
+            ESCROW_AMOUNT,
+            1_000,
+            preimage,
+        ),
     };
 
     let mut accounts = laplace::accounts::CreateIntent {
@@ -386,7 +439,16 @@ fn hashlock_fulfillment_releases_escrow_to_receiver() {
     assert_eq!(created.criterion_program, hashlock::id());
     assert_eq!(
         created.criterion_data_hash,
-        hashlock::hash_preimage(preimage)
+        commitment(
+            &INTENT_ID,
+            &maker.pubkey(),
+            &receiver.pubkey(),
+            &maker.pubkey(),
+            laplace::EscrowAsset::NativeSol,
+            ESCROW_AMOUNT,
+            1_000,
+            preimage,
+        )
     );
 
     send_ix(

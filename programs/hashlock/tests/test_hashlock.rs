@@ -1,7 +1,7 @@
 use anchor_lang::prelude::Pubkey;
 
 fn valid_request(preimage: &[u8]) -> laplace::CriterionVerificationRequest {
-    laplace::CriterionVerificationRequest {
+    let mut request = laplace::CriterionVerificationRequest {
         interface_version: laplace::CRITERION_INTERFACE_VERSION,
         protocol_program: laplace::id(),
         intent: Pubkey::new_from_array([1; 32]),
@@ -14,9 +14,13 @@ fn valid_request(preimage: &[u8]) -> laplace::CriterionVerificationRequest {
         expiry_slot: 2_000,
         created_slot: 100,
         criterion_program: hashlock::id(),
-        criterion_data_hash: hashlock::hash_preimage(preimage),
+        criterion_data_hash: [0; 32],
         fulfillment_data: preimage.to_vec(),
-    }
+    };
+    // The commitment binds the intent fields, so it must be computed over the request itself.
+    let hashlock = hashlock::hash_preimage(preimage);
+    request.criterion_data_hash = hashlock::hash_hashlock_commitment(&request, &hashlock);
+    request
 }
 
 #[test]

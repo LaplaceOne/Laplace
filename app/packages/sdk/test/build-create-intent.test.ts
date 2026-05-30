@@ -12,7 +12,7 @@ describe('buildCreateIntent', () => {
     const maker = await generateKeyPairSigner();
     const built = await buildCreateIntent({
       maker, receiver, asset: nativeSol(), amount: 5_000_000_000n, expirySlot: 1000n,
-      criterion: Condition.hashlock({ secret: new Uint8Array(32).fill(1) }).resolve('localnet'),
+      criterion: Condition.hashlock({ secret: new Uint8Array(32).fill(1) }), cluster: 'localnet',
     });
     expect(built.instructions).toHaveLength(1);
     const ix = built.instructions[0]!;
@@ -26,7 +26,7 @@ describe('buildCreateIntent', () => {
     const mint = address('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v');
     const built = await buildCreateIntent({
       maker, receiver, asset: splToken({ mint }), amount: 1_200_000_000n, expirySlot: 1000n,
-      criterion: Condition.hashlock({ secret: new Uint8Array(32).fill(1) }).resolve('localnet'),
+      criterion: Condition.hashlock({ secret: new Uint8Array(32).fill(1) }), cluster: 'localnet',
     });
     // [0] = create-vault-ATA (idempotent), [1] = create_intent
     expect(built.instructions).toHaveLength(2);

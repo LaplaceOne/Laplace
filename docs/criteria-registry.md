@@ -45,12 +45,17 @@ accounts (intent, receiver, SPL vault) to the criterion.
 
 ### Hashlock (`DNotXVWh1ifzp9MHSd5H4F78SRHptF9p8vGfMmjtuWX2`)
 - **Stateful?** No. **`criterion_account_count`:** 0.
-- **Commitment:** `criterion_data_hash = SHA256(secret)`.
-- **Fulfillment:** `fulfillment_data = secret` (non-empty, ≤1024 bytes); adapter
-  accepts iff `SHA256(fulfillment_data) == criterion_data_hash`.
-- **Caveat (current code):** the adapter checks only the preimage; it does **not**
-  bind to intent fields. Secrets must be unique + high-entropy. The richer
-  "criterion commitment" hash in `conditional-escrow.md` is not yet implemented.
+- **Commitment (intent-bound):** `criterion_data_hash = SHA256(domain ‖ u16be(version) ‖
+  criterion_program ‖ intent_id ‖ maker ‖ receiver ‖ refund_recipient ‖ asset ‖ u64be(amount) ‖
+  u64be(expiry_slot) ‖ hash_fn_id ‖ SHA256(secret))` (domain `laplace-hashlock-commit-v1`; asset =
+  `[0]` for SOL or `[1]‖mint‖token_program` for SPL; `created_slot`/PDA excluded).
+- **Fulfillment:** `fulfillment_data = secret` (non-empty, ≤1024 bytes). The adapter recomputes the
+  commitment from the request's intent fields + `SHA256(fulfillment_data)` and accepts iff it equals
+  `criterion_data_hash`.
+- **Intent-bound (implements `conditional-escrow.md` §Criterion Commitment):** a revealed secret
+  cannot be replayed against a different intent. **Atomic swaps still work** — the shared secret
+  unlocks every leg, because each leg recomputes the commitment with its own fields. Revealing a
+  preimage on-chain is public/irreversible (it lands in calldata).
 
 ### Validity / SP1 (`EQfH4VFdxcFYh8prdAsB4XwKCZiiR5uta594bfiwhLsB`)
 - **Stateful?** Yes — `ValidityConfig` PDA. **`criterion_account_count`:** 1 (the
