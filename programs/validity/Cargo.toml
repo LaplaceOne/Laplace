@@ -1,0 +1,38 @@
+[package]
+name = "validity"
+version = "0.1.0"
+description = "SP1-backed criterion adapter for Laplace"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "validity"
+
+[features]
+default = []
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+idl-build = ["anchor-lang/idl-build"]
+anchor-debug = []
+custom-heap = []
+custom-panic = []
+
+[dependencies]
+anchor-lang = "1.0.2"
+hex = "0.4.3"
+laplace = { path = "../laplace", features = ["no-entrypoint"] }
+solana-sha256-hasher = { version = "3.1.0", features = ["sha2"] }
+sp1-solana = { git = "https://github.com/succinctlabs/sp1-solana", package = "sp1-solana" }
+
+[dev-dependencies]
+encrypted-disclosure = { path = "../../guests/encrypted-disclosure" }
+litesvm = "0.10.0"
+solana-keypair = "3.0.1"
+solana-message = "3.0.1"
+solana-signer = "3.0.0"
+solana-transaction = "3.0.2"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_os, values("solana"))'] }

@@ -1,0 +1,24 @@
+[package]
+name = "encrypted-disclosure"
+version = "0.1.0"
+description = "Encrypted disclosure SP1 guest and validity config helpers for Laplace"
+edition = "2021"
+autobins = false
+
+[lib]
+name = "encrypted_disclosure"
+
+[[bin]]
+name = "encrypted-disclosure"
+path = "src/main.rs"
+test = false
+
+[dependencies]
+borsh = { version = "1.6.1", features = ["derive"] }
+sha2 = "0.10.9"
+
+[target.'cfg(target_os = "zkvm")'.dependencies]
+sp1-zkvm = "6.2.2"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_os, values("zkvm"))'] }
