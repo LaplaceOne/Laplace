@@ -57,6 +57,44 @@ fn send_ixs(svm: &mut LiteSVM, payer: &Keypair, ixs: Vec<Instruction>) -> Result
     Ok(())
 }
 
+fn send_ixs_meta(
+    svm: &mut LiteSVM,
+    payer: &Keypair,
+    ixs: Vec<Instruction>,
+) -> litesvm::types::TransactionMetadata {
+    let blockhash = svm.latest_blockhash();
+    let msg = Message::new_with_blockhash(&ixs, Some(&payer.pubkey()), &blockhash);
+    let tx = VersionedTransaction::try_new(VersionedMessage::Legacy(msg), &[payer]).unwrap();
+    svm.send_transaction(tx).unwrap()
+}
+
+fn event_discriminator(name: &str) -> [u8; 8] {
+    // Anchor event discriminator = sha256("event:<Name>")[..8].
+    let h = solana_sha256_hasher::hash(format!("event:{name}").as_bytes());
+    let mut d = [0u8; 8];
+    d.copy_from_slice(&h.to_bytes()[..8]);
+    d
+}
+
+fn decode_event<T: anchor_lang::AnchorDeserialize>(
+    meta: &litesvm::types::TransactionMetadata,
+    name: &str,
+) -> T {
+    use base64::{engine::general_purpose::STANDARD, Engine};
+    let disc = event_discriminator(name);
+    for line in &meta.logs {
+        if let Some(b64) = line.strip_prefix("Program data: ") {
+            if let Ok(bytes) = STANDARD.decode(b64) {
+                if bytes.len() >= 8 && bytes[..8] == disc {
+                    return T::try_from_slice(&bytes[8..])
+                        .expect("event payload should deserialize");
+                }
+            }
+        }
+    }
+    panic!("event {name} not found in tx logs: {:?}", meta.logs);
+}
+
 fn compute_budget_limit_ix(units: u32) -> Instruction {
     let mut data = Vec::with_capacity(5);
     // ComputeBudgetInstruction::SetComputeUnitLimit is encoded as tag 2 + little-endian u32.
@@ -199,21 +237,21 @@ fn validity_e2e_creates_config_and_rejects_bad_proof() {
     let config = validity_pda(&config_hash);
     let intent = intent_pda(&maker.pubkey(), &INTENT_ID);
 
-    send_ix(
-        &mut svm,
-        &maker,
-        create_validity_ix(
-            &maker.pubkey(),
-            &config,
-            validity::CreateValidityArgs {
-                config_hash,
-                guest_elf_hash,
-                sp1_vkey_hash,
-                fixed_public_inputs: fixed_public_inputs.clone(),
-            },
-        ),
-    )
-    .unwrap();
+    let create_cfg_ix = create_validity_ix(
+        &maker.pubkey(),
+        &config,
+        validity::CreateValidityArgs {
+            config_hash,
+            guest_elf_hash,
+            sp1_vkey_hash,
+            fixed_public_inputs: fixed_public_inputs.clone(),
+        },
+    );
+    let meta = send_ixs_meta(&mut svm, &maker, vec![create_cfg_ix]);
+    let ev: validity::ValidityConfigCreated = decode_event(&meta, "ValidityConfigCreated");
+    assert_eq!(ev.config, config);
+    assert_eq!(ev.config_hash, config_hash);
+    assert_eq!(ev.payer, maker.pubkey());
 
     let stored_config = read_validity_config(&mut svm, &config);
     assert_eq!(stored_config.config_hash, config_hash);

@@ -4765,6 +4765,7 @@ name = "validity"
 version = "0.1.0"
 dependencies = [
  "anchor-lang",
+ "base64 0.22.1",
  "encrypted-disclosure",
  "hex",
  "laplace",

@@ -3,7 +3,7 @@ use anchor_lang::prelude::*;
 use crate::{
     constants::{MAX_FIXED_PUBLIC_INPUTS_LEN, VALIDITY_SEED},
     error::ErrorCode,
-    hash_config, CreateValidityArgs, ValidityConfig,
+    hash_config, CreateValidityArgs, ValidityConfig, ValidityConfigCreated,
 };
 
 #[derive(Accounts)]
@@ -44,6 +44,15 @@ pub(crate) fn handler(ctx: Context<CreateValidity>, args: CreateValidityArgs) ->
     config.sp1_vkey_hash = args.sp1_vkey_hash;
     config.fixed_public_inputs = args.fixed_public_inputs;
     config.bump = ctx.bumps.config;
+
+    emit!(ValidityConfigCreated {
+        config: ctx.accounts.config.key(),
+        config_hash: ctx.accounts.config.config_hash,
+        guest_elf_hash: ctx.accounts.config.guest_elf_hash,
+        sp1_vkey_hash: ctx.accounts.config.sp1_vkey_hash,
+        fixed_public_inputs_len: ctx.accounts.config.fixed_public_inputs.len() as u32,
+        payer: ctx.accounts.payer.key(),
+    });
 
     Ok(())
 }
