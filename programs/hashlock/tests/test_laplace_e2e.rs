@@ -59,13 +59,48 @@ fn send_ixs(
     ixs: Vec<anchor_lang::solana_program::instruction::Instruction>,
     extra_signers: &[&Keypair],
 ) {
+    send_ixs_meta(svm, payer, ixs, extra_signers);
+}
+
+fn send_ixs_meta(
+    svm: &mut LiteSVM,
+    payer: &Keypair,
+    ixs: Vec<anchor_lang::solana_program::instruction::Instruction>,
+    extra_signers: &[&Keypair],
+) -> litesvm::types::TransactionMetadata {
     let blockhash = svm.latest_blockhash();
     let msg = Message::new_with_blockhash(&ixs, Some(&payer.pubkey()), &blockhash);
     let mut signers: Vec<&dyn Signer> = vec![payer];
     signers.extend(extra_signers.iter().map(|signer| *signer as &dyn Signer));
     let tx = VersionedTransaction::try_new(VersionedMessage::Legacy(msg), &signers).unwrap();
+    svm.send_transaction(tx).unwrap()
+}
 
-    svm.send_transaction(tx).unwrap();
+fn event_discriminator(name: &str) -> [u8; 8] {
+    // Anchor event discriminator = sha256("event:<Name>")[..8].
+    let h = solana_sha256_hasher::hash(format!("event:{name}").as_bytes());
+    let mut d = [0u8; 8];
+    d.copy_from_slice(&h.to_bytes()[..8]);
+    d
+}
+
+fn decode_event<T: anchor_lang::AnchorDeserialize>(
+    meta: &litesvm::types::TransactionMetadata,
+    name: &str,
+) -> T {
+    use base64::{engine::general_purpose::STANDARD, Engine};
+    let disc = event_discriminator(name);
+    for line in &meta.logs {
+        if let Some(b64) = line.strip_prefix("Program data: ") {
+            if let Ok(bytes) = STANDARD.decode(b64) {
+                if bytes.len() >= 8 && bytes[..8] == disc {
+                    return T::try_from_slice(&bytes[8..])
+                        .expect("event payload should deserialize");
+                }
+            }
+        }
+    }
+    panic!("event {name} not found in tx logs: {:?}", meta.logs);
 }
 
 fn try_send_ix(
@@ -433,11 +468,13 @@ fn hashlock_fulfillment_releases_escrow_to_receiver() {
     svm.airdrop(&receiver.pubkey(), 1_000_000).unwrap();
     let receiver_before = svm.get_balance(&receiver.pubkey()).unwrap();
 
-    send_ix(
-        &mut svm,
-        &maker,
-        create_intent_ix(&maker.pubkey(), &receiver.pubkey(), &intent, preimage),
-    );
+    let create_ix = create_intent_ix(&maker.pubkey(), &receiver.pubkey(), &intent, preimage);
+    let meta = send_ixs_meta(&mut svm, &maker, vec![create_ix], &[]);
+    let ev: laplace::IntentCreated = decode_event(&meta, "IntentCreated");
+    assert_eq!(ev.intent, intent);
+    assert_eq!(ev.maker, maker.pubkey());
+    assert_eq!(ev.amount, ESCROW_AMOUNT);
+    assert!(matches!(ev.asset, laplace::EscrowAsset::NativeSol));
 
     let created = read_intent(&mut svm, &intent);
     assert_eq!(created.status, laplace::IntentStatus::Active);
@@ -456,11 +493,12 @@ fn hashlock_fulfillment_releases_escrow_to_receiver() {
         )
     );
 
-    send_ix(
-        &mut svm,
-        &maker,
-        fulfill_ix(&receiver.pubkey(), &intent, preimage),
-    );
+    let fulfill_ix = fulfill_ix(&receiver.pubkey(), &intent, preimage);
+    let meta = send_ixs_meta(&mut svm, &maker, vec![fulfill_ix], &[]);
+    let ev: laplace::IntentFulfilled = decode_event(&meta, "IntentFulfilled");
+    assert_eq!(ev.intent, intent);
+    assert_eq!(ev.receiver, receiver.pubkey());
+    assert_eq!(ev.amount, ESCROW_AMOUNT);
 
     let fulfilled = read_intent(&mut svm, &intent);
     assert_eq!(fulfilled.status, laplace::IntentStatus::Fulfilled);
@@ -555,18 +593,18 @@ fn hashlock_spl_fulfillment_releases_tokens_to_receiver() {
         ESCROW_AMOUNT
     );
 
-    send_ix(
-        &mut svm,
-        &maker,
-        fulfill_spl_ix(
-            &receiver.pubkey(),
-            &intent,
-            preimage,
-            &mint.pubkey(),
-            &receiver_token.pubkey(),
-            &vault_token.pubkey(),
-        ),
+    let fulfill_spl_ix = fulfill_spl_ix(
+        &receiver.pubkey(),
+        &intent,
+        preimage,
+        &mint.pubkey(),
+        &receiver_token.pubkey(),
+        &vault_token.pubkey(),
     );
+    let meta = send_ixs_meta(&mut svm, &maker, vec![fulfill_spl_ix], &[]);
+    let ev: laplace::IntentFulfilled = decode_event(&meta, "IntentFulfilled");
+    assert_eq!(ev.intent, intent);
+    assert!(matches!(ev.asset, laplace::EscrowAsset::SplToken { .. }));
 
     let fulfilled = read_intent(&mut svm, &intent);
     assert_eq!(fulfilled.status, laplace::IntentStatus::Fulfilled);
@@ -579,11 +617,12 @@ fn hashlock_spl_fulfillment_releases_tokens_to_receiver() {
         0
     );
 
-    send_ix(
-        &mut svm,
-        &maker,
-        close_spl_intent_ix(&maker.pubkey(), &intent, &vault_token.pubkey()),
-    );
+    let close_spl_ix = close_spl_intent_ix(&maker.pubkey(), &intent, &vault_token.pubkey());
+    let meta = send_ixs_meta(&mut svm, &maker, vec![close_spl_ix], &[]);
+    let ev: laplace::IntentClosed = decode_event(&meta, "IntentClosed");
+    assert_eq!(ev.intent, intent);
+    assert_eq!(ev.maker, maker.pubkey());
+    assert_eq!(ev.final_status, laplace::IntentStatus::Fulfilled);
 
     assert!(svm.get_account(&vault_token.pubkey()).is_none());
 }
@@ -631,17 +670,17 @@ fn hashlock_spl_refund_returns_tokens_after_expiry() {
     );
 
     svm.warp_to_slot(1_001);
-    send_ix(
-        &mut svm,
-        &maker,
-        refund_spl_ix(
-            &maker.pubkey(),
-            &intent,
-            &mint.pubkey(),
-            &maker_token.pubkey(),
-            &vault_token.pubkey(),
-        ),
+    let refund_spl_ix = refund_spl_ix(
+        &maker.pubkey(),
+        &intent,
+        &mint.pubkey(),
+        &maker_token.pubkey(),
+        &vault_token.pubkey(),
     );
+    let meta = send_ixs_meta(&mut svm, &maker, vec![refund_spl_ix], &[]);
+    let ev: laplace::IntentRefunded = decode_event(&meta, "IntentRefunded");
+    assert_eq!(ev.intent, intent);
+    assert_eq!(ev.amount, ESCROW_AMOUNT);
 
     let refunded = read_intent(&mut svm, &intent);
     assert_eq!(refunded.status, laplace::IntentStatus::Refunded);

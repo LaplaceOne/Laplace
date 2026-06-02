@@ -6,7 +6,7 @@ use anchor_spl::token_interface::{self, Mint, TokenAccount, TransferChecked};
 use crate::{
     constants::{CRITERION_INTERFACE_VERSION, INTENT_SEED},
     error::ErrorCode,
-    CreateIntentArgs, EscrowAsset, Intent, IntentStatus,
+    CreateIntentArgs, EscrowAsset, Intent, IntentCreated, IntentStatus,
 };
 
 #[derive(Accounts)]
@@ -49,11 +49,27 @@ pub(crate) fn handler<'info>(
     intent.status = IntentStatus::Active;
     intent.bump = ctx.bumps.intent;
 
+    let created_event = IntentCreated {
+        intent: ctx.accounts.intent.key(),
+        id: ctx.accounts.intent.id,
+        maker: ctx.accounts.intent.maker,
+        receiver: ctx.accounts.intent.receiver,
+        refund_recipient: ctx.accounts.intent.refund_recipient,
+        criterion_program: ctx.accounts.intent.criterion_program,
+        criterion_data_hash: ctx.accounts.intent.criterion_data_hash,
+        criterion_interface_version: ctx.accounts.intent.criterion_interface_version,
+        asset: ctx.accounts.intent.asset,
+        amount: ctx.accounts.intent.amount,
+        expiry_slot: ctx.accounts.intent.expiry_slot,
+        created_slot: ctx.accounts.intent.created_slot,
+    };
+
     match args.asset {
         EscrowAsset::NativeSol => lock_native_sol(ctx, args.amount)?,
         EscrowAsset::SplToken { .. } => lock_spl_tokens(ctx, args.amount)?,
     }
 
+    emit!(created_event);
     Ok(())
 }
 

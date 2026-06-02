@@ -1,7 +1,9 @@
 use anchor_lang::{prelude::*, AccountDeserialize};
 use anchor_spl::token_interface::{self, Mint, TokenAccount, TransferChecked};
 
-use crate::{constants::INTENT_SEED, error::ErrorCode, EscrowAsset, Intent, IntentStatus};
+use crate::{
+    constants::INTENT_SEED, error::ErrorCode, EscrowAsset, Intent, IntentRefunded, IntentStatus,
+};
 
 #[derive(Accounts)]
 pub struct RefundExpiredIntent<'info> {
@@ -33,6 +35,16 @@ pub(crate) fn handler<'info>(mut ctx: Context<'info, RefundExpiredIntent<'info>>
         EscrowAsset::NativeSol => refund_native_sol(&mut ctx)?,
         EscrowAsset::SplToken { .. } => refund_spl_tokens(&mut ctx)?,
     }
+
+    emit!(IntentRefunded {
+        intent: ctx.accounts.intent.key(),
+        id: ctx.accounts.intent.id,
+        maker: ctx.accounts.intent.maker,
+        refund_recipient: ctx.accounts.intent.refund_recipient,
+        asset: ctx.accounts.intent.asset,
+        amount: ctx.accounts.intent.amount,
+        slot: Clock::get()?.slot,
+    });
 
     Ok(())
 }

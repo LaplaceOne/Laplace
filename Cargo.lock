@@ -1559,6 +1559,7 @@ name = "hashlock"
 version = "0.1.0"
 dependencies = [
  "anchor-lang",
+ "base64 0.22.1",
  "laplace",
  "litesvm",
  "solana-keypair",

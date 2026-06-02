@@ -25,7 +25,9 @@ laplace = { path = "../laplace", features = ["no-entrypoint"] }
 solana-sha256-hasher = { version = "3.1.0", features = ["sha2"] }
 
 [dev-dependencies]
+base64 = "0.22"
 litesvm = "0.10.0"
+solana-sha256-hasher = { version = "3.1.0", features = ["sha2"] }
 solana-keypair = "3.0.1"
 solana-message = "3.0.1"
 solana-program-pack = "3.0.0"

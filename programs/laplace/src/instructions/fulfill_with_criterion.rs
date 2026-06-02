@@ -8,7 +8,7 @@ use anchor_spl::token_interface::{self, Mint, TokenAccount, TransferChecked};
 use crate::{
     constants::{INTENT_SEED, MAX_FULFILLMENT_DATA_LEN, VERIFY_CRITERION_DISCRIMINATOR},
     error::ErrorCode,
-    CriterionVerificationRequest, EscrowAsset, Intent, IntentStatus,
+    CriterionVerificationRequest, EscrowAsset, Intent, IntentFulfilled, IntentStatus,
 };
 
 #[derive(Accounts)]
@@ -78,6 +78,17 @@ pub(crate) fn handler<'info>(
         EscrowAsset::NativeSol => release_native_sol(&mut ctx, settlement_accounts)?,
         EscrowAsset::SplToken { .. } => release_spl_tokens(&mut ctx, settlement_accounts)?,
     }
+
+    emit!(IntentFulfilled {
+        intent: ctx.accounts.intent.key(),
+        id: ctx.accounts.intent.id,
+        maker: ctx.accounts.intent.maker,
+        receiver: ctx.accounts.intent.receiver,
+        criterion_program: ctx.accounts.intent.criterion_program,
+        asset: ctx.accounts.intent.asset,
+        amount: ctx.accounts.intent.amount,
+        slot: Clock::get()?.slot,
+    });
 
     Ok(())
 }

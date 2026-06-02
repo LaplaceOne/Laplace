@@ -1,7 +1,9 @@
 use anchor_lang::{prelude::*, AccountDeserialize};
 use anchor_spl::token_interface::{self, CloseAccount, TokenAccount};
 
-use crate::{constants::INTENT_SEED, error::ErrorCode, EscrowAsset, Intent, IntentStatus};
+use crate::{
+    constants::INTENT_SEED, error::ErrorCode, EscrowAsset, Intent, IntentClosed, IntentStatus,
+};
 
 #[derive(Accounts)]
 pub struct CloseIntent<'info> {
@@ -21,6 +23,14 @@ pub(crate) fn handler<'info>(ctx: Context<'info, CloseIntent<'info>>) -> Result<
             || ctx.accounts.intent.status == IntentStatus::Refunded,
         ErrorCode::IntentNotClosable
     );
+
+    emit!(IntentClosed {
+        intent: ctx.accounts.intent.key(),
+        id: ctx.accounts.intent.id,
+        maker: ctx.accounts.intent.maker,
+        final_status: ctx.accounts.intent.status,
+        slot: Clock::get()?.slot,
+    });
 
     match ctx.accounts.intent.asset {
         EscrowAsset::NativeSol => {
