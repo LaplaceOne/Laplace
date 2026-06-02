@@ -1,8 +1,7 @@
 export type Cluster = 'localnet' | 'devnet' | 'mainnet-beta';
 export type TrustTier = 'official' | 'audited' | 'community' | 'unverified' | 'flagged';
 export interface ClusterConfig { cluster: Cluster; rpcUrl: string;
-  programs: { laplace: string; hashlock: string; validity: string };
-  stablecoins: { symbol: string; mint: string; decimals: number }[]; }
+  programs: { laplace: string; hashlock: string; validity: string }; }
 export interface CriterionEntry { key: string; name: string; kind: string; desc: string; tier: TrustTier;
   programId: Partial<Record<Cluster, string>>; stateful: boolean; criterionAccountCount: number;
   fulfillmentKind: 'preimage' | 'sp1-proof' | 'custom'; commitment: string; verify: string;
