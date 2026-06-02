@@ -12,16 +12,22 @@ import {
 import { sha256 } from '@noble/hashes/sha256';
 import { getCluster, type Cluster } from '@laplace/registry';
 import {
-  CRITERION_INTERFACE_VERSION,
-  HASHLOCK_COMMITMENT_DOMAIN,
   HASH_FUNCTION_ID_SHA256,
 } from '../constants.js';
 import type { EscrowAssetInput } from '../asset.js';
 import { hashConfig } from './hash-config.js';
+import { intentBindingHash, concatBytes, u16be, u64be, encodeAssetCanonical } from '../binding.js';
 
 export interface PreparedCriterion {
   programId: Address;
   criterionDataHash: ReadonlyUint8Array;
+  /** Always set — the `intentBindingHash(ctx)` value for this intent. */
+  bindingTag: ReadonlyUint8Array;
+  /**
+   * Set by validity (= bindingTag). The SP1 guest MUST commit this as its leading 32 public-input
+   * bytes; the adapter prepends it before on-chain verification.
+   */
+  requiredPublicInputPrefix?: ReadonlyUint8Array;
   secret?: ReadonlyUint8Array;
 }
 export interface FulfillmentParts {
@@ -30,8 +36,7 @@ export interface FulfillmentParts {
   criterionAccountCount: number;
 }
 
-// The intent context a criterion needs to compute its (possibly intent-bound) commitment. Hashlock
-// binds these fields; validity/custom ignore them (validity binds via SP1 public inputs).
+// The intent context a criterion needs to compute its (possibly intent-bound) commitment.
 export interface CommitContext {
   cluster: Cluster;
   criterionProgram: Address;
@@ -50,29 +55,17 @@ export interface CriterionSpec {
   prepare(ctx: CommitContext): PreparedCriterion;
 }
 
+// Re-export helpers for callers that imported them from here previously.
+export { concatBytes, u16be, u64be };
+
 const addr = getAddressEncoder();
-const u16be = (n: number) => new Uint8Array([(n >> 8) & 0xff, n & 0xff]);
-function u64be(n: bigint): Uint8Array {
-  const b = new Uint8Array(8);
-  new DataView(b.buffer).setBigUint64(0, n, false);
-  return b;
-}
-function concatBytes(parts: ReadonlyUint8Array[]): Uint8Array {
-  const total = parts.reduce((n, p) => n + p.length, 0);
-  const out = new Uint8Array(total);
-  let o = 0;
-  for (const p of parts) {
-    out.set(p, o);
-    o += p.length;
-  }
-  return out;
-}
 
 /**
- * Intent-bound hashlock commitment — byte-for-byte mirror of `hashlock::hash_hashlock_commitment`:
- * SHA256(domain ‖ u16be(version) ‖ criterion_program ‖ intent_id ‖ maker ‖ receiver ‖ refund_recipient
- *        ‖ asset ‖ u64be(amount) ‖ u64be(expiry_slot) ‖ hash_fn_id ‖ hashlock), where
- * hashlock = SHA256(secret) and asset = [0] (SOL) or [1]‖mint‖tokenProgram (SPL, vault excluded).
+ * Hashlock commitment using the shared universal binding primitive:
+ *   SHA256(intent_binding_hash(ctx) ‖ hash_fn_id ‖ SHA256(secret))
+ *
+ * Mirrors `programs/hashlock/src/verify_criterion.rs :: hash_hashlock_commitment`
+ * after adoption of the shared `laplace::binding::intent_binding_hash`.
  */
 export function hashHashlockCommitment(input: {
   interfaceVersion: number;
@@ -86,26 +79,20 @@ export function hashHashlockCommitment(input: {
   expirySlot: bigint;
   hashlock: ReadonlyUint8Array;
 }): Uint8Array {
-  const assetBytes =
-    'sol' in input.asset
-      ? new Uint8Array([0])
-      : concatBytes([new Uint8Array([1]), addr.encode(input.asset.spl.mint), addr.encode(input.asset.spl.tokenProgram)]);
-  return sha256(
-    concatBytes([
-      HASHLOCK_COMMITMENT_DOMAIN,
-      u16be(input.interfaceVersion),
-      addr.encode(input.criterionProgram),
-      input.intentId,
-      addr.encode(input.maker),
-      addr.encode(input.receiver),
-      addr.encode(input.refundRecipient),
-      assetBytes,
-      u64be(input.amount),
-      u64be(input.expirySlot),
-      new Uint8Array([HASH_FUNCTION_ID_SHA256]),
-      input.hashlock,
-    ]),
-  );
+  const ctx: CommitContext = {
+    cluster: 'localnet', // cluster not used in intentBindingHash computation
+    criterionProgram: input.criterionProgram,
+    interfaceVersion: input.interfaceVersion,
+    intentId: input.intentId,
+    maker: input.maker,
+    receiver: input.receiver,
+    refundRecipient: input.refundRecipient,
+    asset: input.asset,
+    amount: input.amount,
+    expirySlot: input.expirySlot,
+  };
+  const bindingTag = intentBindingHash(ctx);
+  return sha256(concatBytes([bindingTag, new Uint8Array([HASH_FUNCTION_ID_SHA256]), input.hashlock]));
 }
 
 // borsh ValidityFulfillment { proof: Vec<u8>, public_inputs_suffix: Vec<u8> } — u32-le length-prefixed.
@@ -129,20 +116,11 @@ export const Condition = {
       key: 'hashlock',
       programId: (cluster) => address(getCluster(cluster).programs.hashlock),
       prepare(ctx) {
+        const bindingTag = intentBindingHash(ctx);
         return {
           programId: ctx.criterionProgram,
-          criterionDataHash: hashHashlockCommitment({
-            interfaceVersion: ctx.interfaceVersion,
-            criterionProgram: ctx.criterionProgram,
-            intentId: ctx.intentId,
-            maker: ctx.maker,
-            receiver: ctx.receiver,
-            refundRecipient: ctx.refundRecipient,
-            asset: ctx.asset,
-            amount: ctx.amount,
-            expirySlot: ctx.expirySlot,
-            hashlock,
-          }),
+          criterionDataHash: sha256(concatBytes([bindingTag, new Uint8Array([HASH_FUNCTION_ID_SHA256]), hashlock])),
+          bindingTag,
           secret,
         };
       },
@@ -153,8 +131,6 @@ export const Condition = {
       | { configHash: ReadonlyUint8Array }
       | { guestElfHash: ReadonlyUint8Array; sp1VkeyHash: ReadonlyUint8Array; fixedPublicInputs: ReadonlyUint8Array },
   ): CriterionSpec {
-    // Validity binds intent fields through its SP1 public inputs, not the criterion_data_hash, so it
-    // ignores the intent context here.
     const criterionDataHash =
       'configHash' in args
         ? Uint8Array.from(args.configHash)
@@ -162,14 +138,31 @@ export const Condition = {
     return {
       key: 'validity',
       programId: (cluster) => address(getCluster(cluster).programs.validity),
-      prepare: (ctx) => ({ programId: ctx.criterionProgram, criterionDataHash }),
+      prepare: (ctx) => {
+        const bindingTag = intentBindingHash(ctx);
+        return {
+          programId: ctx.criterionProgram,
+          criterionDataHash,
+          bindingTag,
+          requiredPublicInputPrefix: bindingTag,
+        };
+      },
     };
   },
-  custom(args: { programId: Address; criterionDataHash: ReadonlyUint8Array }): CriterionSpec {
+  custom(
+    args:
+      | { programId: Address; criterionDataHash: ReadonlyUint8Array }
+      | { programId: Address; bind: (tag: Uint8Array) => Uint8Array },
+  ): CriterionSpec {
     return {
       key: 'custom',
       programId: () => args.programId,
-      prepare: () => ({ programId: args.programId, criterionDataHash: args.criterionDataHash }),
+      prepare: (ctx) => {
+        const bindingTag = intentBindingHash(ctx);
+        const criterionDataHash =
+          'criterionDataHash' in args ? args.criterionDataHash : args.bind(Uint8Array.from(bindingTag));
+        return { programId: args.programId, criterionDataHash, bindingTag };
+      },
     };
   },
 };

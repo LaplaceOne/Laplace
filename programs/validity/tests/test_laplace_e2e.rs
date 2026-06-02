@@ -20,19 +20,26 @@ const FIBONACCI_SP1_VKEY_HASH: [u8; 32] = [
     0x04, 0x95, 0xf2, 0x01, 0x5c, 0x5a, 0x8a, 0x73, 0x73, 0x33, 0x68, 0x0c, 0xe6, 0xbb, 0x42, 0x4e,
 ];
 
-fn load_programs(svm: &mut LiteSVM) -> bool {
-    let Ok(laplace_bytes) = std::fs::read("target/deploy/laplace.so") else {
-        eprintln!("skipping validity e2e: run `anchor build --ignore-keys` first");
-        return false;
-    };
-    let Ok(validity_bytes) = std::fs::read("target/deploy/validity.so") else {
-        eprintln!("skipping validity e2e: run `anchor build --ignore-keys` first");
-        return false;
-    };
+/// Read a built program `.so` from the workspace-root `target/deploy`, resolved relative to this
+/// crate (`CARGO_MANIFEST_DIR` = `programs/validity`) so it works regardless of the test's CWD.
+///
+/// Fail-closed: a missing `.so` PANICS rather than skipping, so a green `cargo test` run can never
+/// silently hide un-executed e2e coverage. Build with `anchor build --ignore-keys` first.
+fn deploy_so(name: &str) -> Vec<u8> {
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../target/deploy")
+        .join(name);
+    std::fs::read(&path).unwrap_or_else(|err| {
+        panic!(
+            "{name} not found ({err}) — run `anchor build --ignore-keys` before e2e tests (looked in {})",
+            path.display()
+        )
+    })
+}
 
-    svm.add_program(laplace::id(), &laplace_bytes).unwrap();
-    svm.add_program(validity::id(), &validity_bytes).unwrap();
-    true
+fn load_programs(svm: &mut LiteSVM) {
+    svm.add_program(laplace::id(), &deploy_so("laplace.so")).unwrap();
+    svm.add_program(validity::id(), &deploy_so("validity.so")).unwrap();
 }
 
 fn send_ix(svm: &mut LiteSVM, payer: &Keypair, ix: Instruction) -> Result<(), String> {
@@ -178,9 +185,7 @@ fn fibonacci_fixture() -> (Vec<u8>, Vec<u8>, Vec<u8>) {
 #[test]
 fn validity_e2e_creates_config_and_rejects_bad_proof() {
     let mut svm = LiteSVM::new();
-    if !load_programs(&mut svm) {
-        return;
-    }
+    load_programs(&mut svm);
 
     let maker = Keypair::new();
     let receiver = Keypair::new();
@@ -241,18 +246,23 @@ fn validity_e2e_creates_config_and_rejects_bad_proof() {
     assert_eq!(active_intent.status, laplace::IntentStatus::Active);
 }
 
+/// The Fibonacci fixture was generated WITHOUT an intent-binding prefix (pre-universal-binding).
+/// Since the adapter now mandatorily prepends the 32-byte `intent_binding_hash` to the public
+/// inputs before calling `verify_proof`, this fixture's public inputs no longer match the proof —
+/// the proof is cryptographically invalid against the new prefixed layout.
+///
+/// This test PROVES the guard fires: an unbound proof is REJECTED by the adapter.
+///
+/// Note: the intent remains Active (not Fulfilled) because the fulfill transaction fails.
 #[test]
-fn validity_e2e_accepts_real_sp1_fibonacci_proof() {
+fn validity_e2e_rejects_unbound_fibonacci_proof_after_binding_enforcement() {
     let mut svm = LiteSVM::new();
-    if !load_programs(&mut svm) {
-        return;
-    }
+    load_programs(&mut svm);
 
     let maker = Keypair::new();
     let receiver = Keypair::new();
     svm.airdrop(&maker.pubkey(), 1_000_000_000).unwrap();
     svm.airdrop(&receiver.pubkey(), 1_000_000).unwrap();
-    let receiver_before = svm.get_balance(&receiver.pubkey()).unwrap();
 
     let (proof, fixed_public_inputs, public_inputs_suffix) = fibonacci_fixture();
     let config_hash = validity::hash_config(
@@ -279,6 +289,13 @@ fn validity_e2e_accepts_real_sp1_fibonacci_proof() {
     )
     .unwrap();
 
+    // Confirm config_hash parity: the config PDA stores exactly the hash we computed.
+    let stored_config = read_validity_config(&mut svm, &config);
+    assert_eq!(
+        stored_config.config_hash, config_hash,
+        "config PDA must store the criterion_data_hash used in create"
+    );
+
     send_ix(
         &mut svm,
         &maker,
@@ -286,7 +303,10 @@ fn validity_e2e_accepts_real_sp1_fibonacci_proof() {
     )
     .unwrap();
 
-    send_ixs(
+    // The adapter now prepends the 32-byte intent_binding_hash to the public inputs before
+    // calling verify_proof. The Fibonacci fixture was NOT generated with this prefix, so the
+    // Groth16 verifier rejects it — proving the replay guard fires.
+    let fulfill_result = send_ixs(
         &mut svm,
         &maker,
         vec![
@@ -302,15 +322,43 @@ fn validity_e2e_accepts_real_sp1_fibonacci_proof() {
                 .serialize_to_vec(),
             ),
         ],
-    )
-    .unwrap();
-
-    let fulfilled = read_intent(&mut svm, &intent);
-    assert_eq!(fulfilled.status, laplace::IntentStatus::Fulfilled);
-    assert_eq!(
-        svm.get_balance(&receiver.pubkey()).unwrap(),
-        receiver_before + 10_000
     );
+
+    assert!(
+        fulfill_result.is_err(),
+        "unbound Fibonacci proof must be REJECTED after intent-binding enforcement"
+    );
+
+    // The intent must remain Active — no funds were transferred.
+    let active_intent = read_intent(&mut svm, &intent);
+    assert_eq!(
+        active_intent.status,
+        laplace::IntentStatus::Active,
+        "intent must remain Active when the unbound proof is rejected"
+    );
+}
+
+// TODO(sp1-tooling): Generate a Groth16 proof whose leading 32 public-input bytes equal
+// `intent_binding_hash(request)` (computed from the actual intent fields used in the test),
+// followed by the fixed_public_inputs and suffix as before. This requires the SP1 toolchain
+// (sp1-sdk, RISC-V guest compiler) which is not available in this environment.
+//
+// Guest-authoring contract: the SP1 guest MUST commit the 32-byte `intent_binding_hash` as
+// its LEADING public output, followed by any criterion-specific fixed values, then suffix values.
+// The adapter enforces this layout by construction — it will always prepend the tag before
+// calling verify_proof, so a guest that omits the tag will always be rejected.
+//
+// When SP1 tooling is available, un-ignore this test, generate a bound fixture, and verify
+// that `fulfill_result.is_ok()` and `intent.status == IntentStatus::Fulfilled`.
+#[test]
+#[ignore = "TODO(sp1-tooling): needs a bound Groth16 fixture generated with intent_binding_hash as leading public input"]
+fn validity_e2e_accepts_bound_sp1_proof() {
+    // Stub — see comment above for the required guest layout and fixture generation steps.
+    // The test body should follow the same pattern as the rejection test above, but:
+    //   1. Generate a proof where public_inputs[0..32] == intent_binding_hash(request).
+    //   2. Set fixed_public_inputs to the criterion-specific constants (NOT intent fields).
+    //   3. Assert fulfill_result.is_ok() and intent.status == IntentStatus::Fulfilled.
+    todo!("generate bound SP1 fixture — see TODO(sp1-tooling) comment above");
 }
 
 trait SerializeToVec {

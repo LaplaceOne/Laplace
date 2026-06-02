@@ -9,4 +9,5 @@ export * from './queries.js';
 export * from './projections.js';
 export * from './errors.js';
 export * from './links.js';
+export { intentBindingHash, assertBoundPublicInputs } from './binding.js';
 export type { Cluster, TrustTier } from '@laplace/registry';

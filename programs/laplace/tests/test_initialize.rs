@@ -12,10 +12,16 @@ fn test_initialize() {
     let program_id = laplace::id();
     let payer = Keypair::new();
     let mut svm = LiteSVM::new();
-    let Ok(bytes) = std::fs::read("target/deploy/laplace.so") else {
-        eprintln!("skipping LiteSVM smoke test: run `anchor build` first");
-        return;
-    };
+    // Resolve the .so at the workspace root (CARGO_MANIFEST_DIR = programs/laplace), independent of
+    // CWD, and fail-closed if missing so a green run can't hide a skipped smoke test.
+    let so_path =
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../target/deploy/laplace.so");
+    let bytes = std::fs::read(&so_path).unwrap_or_else(|err| {
+        panic!(
+            "laplace.so not found ({err}) — run `anchor build --ignore-keys` first (looked in {})",
+            so_path.display()
+        )
+    });
     svm.add_program(program_id, &bytes).unwrap();
     svm.airdrop(&payer.pubkey(), 1_000_000_000).unwrap();
 

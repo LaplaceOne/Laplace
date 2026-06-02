@@ -1724,6 +1724,7 @@ dependencies = [
  "solana-message",
  "solana-program-pack",
  "solana-rent",
+ "solana-sha256-hasher",
  "solana-signer",
  "solana-system-interface 2.0.0",
  "solana-transaction",

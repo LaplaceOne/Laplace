@@ -49,7 +49,13 @@ pub fn validate_request(
         ErrorCode::InvalidFulfillmentData
     );
 
+    // Compute the 32-byte intent-binding tag and prepend it as the leading public input.
+    // This enforces that the Groth16 proof is cryptographically bound to this exact intent:
+    // a proof accepted for intent A cannot be replayed against intent B (different intent_id
+    // ⇒ different tag ⇒ different public_inputs ⇒ proof verification fails).
+    let intent_binding_tag = laplace::binding::intent_binding_hash(request);
     let public_inputs = reconstruct_public_inputs(
+        &intent_binding_tag,
         &config.fixed_public_inputs,
         &fulfillment.public_inputs_suffix,
     );

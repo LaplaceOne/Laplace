@@ -132,8 +132,12 @@ disclosures.
   criterion means deploying an on-chain program (and, for validity, authoring an
   SP1 guest + verifying key). The products *configure and register* existing
   criteria; authoring stays in CLI/SDK territory.
-- **Hashlock is not intent-bound in the current adapter.** It checks only
-  `SHA256(preimage) == criterion_data_hash`, so secrets must be unique and
-  high-entropy. Products must generate secrets client-side and surface this.
+- **Intent-binding is now a universal, adapter-enforced guard.** Both official
+  adapters (`hashlock`, `validity`) derive their accept/reject decision from a
+  shared `intent_binding_hash` primitive (domain `laplace-intent-bind-v1`), enforced
+  at the adapter level. A fulfillment accepted for one intent cannot be replayed
+  against any other. Custom/third-party criteria can adopt the same primitive via
+  `laplace::binding::intent_binding_hash`; the registry records whether adoption is
+  adapter-enforced, convention, or unverified.
 - **Indexing is client-side for now** (`getProgramAccounts` + `memcmp`); a
   dedicated indexer is a later optimization behind the same SDK interface.

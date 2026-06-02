@@ -97,3 +97,37 @@ fn hashlock_request_rejects_wrong_preimage() {
 
     assert!(hashlock::validate_request(&request).is_err());
 }
+
+/// Cross-language vector locking `hash_hashlock_commitment = SHA256(intent_binding_hash(req) ‖
+/// hash_fn_id(0) ‖ SHA256(secret))`. The SAME inputs + expected bytes are asserted by
+/// `@laplace/sdk` `test/binding.test.ts` (`hashHashlockCommitment` / `Condition.hashlock`), so the
+/// Rust adapter and the TS SDK can never silently diverge. Fields mirror the SDK `solCtx()` fixture;
+/// the expected bytes were independently recomputed with a standalone SHA256 (not this code path).
+#[test]
+fn hashlock_commitment_cross_language_vector() {
+    let request = laplace::CriterionVerificationRequest {
+        interface_version: 2,
+        protocol_program: Pubkey::new_from_array([0; 32]), // excluded from the binding
+        intent: Pubkey::new_from_array([0; 32]),           // excluded from the binding
+        intent_id: [2; 32],
+        maker: Pubkey::new_from_array([3; 32]),
+        receiver: Pubkey::new_from_array([4; 32]),
+        refund_recipient: Pubkey::new_from_array([5; 32]),
+        asset: laplace::EscrowAsset::NativeSol,
+        amount: 1_000_000_000,
+        expiry_slot: 500_000,
+        created_slot: 0, // excluded from the binding
+        criterion_program: Pubkey::new_from_array([1; 32]),
+        criterion_data_hash: [0; 32], // excluded from the binding
+        fulfillment_data: vec![0x42; 32],
+    };
+    let hashlock = hashlock::hash_preimage(&[0x42u8; 32]);
+    let commitment = hashlock::hash_hashlock_commitment(&request, &hashlock);
+    assert_eq!(
+        commitment,
+        [
+            120, 146, 12, 251, 204, 169, 134, 109, 126, 175, 240, 100, 205, 94, 48, 53, 122, 199,
+            205, 116, 194, 183, 109, 149, 53, 25, 46, 114, 211, 9, 104, 196
+        ]
+    );
+}

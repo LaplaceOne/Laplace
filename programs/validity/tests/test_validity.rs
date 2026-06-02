@@ -127,15 +127,64 @@ fn config_hash_is_stable_and_binds_elf_and_vkey() {
     );
 }
 
-#[test]
-fn public_inputs_reconstruct_from_prefix_and_suffix() {
-    let prefix = vec![1, 2, 3];
-    let suffix = vec![4, 5, 6];
+// ---------------------------------------------------------------------------
+// reconstruct_public_inputs — binding-tag prefix tests
+// ---------------------------------------------------------------------------
 
-    assert_eq!(
-        validity::reconstruct_public_inputs(&prefix, &suffix),
-        vec![1, 2, 3, 4, 5, 6]
+#[test]
+fn public_inputs_starts_with_32_byte_binding_tag() {
+    let tag: [u8; 32] = [0xab; 32];
+    let fixed = vec![1u8, 2, 3, 4];
+    let suffix = vec![5u8, 6];
+
+    let pi = validity::reconstruct_public_inputs(&tag, &fixed, &suffix);
+
+    // First 32 bytes are the intent-binding tag.
+    assert_eq!(&pi[..32], &tag);
+    // Next bytes are fixed_public_inputs.
+    assert_eq!(&pi[32..32 + fixed.len()], fixed.as_slice());
+    // Remaining bytes are the suffix.
+    assert_eq!(&pi[32 + fixed.len()..], suffix.as_slice());
+}
+
+#[test]
+fn public_inputs_equals_tag_concat_fixed_concat_suffix() {
+    let tag: [u8; 32] = [0x11; 32];
+    let fixed = vec![0x22u8, 0x33];
+    let suffix = vec![0x44u8, 0x55, 0x66];
+
+    let pi = validity::reconstruct_public_inputs(&tag, &fixed, &suffix);
+
+    let mut expected = Vec::new();
+    expected.extend_from_slice(&tag);
+    expected.extend_from_slice(&fixed);
+    expected.extend_from_slice(&suffix);
+
+    assert_eq!(pi, expected, "public_inputs must equal tag ‖ fixed ‖ suffix");
+}
+
+#[test]
+fn public_inputs_different_tags_produce_different_inputs() {
+    let tag_a: [u8; 32] = [0xaa; 32];
+    let tag_b: [u8; 32] = [0xbb; 32];
+    let fixed = vec![1u8, 2, 3];
+    let suffix = vec![4u8, 5];
+
+    let pi_a = validity::reconstruct_public_inputs(&tag_a, &fixed, &suffix);
+    let pi_b = validity::reconstruct_public_inputs(&tag_b, &fixed, &suffix);
+
+    assert_ne!(
+        pi_a, pi_b,
+        "different binding tags must produce different public inputs"
     );
+}
+
+#[test]
+fn public_inputs_empty_fixed_and_suffix() {
+    let tag: [u8; 32] = [0x77; 32];
+    let pi = validity::reconstruct_public_inputs(&tag, &[], &[]);
+    assert_eq!(pi.len(), 32);
+    assert_eq!(&pi[..32], &tag);
 }
 
 #[test]

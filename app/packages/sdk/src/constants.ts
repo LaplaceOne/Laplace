@@ -8,6 +8,7 @@ export const VALIDITY_SPEC_VERSION = 1;
 export const VALIDITY_CONFIG_DOMAIN = utf8('validity-config-v1');
 export const MIN_SP1_GROTH16_PROOF_LEN = 260;
 export const MAX_FIXED_PUBLIC_INPUTS_LEN = 1024;
-// Intent-bound hashlock commitment domain + hash-function id (mirror programs/hashlock/src/constants.rs).
-export const HASHLOCK_COMMITMENT_DOMAIN = utf8('laplace-hashlock-commit-v1');
+// Universal intent-binding domain (mirror programs/laplace/src/binding.rs INTENT_BINDING_DOMAIN).
+export const INTENT_BINDING_DOMAIN = utf8('laplace-intent-bind-v1');
+// Hash-function id for SHA256 (used in hashlock commitment, mirror programs/hashlock/src/constants.rs).
 export const HASH_FUNCTION_ID_SHA256 = 0;

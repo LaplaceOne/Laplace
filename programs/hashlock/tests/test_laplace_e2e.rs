@@ -15,19 +15,26 @@ const INTENT_ID: [u8; 32] = [11; 32];
 const ESCROW_AMOUNT: u64 = 10_000;
 const TOKEN_SUPPLY: u64 = 100_000;
 
-fn load_e2e_programs(svm: &mut LiteSVM) -> bool {
-    let Ok(laplace_bytes) = std::fs::read("target/deploy/laplace.so") else {
-        eprintln!("skipping e2e: run `anchor build --ignore-keys` first");
-        return false;
-    };
-    let Ok(hashlock_bytes) = std::fs::read("target/deploy/hashlock.so") else {
-        eprintln!("skipping e2e: run `anchor build --ignore-keys` first");
-        return false;
-    };
+/// Read a built program `.so` from the workspace-root `target/deploy`, resolved relative to this
+/// crate (`CARGO_MANIFEST_DIR` = `programs/hashlock`) so it works regardless of the test's CWD.
+///
+/// Fail-closed: a missing `.so` PANICS rather than skipping, so a green `cargo test` run can never
+/// silently hide un-executed e2e coverage. Build with `anchor build --ignore-keys` first.
+fn deploy_so(name: &str) -> Vec<u8> {
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../target/deploy")
+        .join(name);
+    std::fs::read(&path).unwrap_or_else(|err| {
+        panic!(
+            "{name} not found ({err}) — run `anchor build --ignore-keys` before e2e tests (looked in {})",
+            path.display()
+        )
+    })
+}
 
-    svm.add_program(laplace::id(), &laplace_bytes).unwrap();
-    svm.add_program(hashlock::id(), &hashlock_bytes).unwrap();
-    true
+fn load_e2e_programs(svm: &mut LiteSVM) {
+    svm.add_program(laplace::id(), &deploy_so("laplace.so")).unwrap();
+    svm.add_program(hashlock::id(), &deploy_so("hashlock.so")).unwrap();
 }
 
 fn intent_pda(maker: &Pubkey, intent_id: &[u8; 32]) -> Pubkey {
@@ -415,9 +422,7 @@ fn setup_token_accounts(
 #[test]
 fn hashlock_fulfillment_releases_escrow_to_receiver() {
     let mut svm = LiteSVM::new();
-    if !load_e2e_programs(&mut svm) {
-        return;
-    }
+    load_e2e_programs(&mut svm);
 
     let maker = Keypair::new();
     let receiver = Keypair::new();
@@ -468,9 +473,7 @@ fn hashlock_fulfillment_releases_escrow_to_receiver() {
 #[test]
 fn hashlock_fulfillment_rejects_wrong_preimage() {
     let mut svm = LiteSVM::new();
-    if !load_e2e_programs(&mut svm) {
-        return;
-    }
+    load_e2e_programs(&mut svm);
 
     let maker = Keypair::new();
     let receiver = Keypair::new();
@@ -504,9 +507,7 @@ fn hashlock_fulfillment_rejects_wrong_preimage() {
 #[test]
 fn hashlock_spl_fulfillment_releases_tokens_to_receiver() {
     let mut svm = LiteSVM::new();
-    if !load_e2e_programs(&mut svm) {
-        return;
-    }
+    load_e2e_programs(&mut svm);
 
     let maker = Keypair::new();
     let receiver = Keypair::new();
@@ -590,9 +591,7 @@ fn hashlock_spl_fulfillment_releases_tokens_to_receiver() {
 #[test]
 fn hashlock_spl_refund_returns_tokens_after_expiry() {
     let mut svm = LiteSVM::new();
-    if !load_e2e_programs(&mut svm) {
-        return;
-    }
+    load_e2e_programs(&mut svm);
 
     let maker = Keypair::new();
     let receiver = Keypair::new();

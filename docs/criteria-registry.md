@@ -11,11 +11,12 @@ registry program exists yet**.
    `verify_criterion` interface. Authored and deployed out-of-band (CLI/SDK), not
    by any website. Official today: `hashlock`, `validity`.
 2. **Criterion configuration** — per-use parameters committed by the intent.
-   - hashlock: just the hashlock value (`criterion_data_hash = sha256(secret)`);
-     **stateless**, no on-chain config account.
+   - hashlock: `criterion_data_hash = SHA256(intent_binding_hash ‖ hash_fn_id ‖ SHA256(secret))`;
+     **stateless**, no on-chain config account. Binding is adapter-enforced.
    - validity: a **stateful** `ValidityConfig` account (`guest_elf_hash`,
      `sp1_vkey_hash`, `fixed_public_inputs`) at PDA `[VALIDITY_SEED, config_hash]`;
-     the intent's `criterion_data_hash = config_hash`.
+     the intent's `criterion_data_hash = config_hash`. Per-intent binding comes from the
+     adapter-injected `intent_binding_hash` prefix, not from `config_hash`.
 3. **Registry entry** — front-end metadata that maps a criterion to its program
    IDs per cluster plus display/UX info. Lives off-chain in `@laplace/registry`.
 
@@ -45,27 +46,35 @@ accounts (intent, receiver, SPL vault) to the criterion.
 
 ### Hashlock (`DNotXVWh1ifzp9MHSd5H4F78SRHptF9p8vGfMmjtuWX2`)
 - **Stateful?** No. **`criterion_account_count`:** 0.
-- **Commitment (intent-bound):** `criterion_data_hash = SHA256(domain ‖ u16be(version) ‖
-  criterion_program ‖ intent_id ‖ maker ‖ receiver ‖ refund_recipient ‖ asset ‖ u64be(amount) ‖
-  u64be(expiry_slot) ‖ hash_fn_id ‖ SHA256(secret))` (domain `laplace-hashlock-commit-v1`; asset =
-  `[0]` for SOL or `[1]‖mint‖token_program` for SPL; `created_slot`/PDA excluded).
-- **Fulfillment:** `fulfillment_data = secret` (non-empty, ≤1024 bytes). The adapter recomputes the
-  commitment from the request's intent fields + `SHA256(fulfillment_data)` and accepts iff it equals
-  `criterion_data_hash`.
-- **Intent-bound (implements `conditional-escrow.md` §Criterion Commitment):** a revealed secret
-  cannot be replayed against a different intent. **Atomic swaps still work** — the shared secret
-  unlocks every leg, because each leg recomputes the commitment with its own fields. Revealing a
-  preimage on-chain is public/irreversible (it lands in calldata).
+- **Commitment:** `criterion_data_hash = SHA256(intent_binding_hash ‖ hash_fn_id ‖ SHA256(secret))`.
+  `intent_binding_hash` is the universal primitive (domain `laplace-intent-bind-v1`; covers
+  `interface_version`, `criterion_program`, `intent_id`, `maker`, `receiver`, `refund_recipient`,
+  `asset_canonical`, `amount`, `expiry_slot`; `created_slot`/PDA/`protocol_program` excluded).
+  `hash_fn_id` = `0x00` for SHA256 (reserved for future preimage-hash agility).
+- **Verify:** adapter recomputes the commitment from the request's intent fields +
+  `SHA256(fulfillment_data)` and accepts iff it equals `criterion_data_hash`.
+- **Binding enforcement:** `adapter` — the adapter recomputes `intent_binding_hash` from the
+  live `CriterionVerificationRequest` and rejects on any mismatch. A revealed secret cannot be
+  replayed against a different intent. **Atomic swaps still work** — the shared secret unlocks every
+  leg, because each leg recomputes the commitment with its own fields. Revealing a preimage on-chain
+  is public/irreversible (it lands in calldata).
 
 ### Validity / SP1 (`EQfH4VFdxcFYh8prdAsB4XwKCZiiR5uta594bfiwhLsB`)
 - **Stateful?** Yes — `ValidityConfig` PDA. **`criterion_account_count`:** 1 (the
   config account).
 - **Config:** `config_hash = hash_config(guest_elf_hash, sp1_vkey_hash,
   fixed_public_inputs)` with domain `"validity-config-v1"` + spec version.
-- **Commitment:** intent `criterion_data_hash = config_hash`.
-- **Fulfillment:** `ValidityFulfillment { proof, public_inputs_suffix }`; adapter
-  reconstructs `public_inputs = fixed_public_inputs || suffix` and verifies the
+- **Commitment:** intent `criterion_data_hash = config_hash`. Configs remain reusable across
+  intents; per-intent binding comes from the adapter-injected prefix, not from `config_hash`.
+- **Verify:** adapter reconstructs
+  `public_inputs = intent_binding_hash(req) ‖ fixed_public_inputs ‖ suffix` and verifies the
   Groth16 proof against `sp1_vkey_hash` (`GROTH16_VK_5_0_0_BYTES`, ~270–280k CU).
+  The 32-byte `intent_binding_hash` is mandatorily prepended by the adapter.
+- **Binding enforcement:** `adapter` — the adapter injects `intent_binding_hash` as the leading
+  32-byte public-input prefix. A proof for intent A will not verify for intent B (different
+  `intent_id` ⇒ different prefix). **Guest-authoring contract:** the SP1 guest MUST commit the
+  32-byte `intent_binding_hash` as its leading public input; `fixed_public_inputs` carries only
+  criterion-specific constants and MUST NOT include intent-identity fields.
 - **Lifecycle instr:** `create_validity(args)` (anyone can pay; PDA from
   `config_hash`).
 
@@ -96,6 +105,15 @@ interface CriterionDescriptor {
   criterionAccountCount: number; // hashlock=0, validity=1
   fulfillmentKind: "preimage" | "sp1-proof";
   commitment: "sha256-preimage" | "validity-config-hash";
+  conformance: {
+    binds: "full";               // both official criteria bind all intent-identity fields
+    enforcement: "adapter" | "convention" | "none";
+    // adapter   — the on-chain adapter recomputes intent_binding_hash and enforces it
+    //             (hashlock, validity).
+    // convention — documented contract; the core cannot verify CPI program behavior
+    //             (custom/third-party criteria that voluntarily follow the contract).
+    // none       — no known binding guarantee (unverified or legacy criteria).
+  };
   docsUrl: string;
   warnings?: string[];           // e.g. hashlock "use unique high-entropy secrets"
 }

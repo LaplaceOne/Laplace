@@ -53,10 +53,10 @@ Not implemented yet:
 - Result accounts for large ciphertexts or off-chain data references.
 
 Official criterion adapters that sit directly on Laplace should live in separate programs under `programs/` and implement the same `verify_criterion` interface.
-The `programs/hashlock` adapter implements the intent-bound Criterion Commitment: the maker commits `criterion_data_hash = H(domain, criterion_program, version, intent_id, maker, receiver, refund_recipient, asset, amount, expiry_slot, hash_function_id, SHA256(secret))`, and the adapter recomputes that hash from the verification request's intent fields plus `SHA256(fulfillment_data)`, accepting only on an exact match. This binds every fulfillment to one intent (no cross-intent replay) while preserving atomic swaps — the shared secret unlocks each leg, since every leg recomputes the commitment with its own fields.
-The current `programs/validity` adapter stores a `ValidityConfig` account that binds a user-defined SP1 guest ELF hash, the SP1 vkey hash from `vk.bytes32()`, and a fixed public-input prefix. The fulfiller supplies a Groth16 proof and public-input suffix.
+The `programs/hashlock` adapter implements the universal intent-bound commitment: `criterion_data_hash = SHA256(intent_binding_hash(req) ‖ hash_fn_id ‖ SHA256(secret))`, where `intent_binding_hash` is the shared primitive from `programs/laplace/src/binding.rs` (domain `laplace-intent-bind-v1`). The adapter recomputes the commitment from the request's intent fields plus `SHA256(fulfillment_data)` and accepts only on an exact match. This binds every fulfillment to one exact intent while preserving atomic swaps — the shared secret unlocks each leg, because every leg recomputes the commitment with its own fields.
+The current `programs/validity` adapter stores a `ValidityConfig` account that binds a user-defined SP1 guest ELF hash, the SP1 vkey hash from `vk.bytes32()`, and a `fixed_public_inputs` prefix of criterion-specific constants. The adapter mandatorily prepends the 32-byte `intent_binding_hash` before `fixed_public_inputs` when reconstructing the full public-input vector. The fulfiller supplies a Groth16 proof and a public-input suffix.
 The encrypted-disclosure profile lives as a guest/helper crate under `guests/encrypted-disclosure` implementing a symmetric-key SHA256-derived XOR stream cipher; Laplace still invokes `validity`, and `validity` verifies the SP1 proof for that guest.
-The `validity` e2e tests include a checked-in SP1 Fibonacci Groth16 proof fixture from `succinctlabs/sp1-solana`; the test binds input `n = 20` in the config and verifies the proof releases escrow when the fulfiller supplies the output public values.
+The `validity` e2e tests include a checked-in SP1 Fibonacci Groth16 proof fixture from `succinctlabs/sp1-solana`. This fixture is unbound (it predates the guest-authoring contract) and is used as a rejection test — the adapter must reject an unbound proof. A positive bound-proof test is deferred pending SP1 toolchain availability.
 
 ## Actors
 
@@ -293,6 +293,39 @@ Fulfilled -> Closed
 Refunded -> Closed
 ```
 
+## Universal Intent Binding
+
+Every official criterion adapter derives its accept/reject decision from a single shared primitive: the `intent_binding_hash`. This prevents a fulfillment accepted for one intent from being replayed against any other intent — across different makers, assets, amounts, or expiry times.
+
+### `intent_binding_hash`
+
+```text
+intent_binding_hash = SHA256(
+  "laplace-intent-bind-v1"          // INTENT_BINDING_DOMAIN
+  ‖ u16be(interface_version)
+  ‖ criterion_program   (32 bytes)
+  ‖ intent_id           (32 bytes)
+  ‖ maker               (32 bytes)
+  ‖ receiver            (32 bytes)
+  ‖ refund_recipient    (32 bytes)
+  ‖ asset_canonical
+  ‖ u64be(amount)
+  ‖ u64be(expiry_slot)
+)
+```
+
+`asset_canonical` encoding: `[0x00]` for NativeSol; `[0x01] ‖ mint ‖ token_program` for SplToken. The SPL vault is excluded because it is a deterministic ATA of the intent PDA — it adds no additional binding.
+
+All integers are big-endian.
+
+**Excluded fields:** `created_slot` (unknown to the maker at commit time), the intent PDA address (same reason), `fulfillment_data` (the criterion-specific payload), `criterion_data_hash`, and `protocol_program`. Binding `criterion_program` prevents pointing a commitment at a different criterion adapter. Binding `protocol_program` is noted as optional future hardening, out of scope in the current version.
+
+**Defined in:** `programs/laplace/src/binding.rs` (`INTENT_BINDING_DOMAIN`, `intent_binding_hash`). Mirrored byte-for-byte in the TypeScript SDK as `intentBindingHash(ctx)`.
+
+### Adapter enforcement
+
+Both official adapters (`hashlock`, `validity`) enforce the binding at the adapter level — it is not optional. Custom criterion programs can call `laplace::binding::intent_binding_hash` from the same crate; conformant custom criteria are expected to bind on this value, though the core cannot introspect a CPI'd program to enforce it.
+
 ## Hashlock Criterion
 
 The hashlock criterion is the simplest settlement condition.
@@ -315,11 +348,15 @@ The fulfillment payload is:
 preimage
 ```
 
-The program checks:
+The adapter computes the commitment as:
 
 ```text
-SHA256(preimage) == criterion_data_hash
+criterion_data_hash = SHA256( intent_binding_hash ‖ hash_fn_id ‖ SHA256(secret) )
 ```
+
+where `intent_binding_hash` is the universal primitive defined above (domain `laplace-intent-bind-v1`), and `hash_fn_id` is a one-byte identifier for the hash function used (0 = SHA256, reserved for future preimage-hash agility). The adapter recomputes this value from the request's intent fields plus `SHA256(fulfillment_data)` and accepts only on an exact match.
+
+This binds every fulfillment to one exact intent. Atomic swaps still work because the shared secret unlocks each leg — every leg recomputes the commitment with its own fields, so cross-leg replay is also prevented.
 
 ## Cross-Chain Atomic Swap
 
@@ -362,8 +399,18 @@ On-chain, the adapter verifies:
 ```text
 proof is valid under expected sp1_vkey_hash
 criterion_data_hash == hash(validity_config)
-public_inputs == fixed_public_inputs_prefix || fulfiller_public_inputs_suffix
+public_inputs = intent_binding_hash(req) ‖ fixed_public_inputs ‖ suffix
 ```
+
+The adapter mandatorily prepends the 32-byte `intent_binding_hash` before the config's `fixed_public_inputs` and the fulfiller's suffix. This means the full public-input vector seen by `sp1-solana::verify_proof` is:
+
+```text
+public_inputs = intent_binding_hash   (32 bytes, adapter-injected)
+              ‖ fixed_public_inputs   (from ValidityConfig, criterion-specific constants)
+              ‖ public_inputs_suffix  (from ValidityFulfillment, fulfiller-supplied)
+```
+
+`criterion_data_hash` stays `= config_hash`. Configs remain reusable across intents; the config PDA seed (`[VALIDITY_SEED, criterion_data_hash]`) and the `config.config_hash == request.criterion_data_hash` check are unchanged. Per-intent binding now comes from the adapter-injected prefix: a proof for intent A no longer verifies for intent B because the two intents have different `intent_id` values and therefore different `intent_binding_hash` values.
 
 The SP1 vkey hash is derived from the user-defined guest ELF off-chain:
 
@@ -390,7 +437,7 @@ pub struct ValidityFulfillment {
 }
 ```
 
-The maker fixes the public-input prefix in the config. The fulfiller supplies the suffix. This supports intents where Alice fixes fields like domain, intent ID, asset, amount, and criteria version, while Bob supplies proof-specific values such as computed outputs.
+The fulfiller submits only proof + suffix. The adapter builds the binding prefix; the fulfiller never needs to construct it. This wire format is unchanged from the pre-binding adapter.
 
 For Solana verification, SP1 should use Groth16 proofs. `sp1-solana` verifies with:
 
@@ -400,22 +447,19 @@ verify_proof(proof, public_inputs, sp1_vkey_hash, GROTH16_VK_5_0_0_BYTES)
 
 SP1 Groth16 proofs are roughly 260 bytes. Verification requires a raised compute budget, around 270k-280k CU.
 
-SP1 public inputs should include:
+### Guest-authoring contract
+
+**The SP1 guest MUST commit the 32-byte `intent_binding_hash` as its leading public input**, followed by its own criterion-specific fixed values, and then any per-fulfillment suffix values:
 
 ```text
-domain_separator
-program_id
-intent_id
-criterion_data_hash
-maker
-receiver
-refund_recipient
-asset
-amount
-expiry_slot
+committed public inputs = intent_binding_hash (32 bytes, leading)
+                        ‖ criterion-fixed values
+                        ‖ per-fulfillment suffix values
 ```
 
-Criterion-specific public inputs can then be appended after these shared fields. In `validity`, these shared bytes should normally be part of the fixed public-input prefix committed by the maker.
+`fixed_public_inputs` in `ValidityConfig` carries only criterion-specific constants. It MUST NOT carry intent-identity fields (maker, receiver, intent ID, asset, amount, expiry) — the adapter injects those via the binding prefix. Guests that include intent fields in `fixed_public_inputs` will fail verification because the adapter prepends the binding tag ahead of `fixed_public_inputs`, shifting all offsets.
+
+The `criterion_data_hash = config_hash` relationship is unchanged; `config_hash` does not commit to per-intent values and that is intentional — the adapter-injected prefix provides per-intent binding.
 
 ## Encrypted Disclosure Criterion
 

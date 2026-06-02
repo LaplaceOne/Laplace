@@ -1,3 +1,17 @@
+//! ⚠️ PRE-UNIVERSAL-BINDING — NOT YET CONFORMANT with the `validity` adapter.
+//!
+//! This reference guest helper predates the universal intent-binding guard (see
+//! `docs/conditional-escrow.md` "Universal Intent Binding"). The `validity` adapter now MANDATORILY
+//! prepends the 32-byte `laplace::binding::intent_binding_hash` as the LEADING public input, and a
+//! `ValidityConfig.fixed_public_inputs` must hold ONLY criterion-specific constants. This helper
+//! still embeds intent-identity fields directly (`IntentBinding`, with a single `asset_hash` rather
+//! than the canonical `asset_canonical` encoding) and never commits the binding tag, so a proof
+//! built from it would be REJECTED by the current adapter. Do not copy it as a conformant example.
+//!
+//! TODO(encrypted-disclosure): re-author so the leading public input is `intent_binding_hash(request)`
+//! (matching `binding.rs` field layout / `asset_canonical`), and reduce `fixed_public_inputs` to
+//! criterion-specific constants. Tracked as deferred work in the universal-intent-binding design (§13).
+
 use borsh::{BorshDeserialize, BorshSerialize};
 use sha2::{Digest, Sha256};
 
@@ -74,6 +88,9 @@ pub fn public_inputs_bytes(public_inputs: &EncryptedDisclosurePublicInputs) -> V
     borsh::to_vec(public_inputs).expect("encrypted disclosure public inputs serialize")
 }
 
+/// ⚠️ Pre-universal-binding (see module banner): this returns intent-identity fields inside
+/// `fixed_public_inputs`, which the current `validity` adapter forbids — the adapter injects the
+/// 32-byte `intent_binding_hash` itself. Re-author before using against the live adapter.
 pub fn validity_fixed_public_inputs(public_inputs: &EncryptedDisclosurePublicInputs) -> Vec<u8> {
     public_inputs_bytes(public_inputs)
 }

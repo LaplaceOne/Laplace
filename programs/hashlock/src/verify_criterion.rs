@@ -1,10 +1,7 @@
 use anchor_lang::prelude::*;
 use solana_sha256_hasher::hash;
 
-use crate::{
-    constants::{HASH_FUNCTION_ID_SHA256, HASHLOCK_COMMITMENT_DOMAIN},
-    error::ErrorCode,
-};
+use crate::{constants::HASH_FUNCTION_ID_SHA256, error::ErrorCode};
 
 #[derive(Accounts)]
 #[instruction(request: laplace::CriterionVerificationRequest)]
@@ -58,43 +55,21 @@ pub fn preimage_matches(hashlock: &[u8; 32], preimage: &[u8]) -> bool {
 }
 
 /// Intent-bound hashlock commitment:
-/// `SHA256(domain ‖ u16be(version) ‖ criterion_program ‖ intent_id ‖ maker ‖ receiver ‖
-///          refund_recipient ‖ asset ‖ u64be(amount) ‖ u64be(expiry_slot) ‖ hash_fn_id ‖ hashlock)`
-/// where `hashlock = SHA256(secret)`. `created_slot` and the intent PDA are excluded — the maker does
-/// not know them at commit time. Mirrored byte-for-byte by `@laplace/sdk` `hashHashlockCommitment`.
+/// `SHA256( intent_binding_hash(request) ‖ hash_fn_id ‖ SHA256(secret) )`
+///
+/// `intent_binding_hash` is the shared, domain-separated canonical binding defined in the `laplace`
+/// crate (see `programs/laplace/src/binding.rs`). Using it here means the domain and field
+/// serialization live in exactly one place. Mirrored byte-for-byte by `@laplace/sdk`
+/// `hashHashlockCommitment`.
 pub fn hash_hashlock_commitment(
     request: &laplace::CriterionVerificationRequest,
     hashlock: &[u8; 32],
 ) -> [u8; 32] {
-    let mut data = Vec::with_capacity(256);
-    data.extend_from_slice(HASHLOCK_COMMITMENT_DOMAIN);
-    data.extend_from_slice(&request.interface_version.to_be_bytes());
-    data.extend_from_slice(request.criterion_program.as_ref());
-    data.extend_from_slice(&request.intent_id);
-    data.extend_from_slice(request.maker.as_ref());
-    data.extend_from_slice(request.receiver.as_ref());
-    data.extend_from_slice(request.refund_recipient.as_ref());
-    encode_asset(&request.asset, &mut data);
-    data.extend_from_slice(&request.amount.to_be_bytes());
-    data.extend_from_slice(&request.expiry_slot.to_be_bytes());
+    let binding_tag = laplace::binding::intent_binding_hash(request);
+    // capacity: 32 (tag) + 1 (hash_fn_id) + 32 (hashlock) = 65
+    let mut data = Vec::with_capacity(65);
+    data.extend_from_slice(&binding_tag);
     data.push(HASH_FUNCTION_ID_SHA256);
     data.extend_from_slice(hashlock);
     hash(&data).to_bytes()
-}
-
-/// Canonical asset encoding for the commitment: NativeSol = `[0]`; SplToken = `[1] ‖ mint ‖ token_program`.
-/// The vault is excluded — it is a deterministic ATA of the intent PDA + mint, so it adds no binding.
-fn encode_asset(asset: &laplace::EscrowAsset, out: &mut Vec<u8>) {
-    match asset {
-        laplace::EscrowAsset::NativeSol => out.push(0u8),
-        laplace::EscrowAsset::SplToken {
-            mint,
-            token_program,
-            ..
-        } => {
-            out.push(1u8);
-            out.extend_from_slice(mint.as_ref());
-            out.extend_from_slice(token_program.as_ref());
-        }
-    }
 }

@@ -6,7 +6,7 @@ export interface ClusterConfig { cluster: Cluster; rpcUrl: string;
 export interface CriterionEntry { key: string; name: string; kind: string; desc: string; tier: TrustTier;
   programId: Partial<Record<Cluster, string>>; stateful: boolean; criterionAccountCount: number;
   fulfillmentKind: 'preimage' | 'sp1-proof' | 'custom'; commitment: string; verify: string;
-  conformance: { binds: 'full' | 'partial' | 'unknown'; accounts: number; interfaceVersion: number; note: string };
+  conformance: { binds: 'full' | 'partial' | 'unknown'; enforcement: 'adapter' | 'convention' | 'none'; accounts: number; interfaceVersion: number; note: string };
   audit?: { by: string; date: string; findings: string; url: string };
   build?: { repo: string; commit: string; match: boolean };
   usage?: { settled: number; value?: string; since: string }; incidents?: string; warnings?: string[]; docsUrl: string; }
