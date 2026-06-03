@@ -1,4 +1,4 @@
-import { type Address, address } from '@solana/kit';
+import { type Address, address, getBase64Encoder } from '@solana/kit';
 import { getCluster, type Cluster } from '@laplace/registry';
 import { getIntentDecoder, type Intent } from './generated/laplace/index.js';
 import type { ResolvedIntent } from './intent.js';
@@ -14,8 +14,9 @@ export function refundPostFilter(i: Pick<Intent, 'maker' | 'refundRecipient'>, o
 export async function fetchIntent(rpc: any, pda: Address): Promise<ResolvedIntent> {
   const { value } = await rpc.getAccountInfo(pda, { encoding: 'base64' }).send();
   if (!value) throw new Error(`intent not found: ${pda}`);
-  const bytes = Buffer.from((value.data as [string, string])[0], 'base64');
-  return { address: pda, data: getIntentDecoder().decode(new Uint8Array(bytes)) };
+  // Buffer is a Node global; kit's base64 encoder keeps this working in the browser.
+  const bytes = new Uint8Array(getBase64Encoder().encode((value.data as [string, string])[0]));
+  return { address: pda, data: getIntentDecoder().decode(bytes) };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -36,9 +37,10 @@ export async function fetchIntents(
   }
   const accounts = await rpc.getProgramAccounts(program, { encoding: 'base64', filters }).send();
   const decoder = getIntentDecoder();
+  const b64 = getBase64Encoder();
   let out: ResolvedIntent[] = (accounts as any[]).map((a) => ({
     address: a.pubkey,
-    data: decoder.decode(new Uint8Array(Buffer.from(a.account.data[0], 'base64'))),
+    data: decoder.decode(new Uint8Array(b64.encode(a.account.data[0]))),
   }));
   if (args.role === 'refund') out = out.filter((r) => refundPostFilter(r.data, args.owner));
   return out;

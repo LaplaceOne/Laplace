@@ -5,7 +5,7 @@
 import {
   type Address, type ReadonlyUint8Array, type Decoder,
   getStructDecoder, getAddressDecoder, getBytesDecoder, fixDecoderSize,
-  getU16Decoder, getU32Decoder, getU64Decoder,
+  getU16Decoder, getU32Decoder, getU64Decoder, getBase64Encoder,
 } from '@solana/kit';
 import { sha256 } from '@noble/hashes/sha256';
 import {
@@ -100,7 +100,8 @@ export function parseLaplaceEvents(logs: readonly string[]): LaplaceEvent[] {
     if (!m?.[1]) continue;
     const b64 = m[1];
     let data: Uint8Array;
-    try { data = new Uint8Array(Buffer.from(b64, 'base64')); } catch { continue; }
+    // Buffer is a Node global; use kit's base64 encoder so the SDK decodes events in the browser too.
+    try { data = new Uint8Array(getBase64Encoder().encode(b64)); } catch { continue; }
     if (data.length < 8) continue;
     const head = data.subarray(0, 8);
     const entry = TABLE.find((e) => bytesEqual(head, e.disc));
