@@ -17,3 +17,4 @@ export { ExpiryCountdown } from './intent/ExpiryCountdown.js';
 export { AssetAmount } from './intent/AssetAmount.js';
 export { RoleActionButton } from './intent/RoleActionButton.js';
 export { IntentCard } from './intent/IntentCard.js';
+export { ToastProvider, useToast } from './feedback/ToastProvider.js';
