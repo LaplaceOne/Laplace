@@ -1,6 +1,8 @@
 import { Outlet, NavLink, Link } from 'react-router-dom';
 import { CursorRing, ThemeToggle } from '@laplace/ui';
 import { BrandMark } from '../components/BrandMark';
+import { WalletButton } from '../wallet/WalletButton';
+import { env } from '../env';
 import styles from './ConsoleLayout.module.css';
 
 const tabs = [
@@ -37,10 +39,10 @@ export function ConsoleLayout() {
           <div className={styles.appbarRight}>
             <span className={styles.clusterBadge}>
               <span className={styles.dot} />
-              devnet
+              {env.cluster}
             </span>
             <ThemeToggle />
-            <button className={styles.walletBtn}>Connect wallet</button>
+            <WalletButton />
           </div>
         </div>
       </header>

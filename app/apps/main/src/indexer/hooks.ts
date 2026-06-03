@@ -32,7 +32,7 @@ export function useIntentList({ role, status }: { role: Role; status?: 'active' 
         if (role === 'refund' && owner) views = views.filter((v) => v.refundRecipient === owner);
       } else if (owner) {
         const sdkRole = role === 'all' ? 'all' : role === 'refund' ? 'refund' : role;
-        const resolved = await fetchIntents(rpc, { role: sdkRole as any, owner, cluster });
+        const resolved = await fetchIntents(rpc, { role: sdkRole as any, owner: owner as any, cluster });
         views = resolved.map(fromResolved);
       }
       if (live) { setData(views); setLoading(false); }

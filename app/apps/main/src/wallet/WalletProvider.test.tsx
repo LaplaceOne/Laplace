@@ -14,7 +14,7 @@ test('select() sets the account and persists it', () => {
   const wrapper = ({ children }: { children: React.ReactNode }) => <WalletProvider>{children}</WalletProvider>;
   const { result } = renderHook(() => useWallet(), { wrapper });
   expect(result.current.selectedAccount).toBeUndefined();
-  act(() => result.current.select(result.current.wallets[0].accounts[0]));
+  act(() => result.current.select(result.current.wallets[0]!.accounts[0]!));
   expect(result.current.selectedAccount?.address).toBe('ACC1');
   expect(localStorage.getItem('laplace-wallet')).toBe('ACC1');
 });

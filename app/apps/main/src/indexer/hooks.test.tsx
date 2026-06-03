@@ -14,5 +14,5 @@ test('useIntentList queries the indexer by role→owner and returns views', asyn
   const { result } = renderHook(() => useIntentList({ role: 'maker' }));
   await waitFor(() => expect(result.current.loading).toBe(false));
   expect(listIntents).toHaveBeenCalledWith(expect.objectContaining({ maker: 'ME' }));
-  expect(result.current.data[0].pda).toBe('P');
+  expect(result.current.data[0]!.pda).toBe('P');
 });

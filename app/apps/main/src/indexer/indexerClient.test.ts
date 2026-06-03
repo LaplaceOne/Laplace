@@ -5,7 +5,7 @@ test('listIntents builds the query string and unwraps {intents}', async () => {
   vi.stubGlobal('fetch', fetchMock);
   const client = createIndexerClient('https://idx.test');
   const rows = await client.listIntents({ status: 'active', maker: 'M', limit: 25 });
-  const url = fetchMock.mock.calls[0][0] as string;
+  const url = fetchMock.mock.calls[0]![0] as string;
   expect(url).toContain('https://idx.test/intents?');
   expect(url).toContain('status=active');
   expect(url).toContain('maker=M');
