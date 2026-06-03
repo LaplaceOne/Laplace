@@ -1,0 +1,25 @@
+# Cloudflare Worker: Laplace indexer (D1 + cron ingest + read API).
+#   1. wrangler d1 create laplace-indexer        → paste database_id below
+#   2. wrangler d1 migrations apply laplace-indexer --remote
+#   3. (optional) wrangler secret put LAPLACE_RPC_URL   → a dedicated devnet RPC
+#   4. wrangler deploy
+# Then set the frontend's VITE_INDEXER_URL to the deployed worker URL.
+name = "laplace-indexer"
+main = "src/index.ts"
+compatibility_date = "2024-11-06"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "laplace-indexer"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+migrations_dir = "migrations"
+
+# Ingest tick: poll the chain every 2 minutes.
+[triggers]
+crons = ["*/2 * * * *"]
+
+[vars]
+LAPLACE_CLUSTER = "devnet"
+# For a dedicated RPC (recommended), prefer a secret over a plaintext var:
+#   wrangler secret put LAPLACE_RPC_URL
