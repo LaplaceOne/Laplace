@@ -129,7 +129,8 @@ Edit `app/package.json` — change the `workspaces` line to:
     "@testing-library/react": "^16.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react": "^6.0.0",
+    "@testing-library/dom": "^10.0.0",
+    "@vitejs/plugin-react": "^5.2.0",
     "jsdom": "^25.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -232,7 +233,8 @@ export { cn } from './lib/cn.js';
     "@testing-library/react": "^16.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react": "^6.0.0",
+    "@testing-library/dom": "^10.0.0",
+    "@vitejs/plugin-react": "^5.2.0",
     "jsdom": "^25.0.0",
     "typescript": "^5.7.3",
     "vite": "^7.0.0",
@@ -870,7 +872,7 @@ git commit -m "feat(ui): Icon, Button, ArrowLink, CopyButton, CodeBlock atoms"
 `app/packages/ui/src/components/Reveal.test.tsx`:
 
 ```tsx
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import { Reveal } from './Reveal.js';
 
 let observeCb: ((entries: Array<{ isIntersecting: boolean; target: Element }>) => void) | null = null;
@@ -889,7 +891,7 @@ test('reveals content when it intersects', () => {
   render(<Reveal><p>hello</p></Reveal>);
   const el = screen.getByText('hello').parentElement!;
   expect(el.className).not.toMatch(/\bin\b/);
-  observeCb!([{ isIntersecting: true, target: el }]);
+  act(() => observeCb!([{ isIntersecting: true, target: el }]));
   expect(el.className).toMatch(/in/);
 });
 ```
