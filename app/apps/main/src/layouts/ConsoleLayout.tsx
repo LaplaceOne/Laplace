@@ -3,6 +3,7 @@ import { CursorRing, ThemeToggle } from '@laplace/ui';
 import { BrandMark } from '../components/BrandMark';
 import { WalletButton } from '../wallet/WalletButton';
 import { ClusterWarning } from '../wallet/ClusterWarning';
+import { IndexerBadge } from '../indexer/IndexerBadge';
 import { env } from '../env';
 import styles from './ConsoleLayout.module.css';
 
@@ -38,6 +39,7 @@ export function ConsoleLayout() {
             ))}
           </nav>
           <div className={styles.appbarRight}>
+            <IndexerBadge />
             <span className={styles.clusterBadge}>
               <span className={styles.dot} />
               {env.cluster}

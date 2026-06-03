@@ -33,5 +33,10 @@ crons = ["*/2 * * * *"]
 
 [vars]
 LAPLACE_CLUSTER = "devnet"
+
+# Workers Logs + analytics (view in the Cloudflare dashboard → the Worker → Logs/Observability).
+[observability]
+enabled = true
+head_sampling_rate = 1
 # For a dedicated RPC (recommended), prefer a secret over a plaintext var:
 #   wrangler secret put LAPLACE_RPC_URL
