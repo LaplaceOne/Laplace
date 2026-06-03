@@ -11,8 +11,8 @@ export default function IntentDetail() {
   const { pda } = useParams<{ pda: string }>();
   const slot = useSlot();
   const { signer, cluster } = useLaplaceContext() as { signer?: any; cluster: Cluster };
-  const detail = useIntentDetail(pda);
-  const actions = useIntentActions(pda);
+  const { detail, refresh } = useIntentDetail(pda);
+  const actions = useIntentActions(pda, refresh);
 
   return (
     <section className="wrap">

@@ -47,27 +47,38 @@ export function useIntentDetail(pda: string | undefined) {
   const idx = useIndexer();
   const { rpc } = useLaplaceContext() as any;
   const [detail, setDetail] = React.useState<{ view: IntentView; timeline: IntentDetail['timeline'] } | null>(null);
-  React.useEffect(() => {
-    let live = true;
+  const mounted = React.useRef(true);
+
+  // The indexer carries the timeline (past event signatures/slots); the on-chain account carries the
+  // freshest status. The cron can lag a couple of minutes behind a just-submitted fulfill/refund, so
+  // take status from chain (it is never behind) and the timeline from the indexer. `refresh` lets an
+  // action update the status the instant its tx confirms, instead of waiting for the next poll.
+  const load = React.useCallback(async () => {
     if (!pda) { setDetail(null); return; }
-    const load = async () => {
-      // Prefer the indexer (it carries the timeline). For an intent the cron hasn't ingested yet —
-      // e.g. one just created — fall back to the on-chain account so it shows immediately; the
-      // timeline fills in once indexed. Polling lets that transition happen without a manual refresh.
-      if (idx && (await idx.health())) {
-        const d = await idx.getIntent(pda);
-        if (d) { if (live) setDetail({ view: fromIndexerRow(d.intent), timeline: d.timeline }); return; }
-      }
-      try {
-        const ri = await fetchIntent(rpc, pda as any);
-        if (live && ri) setDetail((prev) => ({ view: fromResolved(ri), timeline: prev?.timeline ?? [] }));
-      } catch { /* not readable on-chain yet — keep whatever we have */ }
-    };
+    let timeline: IntentDetail['timeline'] = [];
+    let view: IntentView | null = null;
+    if (idx && (await idx.health())) {
+      const d = await idx.getIntent(pda);
+      if (d) { timeline = d.timeline; view = fromIndexerRow(d.intent); }
+    }
+    try {
+      const ri = await fetchIntent(rpc, pda as any);
+      if (ri) view = fromResolved(ri); // on-chain wins for status; the account is gone once closed
+    } catch { /* closed or not yet readable on-chain — keep the indexer view if we have one */ }
+    if (mounted.current && view) {
+      const v = view;
+      setDetail((prev) => ({ view: v, timeline: timeline.length ? timeline : prev?.timeline ?? [] }));
+    }
+  }, [idx, rpc, pda]);
+
+  React.useEffect(() => {
+    mounted.current = true;
     load().catch(() => {});
     const h = setInterval(() => { load().catch(() => {}); }, 8000);
-    return () => { live = false; clearInterval(h); };
-  }, [idx, rpc, pda]);
-  return detail;
+    return () => { mounted.current = false; clearInterval(h); };
+  }, [load]);
+
+  return { detail, refresh: load };
 }
 
 export function useStats(): Stats | null {

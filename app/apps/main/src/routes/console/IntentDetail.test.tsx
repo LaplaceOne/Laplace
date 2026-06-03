@@ -24,7 +24,7 @@ vi.mock('@laplace/sdk/react', () => ({
 }));
 
 vi.mock('../../indexer/hooks', () => ({
-  useIntentDetail: () => ({ view: VIEW, timeline: [] }),
+  useIntentDetail: () => ({ detail: { view: VIEW, timeline: [] }, refresh: vi.fn() }),
 }));
 
 vi.mock('./useIntentActions', () => ({

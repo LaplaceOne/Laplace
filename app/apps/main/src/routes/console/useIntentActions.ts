@@ -4,7 +4,7 @@ import { fetchIntent, mapLaplaceError, type ResolvedIntent } from '@laplace/sdk'
 import { useToast } from '@laplace/ui';
 import type { Address } from '@solana/kit';
 
-export function useIntentActions(pda: string | undefined) {
+export function useIntentActions(pda: string | undefined, onSuccess?: () => void) {
   const client = useClient();
   const { rpc } = useLaplaceContext() as { rpc: unknown };
   const { toast } = useToast();
@@ -21,6 +21,7 @@ export function useIntentActions(pda: string | undefined) {
       const ri = await fetchIntent(rpc as Parameters<typeof fetchIntent>[0], pda as Address);
       const { signature } = await fn(ri);
       toast(`${ok} · ${signature.slice(0, 8)}…`);
+      onSuccess?.(); // tx confirmed — pull the new status now instead of waiting for the next poll
     } catch (e) {
       toast(mapLaplaceError(e).message, 'error');
     } finally {

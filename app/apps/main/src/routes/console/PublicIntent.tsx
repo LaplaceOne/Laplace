@@ -19,8 +19,8 @@ export default function PublicIntent() {
 
   const slot = useSlot();
   const { signer } = useLaplaceContext() as { signer?: any };
-  const detail = useIntentDetail(pda);
-  const actions = useIntentActions(pda);
+  const { detail, refresh } = useIntentDetail(pda);
+  const actions = useIntentActions(pda, refresh);
 
   return (
     <section className="wrap">
