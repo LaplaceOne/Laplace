@@ -118,7 +118,7 @@ Edit `app/package.json` — change the `workspaces` line to:
     "lint": "tsc --noEmit"
   },
   "dependencies": {
-    "@iconify/react": "^5.0.0",
+    "@iconify/react": "^6.0.0",
     "@laplace/sdk": "*",
     "@laplace/registry": "*"
   },
@@ -129,7 +129,7 @@ Edit `app/package.json` — change the `workspaces` line to:
     "@testing-library/react": "^16.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react": "^5.0.0",
+    "@vitejs/plugin-react": "^6.0.0",
     "jsdom": "^25.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -218,7 +218,7 @@ export { cn } from './lib/cn.js';
     "@laplace/wallet": "*",
     "@laplace/registry": "*",
     "@laplace/ui": "*",
-    "@iconify/react": "^5.0.0",
+    "@iconify/react": "^6.0.0",
     "@solana/kit": "^6.0.0",
     "@solana/react": "^6.0.0",
     "@wallet-standard/react": "^1.0.0",
@@ -232,7 +232,7 @@ export { cn } from './lib/cn.js';
     "@testing-library/react": "^16.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react": "^5.0.0",
+    "@vitejs/plugin-react": "^6.0.0",
     "jsdom": "^25.0.0",
     "typescript": "^5.7.3",
     "vite": "^7.0.0",
