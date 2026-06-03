@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useWalletAccountTransactionSendingSigner } from '@solana/react';
+import { useWalletAccountTransactionSigner } from '@solana/react';
 import type { UiWalletAccount } from '@wallet-standard/react';
 import { LaplaceProvider } from '@laplace/wallet';
 import type { TransactionSigner } from '@solana/kit';
@@ -14,7 +14,7 @@ export function SignerGate({ account, children }: { account: UiWalletAccount | u
 }
 
 function Connected({ account, children }: { account: UiWalletAccount; children: React.ReactNode }) {
-  const signer = useWalletAccountTransactionSendingSigner(account, `solana:${env.cluster}`);
+  const signer = useWalletAccountTransactionSigner(account, `solana:${env.cluster}`);
   return (
     <LaplaceProvider cluster={env.cluster} rpcUrl={env.rpcUrl} signer={signer as unknown as TransactionSigner}>
       {children}

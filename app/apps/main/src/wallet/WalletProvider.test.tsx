@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 
 vi.mock('@wallet-standard/react', () => ({
-  useWallets: () => [{ name: 'Phantom', icon: 'i', accounts: [{ address: 'ACC1', chains: ['solana:devnet'] }], chains: ['solana:devnet'], features: ['solana:signAndSendTransaction'] }],
+  useWallets: () => [{ name: 'Phantom', icon: 'i', accounts: [{ address: 'ACC1', chains: ['solana:devnet'] }], chains: ['solana:devnet'], features: ['solana:signTransaction'] }],
   useConnect: () => [false, vi.fn()],
   useDisconnect: () => [false, vi.fn()],
 }));
