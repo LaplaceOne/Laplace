@@ -10,8 +10,11 @@ import {
   setTransactionMessageLifetimeUsingBlockhash,
   appendTransactionMessageInstructions,
   signTransactionMessageWithSigners,
+  signAndSendTransactionMessageWithSigners,
+  isTransactionSendingSigner,
   sendAndConfirmTransactionFactory,
   getSignatureFromTransaction,
+  getBase58Decoder,
 } from '@solana/kit';
 import { getCluster, type Cluster } from '@laplace/registry';
 import {
@@ -48,6 +51,13 @@ export class Laplace {
       (tx) => setTransactionMessageLifetimeUsingBlockhash(blockhash, tx),
       (tx) => appendTransactionMessageInstructions(instructions, tx),
     );
+    // A wallet "sending" signer signs AND submits on its own connection for the message's chain,
+    // which keeps a browser wallet on the dApp's cluster (e.g. devnet). A keypair / partial signer
+    // signs locally and we submit + confirm via our own RPC.
+    if (isTransactionSendingSigner(feePayer)) {
+      const sig = await signAndSendTransactionMessageWithSigners(message);
+      return getBase58Decoder().decode(sig);
+    }
     const signed = await signTransactionMessageWithSigners(message);
     const signature = getSignatureFromTransaction(signed);
     // We always use blockhash lifetime above; cast to satisfy the factory's stricter type.

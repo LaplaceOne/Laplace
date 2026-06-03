@@ -14,7 +14,7 @@ interface WalletCtx {
 const Ctx = React.createContext<WalletCtx | null>(null);
 
 function isSolana(w: UiWallet): boolean {
-  return w.chains.some((c) => c.startsWith('solana:')) && w.features.includes('solana:signTransaction');
+  return w.chains.some((c) => c.startsWith('solana:')) && w.features.includes('solana:signAndSendTransaction');
 }
 
 export function WalletProvider({ children }: { children: React.ReactNode }) {

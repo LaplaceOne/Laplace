@@ -1,9 +1,16 @@
-import * as React from 'react';
-import { useWalletAccountTransactionSigner } from '@solana/react';
+import { useWalletAccountTransactionSendingSigner } from '@solana/react';
 import type { UiWalletAccount } from '@wallet-standard/react';
 import { LaplaceProvider } from '@laplace/wallet';
+import type { Cluster } from '@laplace/registry';
 import type { TransactionSigner } from '@solana/kit';
 import { env } from '../env';
+
+// Wallet Standard Solana chain ids. Note 'mainnet-beta' (our Cluster) maps to 'solana:mainnet'.
+const CHAIN = {
+  localnet: 'solana:localnet',
+  devnet: 'solana:devnet',
+  'mainnet-beta': 'solana:mainnet',
+} as const satisfies Record<Cluster, `solana:${string}`>;
 
 /** Renders LaplaceProvider with a signer derived from the selected account, or none. */
 export function SignerGate({ account, children }: { account: UiWalletAccount | undefined; children: React.ReactNode }) {
@@ -14,7 +21,9 @@ export function SignerGate({ account, children }: { account: UiWalletAccount | u
 }
 
 function Connected({ account, children }: { account: UiWalletAccount; children: React.ReactNode }) {
-  const signer = useWalletAccountTransactionSigner(account, `solana:${env.cluster}`);
+  // A SENDING signer: the wallet signs AND submits on this exact chain, so it operates on the
+  // dApp's cluster (devnet) rather than whatever network the wallet UI happens to be set to.
+  const signer = useWalletAccountTransactionSendingSigner(account, CHAIN[env.cluster]);
   return (
     <LaplaceProvider cluster={env.cluster} rpcUrl={env.rpcUrl} signer={signer as unknown as TransactionSigner}>
       {children}
