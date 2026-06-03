@@ -1,0 +1,252 @@
+/* Registry page — ported from registry.html <style> + laplace.css */
+
+/* trust split band */
+.trustsplit {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.half {
+  padding: 30px 32px;
+}
+
+.half + .half {
+  border-left: 1px solid var(--border-light);
+}
+
+.halfIco {
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+  margin-bottom: 16px;
+}
+
+.halfAuto .halfIco {
+  color: var(--success);
+}
+
+.halfHuman .halfIco {
+  color: var(--warn);
+}
+
+.halfTagline {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.half h3 {
+  font-size: 17px;
+  margin: 0 0 8px;
+  font-weight: var(--fw-semibold);
+}
+
+.half p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* tier legend */
+.tierlegend {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+
+.tl {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 18px;
+}
+
+.tl p {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 12px 0 0;
+}
+
+/* tier badges (shared with RegistryCatalog, but redefined here for .tl context) */
+.tierBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: var(--fw-semibold);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid;
+  letter-spacing: 0.01em;
+  vertical-align: middle;
+}
+
+.tdot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.tierOfficial {
+  color: var(--info);
+  border-color: color-mix(in srgb, var(--info) 38%, transparent);
+  background: color-mix(in srgb, var(--info) 9%, transparent);
+}
+
+.tierAudited {
+  color: var(--success);
+  border-color: color-mix(in srgb, var(--success) 40%, transparent);
+  background: color-mix(in srgb, var(--success) 10%, transparent);
+}
+
+.tierCommunity {
+  color: var(--text-secondary);
+  border-color: var(--border);
+}
+
+.tierUnverified {
+  color: var(--warn);
+  border-color: color-mix(in srgb, var(--warn) 45%, transparent);
+  background: color-mix(in srgb, var(--warn) 10%, transparent);
+}
+
+.tierFlagged {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 45%, transparent);
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+}
+
+/* pipeline */
+.pipeline {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.pstep {
+  padding: 24px;
+  border-right: 1px solid var(--border-light);
+  position: relative;
+}
+
+.pstep:last-child {
+  border-right: 0;
+}
+
+.pn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--primary-solid);
+  color: var(--primary-solid);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  margin-bottom: 14px;
+}
+
+.pstep h4 {
+  font-size: 15px;
+  margin: 0 0 7px;
+  font-weight: var(--fw-semibold);
+}
+
+.pstep p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.pstep ul {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pstep li {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  padding-left: 16px;
+  position: relative;
+  margin-bottom: 5px;
+  line-height: 1.4;
+}
+
+.pstep li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--success);
+}
+
+/* submit section alignment */
+.submitActions {
+  margin-top: 28px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.roadmapNote {
+  margin-top: 32px;
+  max-width: none;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  border-top: 1px solid var(--border-light);
+  padding-top: 24px;
+}
+
+.roadmapNote strong {
+  color: var(--text);
+  font-weight: var(--fw-semibold);
+}
+
+/* responsive */
+@media (max-width: 900px) {
+  .trustsplit {
+    grid-template-columns: 1fr;
+  }
+
+  .half + .half {
+    border-left: 0;
+    border-top: 1px solid var(--border-light);
+  }
+
+  .tierlegend {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .pipeline {
+    grid-template-columns: 1fr;
+  }
+
+  .pstep {
+    border-right: 0;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .pstep:last-child {
+    border-bottom: 0;
+  }
+}
