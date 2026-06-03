@@ -1,0 +1,40 @@
+/* ported from laplace.css lines 214-219 */
+.cta {
+  padding: 110px 0;
+  text-align: center;
+}
+
+.cta h2 {
+  font-size: clamp(32px, 4.6vw, 54px);
+  margin: 0 0 22px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.cta h2 em {
+  font-style: normal;
+  color: var(--primary-solid);
+}
+
+.ctaLine {
+  width: 60px;
+  height: 1px;
+  background: var(--border-darker);
+  margin: 0 auto 32px;
+}
+
+.cta p {
+  font-size: 17px;
+  color: var(--text-secondary);
+  max-width: 34em;
+  margin: 0 auto 36px;
+  line-height: 1.6;
+}
+
+.ctaBtns {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
