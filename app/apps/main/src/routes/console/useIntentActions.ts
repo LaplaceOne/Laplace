@@ -1,28 +1,38 @@
 import * as React from 'react';
-import { useClient, useIntent } from '@laplace/sdk/react';
-import { mapLaplaceError } from '@laplace/sdk';
+import { useClient, useLaplaceContext } from '@laplace/sdk/react';
+import { fetchIntent, mapLaplaceError, type ResolvedIntent } from '@laplace/sdk';
 import { useToast } from '@laplace/ui';
 import type { Address } from '@solana/kit';
 
 export function useIntentActions(pda: string | undefined) {
   const client = useClient();
-  const ri = useIntent(pda as Address | undefined);
+  const { rpc } = useLaplaceContext() as { rpc: unknown };
   const { toast } = useToast();
   const [busy, setBusy] = React.useState(false);
 
-  async function run(fn: () => Promise<{ signature: string }>, ok: string) {
-    if (!ri) { toast('Intent not loaded', 'error'); return; }
+  // Resolve the freshest on-chain intent at action time. The detail view already polls for display;
+  // the lifecycle calls (fulfill/refund/close) need the *current* ResolvedIntent, and a single
+  // up-front read can lag right after creation — so fetch on demand here rather than depend on a
+  // one-shot hook that, once it misses, never retries and leaves every action "not loaded".
+  async function run(fn: (ri: ResolvedIntent) => Promise<{ signature: string }>, ok: string) {
+    if (!pda) { toast('Intent not loaded', 'error'); return; }
     setBusy(true);
-    try { const { signature } = await fn(); toast(`${ok} · ${signature.slice(0, 8)}…`); }
-    catch (e) { toast(mapLaplaceError(e).message, 'error'); }
-    finally { setBusy(false); }
+    try {
+      const ri = await fetchIntent(rpc as Parameters<typeof fetchIntent>[0], pda as Address);
+      const { signature } = await fn(ri);
+      toast(`${ok} · ${signature.slice(0, 8)}…`);
+    } catch (e) {
+      toast(mapLaplaceError(e).message, 'error');
+    } finally {
+      setBusy(false);
+    }
   }
 
   return {
-    ri, busy,
-    fulfillHashlock: (secret: Uint8Array, fulfiller: any) => run(() => client.fulfillIntent(ri!, { secret }, { fulfiller }), 'Fulfilled'),
-    fulfillValidity: (proof: Uint8Array, publicInputsSuffix: Uint8Array, fulfiller: any) => run(() => client.fulfillIntent(ri!, { proof, publicInputsSuffix }, { fulfiller }), 'Fulfilled'),
-    refund: (cranker: any) => run(() => client.refundExpiredIntent(ri!, { cranker }), 'Refunded'),
-    close: (maker: any) => run(() => client.closeIntent(ri!, { maker }), 'Closed'),
+    busy,
+    fulfillHashlock: (secret: Uint8Array, fulfiller: any) => run((ri) => client.fulfillIntent(ri, { secret }, { fulfiller }), 'Fulfilled'),
+    fulfillValidity: (proof: Uint8Array, publicInputsSuffix: Uint8Array, fulfiller: any) => run((ri) => client.fulfillIntent(ri, { proof, publicInputsSuffix }, { fulfiller }), 'Fulfilled'),
+    refund: (cranker: any) => run((ri) => client.refundExpiredIntent(ri, { cranker }), 'Refunded'),
+    close: (maker: any) => run((ri) => client.closeIntent(ri, { maker }), 'Closed'),
   };
 }

@@ -29,13 +29,17 @@ export function useIntent(pda: Address | undefined) {
   const [data, setData] = React.useState<ResolvedIntent | null>(null);
   React.useEffect(() => {
     let live = true;
-    if (!pda) return;
+    if (!pda) { setData(null); return; }
     // A freshly-created intent may not be readable on the queried RPC node for a moment, so
-    // fetchIntent can reject with "intent not found" — swallow it instead of an uncaught rejection.
-    fetchIntent(rpc, pda)
-      .then((r) => { if (live) setData(r); })
-      .catch(() => { if (live) setData(null); });
-    return () => { live = false; };
+    // fetchIntent can reject with "intent not found". Swallow it (no uncaught rejection) and keep
+    // polling — a one-shot read that misses the propagation window would otherwise stay null forever.
+    const load = () =>
+      fetchIntent(rpc, pda)
+        .then((r) => { if (live) setData(r); })
+        .catch(() => { /* not readable yet — keep the last value, retry on the next tick */ });
+    load();
+    const h = setInterval(load, 8000);
+    return () => { live = false; clearInterval(h); };
   }, [rpc, pda]);
   return data;
 }
