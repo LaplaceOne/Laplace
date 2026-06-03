@@ -1,0 +1,232 @@
+/* Docs page styles — ported from docs.html's page <style> block (docs-layout / docs-rail /
+   docs-content / sec-tag) and laplace.css's .deftable/.defrow* (182–186), .conds/.cond*
+   (139–147), .install* (164–166); .warn-box ported from app.css (143–145). Exact values
+   preserved. Descendant element selectors stay unhashed (CSS Modules only hashes class names). */
+
+/* ---------- LAYOUT: left rail + content ---------- */
+.docsLayout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 56px;
+  align-items: start;
+  padding: 56px 0 96px;
+}
+
+.docsRail {
+  position: sticky;
+  top: 96px;
+}
+.docsRail .railLabel {
+  display: block;
+  margin-bottom: 14px;
+}
+.docsRail a {
+  display: block;
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 7px 0;
+  border-left: 1px solid var(--border-light);
+  padding-left: 16px;
+  margin-left: -1px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.docsRail a:hover {
+  color: var(--text);
+}
+.docsRail a.active {
+  color: var(--primary-solid);
+  border-left-color: var(--primary-solid);
+}
+.grp {
+  margin-bottom: 26px;
+}
+
+.docsContent {
+  min-width: 0;
+}
+.section {
+  padding-bottom: 64px;
+  scroll-margin-top: 90px;
+}
+.sectionLast {
+  padding-bottom: 0;
+}
+.docsContent h2 {
+  font-size: 30px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
+}
+.docsContent h3 {
+  font-size: 18px;
+  font-weight: var(--fw-semibold);
+  margin: 32px 0 12px;
+}
+.docsContent p {
+  font-size: 15.5px;
+  line-height: 1.66;
+  color: var(--text-secondary);
+  margin: 0 0 16px;
+  max-width: 64ch;
+}
+.docsContent p strong {
+  color: var(--text);
+  font-weight: var(--fw-semibold);
+}
+.lead {
+  font-size: 17px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+.secTag {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--primary-solid);
+  margin-bottom: 14px;
+  display: block;
+}
+
+/* ---------- DEFINITION TABLE (laplace.css 182–186) ---------- */
+.deftable {
+  border-top: 1px solid var(--border-light);
+}
+.defrow {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 32px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--border-light);
+  align-items: baseline;
+}
+.defrow dt {
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  color: var(--text);
+  font-weight: var(--fw-medium);
+  margin: 0;
+}
+.defrow dd {
+  margin: 0;
+  font-size: 14.5px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.defrow dd code {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--primary-solid);
+}
+
+/* ---------- WARN BOX (app.css 143–145) ---------- */
+.warnBox {
+  display: flex;
+  gap: 11px;
+  padding: 14px;
+  border: 1px solid color-mix(in srgb, var(--warn) 40%, transparent);
+  background: color-mix(in srgb, var(--warn) 8%, transparent);
+  border-radius: var(--radius-sm);
+  margin-bottom: 16px;
+}
+.warnBox :global(iconify-icon),
+.warnBox svg {
+  font-size: 18px;
+  color: var(--warn);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.warnBox p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+/* ---------- CONDITIONS grid (laplace.css 139–147) ---------- */
+.conds {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--border-light);
+  border-left: 1px solid var(--border-light);
+}
+.cond {
+  padding: 34px;
+  border-right: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+  transition: background 0.2s;
+  position: relative;
+}
+.cond:hover {
+  background: var(--primary-04);
+}
+.condIco {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+  color: var(--primary-solid);
+  margin-bottom: 20px;
+  transition: border-color 0.2s;
+}
+.cond:hover .condIco {
+  border-color: var(--primary-40);
+}
+.condIco :global(iconify-icon),
+.condIco svg {
+  font-size: 22px;
+}
+.cond h3 {
+  font-size: 18px;
+  margin: 0 0 9px;
+  font-weight: var(--fw-semibold);
+}
+.cond p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0 0 16px;
+}
+
+/* ---------- INSTALL strip (laplace.css 164–166) ---------- */
+.install {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  flex-wrap: wrap;
+}
+.install code {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  color: var(--text);
+}
+.install code .pr {
+  color: var(--primary-solid);
+}
+
+/* ---------- RESPONSIVE (docs.html line 29) ---------- */
+@media (max-width: 900px) {
+  .docsLayout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .docsRail {
+    position: static;
+    display: none;
+  }
+  .conds {
+    grid-template-columns: 1fr;
+  }
+  .defrow {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}

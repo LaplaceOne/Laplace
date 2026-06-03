@@ -14,5 +14,5 @@ test('renders the docs route under the site layout', () => {
     { initialEntries: ['/docs'] },
   );
   render(<ThemeProvider><RouterProvider router={router} /></ThemeProvider>);
-  expect(screen.getByRole('heading', { name: /docs/i, level: 1 })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: /the intent lifecycle/i })).toBeInTheDocument();
 });
