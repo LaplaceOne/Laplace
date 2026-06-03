@@ -17,7 +17,9 @@ export function useIntents(args: { role: 'maker' | 'receiver' | 'refund' | 'all'
     let live = true;
     if (!signer) { setData([]); setLoading(false); return; }
     setLoading(true);
-    fetchIntents(rpc, { role: args.role, owner: signer.address, cluster }).then((r) => { if (live) { setData(r); setLoading(false); } });
+    fetchIntents(rpc, { role: args.role, owner: signer.address, cluster })
+      .then((r) => { if (live) { setData(r); setLoading(false); } })
+      .catch(() => { if (live) { setData([]); setLoading(false); } });
     return () => { live = false; };
   }, [rpc, cluster, signer?.address, args.role]);
   return { data, loading };
@@ -28,7 +30,11 @@ export function useIntent(pda: Address | undefined) {
   React.useEffect(() => {
     let live = true;
     if (!pda) return;
-    fetchIntent(rpc, pda).then((r) => { if (live) setData(r); });
+    // A freshly-created intent may not be readable on the queried RPC node for a moment, so
+    // fetchIntent can reject with "intent not found" — swallow it instead of an uncaught rejection.
+    fetchIntent(rpc, pda)
+      .then((r) => { if (live) setData(r); })
+      .catch(() => { if (live) setData(null); });
     return () => { live = false; };
   }, [rpc, pda]);
   return data;

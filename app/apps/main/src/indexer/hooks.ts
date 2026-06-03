@@ -50,16 +50,22 @@ export function useIntentDetail(pda: string | undefined) {
   React.useEffect(() => {
     let live = true;
     if (!pda) { setDetail(null); return; }
-    (async () => {
+    const load = async () => {
+      // Prefer the indexer (it carries the timeline). For an intent the cron hasn't ingested yet —
+      // e.g. one just created — fall back to the on-chain account so it shows immediately; the
+      // timeline fills in once indexed. Polling lets that transition happen without a manual refresh.
       if (idx && (await idx.health())) {
         const d = await idx.getIntent(pda);
-        if (live && d) setDetail({ view: fromIndexerRow(d.intent), timeline: d.timeline });
-      } else {
-        const ri = await fetchIntent(rpc, pda as any);
-        if (live && ri) setDetail({ view: fromResolved(ri), timeline: [] });
+        if (d) { if (live) setDetail({ view: fromIndexerRow(d.intent), timeline: d.timeline }); return; }
       }
-    })().catch(() => { if (live) setDetail(null); });
-    return () => { live = false; };
+      try {
+        const ri = await fetchIntent(rpc, pda as any);
+        if (live && ri) setDetail((prev) => ({ view: fromResolved(ri), timeline: prev?.timeline ?? [] }));
+      } catch { /* not readable on-chain yet — keep whatever we have */ }
+    };
+    load().catch(() => {});
+    const h = setInterval(() => { load().catch(() => {}); }, 8000);
+    return () => { live = false; clearInterval(h); };
   }, [idx, rpc, pda]);
   return detail;
 }
