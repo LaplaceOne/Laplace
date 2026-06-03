@@ -1,0 +1,43 @@
+/* ============================================================
+   @laplace/ui — Base globals
+   Re-authored from laplace.css (lines 1–31)
+   ============================================================ */
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; scroll-behavior: smooth; }
+html { background: var(--bg-bright); }
+[data-theme="dark"] html { background: var(--bg); }
+body {
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-normal);
+  letter-spacing: var(--tracking-normal);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- CUSTOM SCROLLBAR ---------- */
+html { scrollbar-width: thin; scrollbar-color: var(--primary-40) transparent; }
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--primary-30);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  transition: background .2s;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--primary-60); background-clip: padding-box; }
+::-webkit-scrollbar-corner { background: transparent; }
+
+.wrap { max-width: 1140px; margin: 0 auto; padding: 0 36px; }
+a { color: inherit; }
+.mono { font-family: var(--font-mono); }
+.label {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+hr.rule { border: 0; border-top: 1px solid var(--border-light); margin: 0; }
