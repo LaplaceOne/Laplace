@@ -1,4 +1,5 @@
 declare module '*.module.css' {
-  const classes: Record<string, string>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const classes: any;
   export default classes;
 }
