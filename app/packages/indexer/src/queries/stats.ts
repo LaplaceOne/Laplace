@@ -1,5 +1,4 @@
-import type { Db } from '../db/client.js';
-import { intents } from '../db/schema.js';
+import { pgTables, type SchemaTables, type AnyDb } from '../db/tables.js';
 
 export interface Stats {
   byStatus: Record<'active' | 'fulfilled' | 'refunded', number>;
@@ -7,8 +6,8 @@ export interface Stats {
   total: number;
 }
 
-export async function stats(db: Db): Promise<Stats> {
-  const rows = await db.select().from(intents);
+export async function stats(db: AnyDb, t: SchemaTables = pgTables): Promise<Stats> {
+  const rows = (await db.select().from(t.intents)) as { status: string; closed: boolean }[];
   const byStatus = { active: 0, fulfilled: 0, refunded: 0 };
   let closed = 0;
   for (const r of rows) {

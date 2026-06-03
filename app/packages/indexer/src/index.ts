@@ -1,5 +1,6 @@
 export * from './config.js';
 export * from './db/schema.js';
+export * from './db/tables.js';
 export * from './db/client.js';
 export * from './ingest/decode.js';
 export * from './ingest/rpc.js';
