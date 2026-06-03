@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Laplace · Community Registry</title>
+<script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('laplace-theme')||'light');}catch(e){}</script>
+<link rel="stylesheet" href="styles/anyui-tokens.css" />
+<link rel="stylesheet" href="styles/laplace.css" />
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+  /* trust split band */
+  .trustsplit { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--border-light); border-radius: var(--radius-lg); overflow: hidden; }
+  .trustsplit .half { padding: 30px 32px; }
+  .trustsplit .half + .half { border-left: 1px solid var(--border-light); }
+  .trustsplit .half .ico { width: 42px; height: 42px; border: 1px solid var(--border); border-radius: var(--radius-sm); display: grid; place-items: center; margin-bottom: 16px; }
+  .trustsplit .half.auto .ico { color: var(--success); }
+  .trustsplit .half.human .ico { color: var(--warn); }
+  .trustsplit .half .ico iconify-icon { font-size: 22px; }
+  .trustsplit .half h3 { font-size: 17px; margin: 0 0 8px; font-weight: var(--fw-semibold); }
+  .trustsplit .half .tagline { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px; }
+  .trustsplit .half p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin: 0; }
+
+  /* tier legend */
+  .tierlegend { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+  .tierlegend .tl { border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 18px; }
+  .tierlegend .tl p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; margin: 12px 0 0; }
+
+  /* tier badge */
+  .tier { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: var(--fw-semibold); padding: 3px 10px; border-radius: var(--radius-pill); border: 1px solid; letter-spacing: .01em; vertical-align: middle; }
+  .tier .td { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .tier.official { color: var(--info); border-color: color-mix(in srgb, var(--info) 38%, transparent); background: color-mix(in srgb, var(--info) 9%, transparent); }
+  .tier.audited { color: var(--success); border-color: color-mix(in srgb, var(--success) 40%, transparent); background: color-mix(in srgb, var(--success) 10%, transparent); }
+  .tier.community { color: var(--text-secondary); border-color: var(--border); }
+  .tier.unverified { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 45%, transparent); background: color-mix(in srgb, var(--warn) 10%, transparent); }
+  .tier.flagged { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 45%, transparent); background: color-mix(in srgb, var(--danger) 10%, transparent); }
+
+  /* tabs + filters */
+  .reg-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border-light); margin-bottom: 22px; }
+  .reg-tabs button { font-family: inherit; font-size: 15px; font-weight: var(--fw-semibold); color: var(--text-secondary); background: none; border: 0; padding: 12px 4px; margin-right: 24px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s; }
+  .reg-tabs button.active { color: var(--text); border-bottom-color: var(--primary-solid); }
+  .reg-toolbar { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; flex-wrap: wrap; }
+  .reg-toolbar .hint { font-size: 13px; color: var(--text-secondary); }
+  .tfilters { display: flex; gap: 7px; margin-left: auto; flex-wrap: wrap; }
+  .tfilter { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-secondary); border: 1px solid var(--border); background: transparent; border-radius: var(--radius-pill); padding: 5px 12px; cursor: pointer; transition: all .15s; }
+  .tfilter:hover { color: var(--text); border-color: var(--border-darker); }
+  .tfilter.active { color: var(--text); border-color: var(--text); }
+
+  /* registry card */
+  .rcatalog { display: flex; flex-direction: column; gap: 10px; }
+  .rcard { border: 1px solid var(--border-light); border-radius: var(--radius-md); overflow: hidden; transition: border-color .2s; }
+  .rcard:hover { border-color: var(--border-darker); }
+  .rcard.open { border-color: var(--primary-40); }
+  .rcard__head { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 22px; background: transparent; border: 0; cursor: pointer; font-family: inherit; text-align: left; }
+  .rcard__name { font-size: 16.5px; font-weight: var(--fw-semibold); display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+  .rcard__sub { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-secondary); }
+  .kindtag { color: var(--primary-solid); }
+  .rcard__right { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+  .rcard__right .usage { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); }
+  .rcard__right .chev { font-size: 20px; color: var(--text-secondary); transition: transform .2s; }
+  .rcard.open .chev { transform: rotate(180deg); }
+  .rcard__body { display: none; padding: 0 22px 22px; }
+  .rcard.open .rcard__body { display: block; }
+
+  /* dossier */
+  .dossier { border-top: 1px solid var(--border-light); padding-top: 20px; }
+  .dz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-bottom: 22px; }
+  .dz-h { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 10px; }
+  .dz-block p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin: 0; }
+  .dz-fact { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border-light); }
+  .dz-fact:last-child { border-bottom: 0; }
+  .dz-fact > iconify-icon { font-size: 18px; color: var(--success); flex-shrink: 0; margin-top: 1px; }
+  .dz-fact.warn > iconify-icon { color: var(--warn); }
+  .dz-fact b { display: block; font-size: 13.5px; font-weight: var(--fw-semibold); }
+  .dz-fact span { font-size: 12px; color: var(--text-secondary); line-height: 1.45; }
+  .dz-fact a { color: var(--primary-solid); }
+  .dz-stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; border: 1px solid var(--border-light); border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 18px; }
+  .dz-stats > div { padding: 12px 14px; border-right: 1px solid var(--border-light); }
+  .dz-stats > div:last-child { border-right: 0; }
+  .dz-stats .k { display: block; font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 5px; }
+  .dz-stats .v { font-size: 15px; font-weight: var(--fw-semibold); }
+  .dz-foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .dz-pid { font-size: 12px; color: var(--text-secondary); }
+  .dz-pid .k { font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; margin-right: 8px; }
+  .dz-pid .mono { word-break: break-all; }
+  .schema { display: flex; flex-wrap: wrap; gap: 6px; }
+  .schema span { font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); border: 1px solid var(--border-light); border-radius: 5px; padding: 3px 8px; }
+  .ok { color: var(--success); display: inline-flex; align-items: center; gap: 5px; font-weight: var(--fw-semibold); font-size: 13.5px; }
+  .no { color: var(--warn); display: inline-flex; align-items: center; gap: 5px; font-weight: var(--fw-semibold); font-size: 13.5px; }
+  .act-btn { display: inline-flex; align-items: center; gap: 7px; height: 38px; padding: 0 18px; border-radius: var(--radius-sm); font-family: inherit; font-size: 13.5px; font-weight: var(--fw-semibold); cursor: pointer; text-decoration: none; border: 1px solid var(--primary-solid); background: var(--primary-solid); color: #fff; transition: filter .15s; }
+  .act-btn:hover { filter: brightness(1.08); }
+  .act-btn.ghost { background: transparent; color: var(--primary-solid); }
+  .act-btn.warnbtn { background: transparent; border-color: color-mix(in srgb, var(--warn) 55%, transparent); color: var(--warn); }
+  .act-note { font-size: 12px; color: var(--text-secondary); }
+
+  /* pipeline */
+  .pipeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid var(--border-light); border-radius: var(--radius-md); overflow: hidden; }
+  .pstep { padding: 24px; border-right: 1px solid var(--border-light); position: relative; }
+  .pstep:last-child { border-right: 0; }
+  .pstep .pn { width: 28px; height: 28px; border: 1px solid var(--primary-solid); color: var(--primary-solid); border-radius: 50%; display: grid; place-items: center; font-family: var(--font-mono); font-size: 12px; margin-bottom: 14px; }
+  .pstep h4 { font-size: 15px; margin: 0 0 7px; font-weight: var(--fw-semibold); }
+  .pstep p { font-size: 13px; color: var(--text-secondary); line-height: 1.55; margin: 0; }
+  .pstep ul { margin: 10px 0 0; padding: 0; list-style: none; }
+  .pstep li { font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); padding-left: 16px; position: relative; margin-bottom: 5px; line-height: 1.4; }
+  .pstep li::before { content: '✓'; position: absolute; left: 0; color: var(--success); }
+
+  /* submit-section header: top-align so the long paragraph sits level with the title */
+  #submit .sec-head { align-items: start; grid-template-columns: 1fr 1.25fr; }
+  #submit .sec-head .sec-sub { padding-top: 30px; }
+
+  @media (max-width: 900px) {
+    .trustsplit, .dz-grid { grid-template-columns: 1fr; }
+    #submit .sec-head { grid-template-columns: 1fr; }
+    #submit .sec-head .sec-sub { padding-top: 0; }
+    .trustsplit .half + .half { border-left: 0; border-top: 1px solid var(--border-light); }
+    .tierlegend { grid-template-columns: 1fr 1fr; }
+    .dz-stats { grid-template-columns: 1fr 1fr; }
+    .pipeline { grid-template-columns: 1fr; }
+    .rcard__right .usage { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-inner">
+    <a class="brand" href="index.html" style="text-decoration:none;">
+      <svg class="mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="4" y="4" width="40" height="40" rx="13" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M31 14.5c-3.2 0-4.4 2-5 5.3l-2.4 8.4c-.6 3.3-1.8 5.3-5 5.3" stroke="var(--primary-solid)" stroke-width="1.9" stroke-linecap="round"/>
+        <circle cx="31" cy="14.5" r="2" fill="var(--primary-solid)"/>
+        <circle cx="18.6" cy="33.5" r="2" fill="var(--primary-solid)"/>
+      </svg>
+      Laplace
+    </a>
+    <div class="nav-links">
+      <a href="docs.html">Docs</a>
+      <a href="lab.html">Lab</a>
+      <a href="registry.html" aria-current="page">Registry</a>
+    </div>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme"><iconify-icon icon="eva:moon-outline"></iconify-icon></button>
+      <a class="btn btn--accent" href="app.html">Launch console <iconify-icon icon="eva:arrow-forward-outline"></iconify-icon></a>
+    </div>
+  </div>
+</nav>
+
+<header class="page-head">
+  <div class="wrap">
+    <span class="eyebrow label"><span class="tick"></span> Community Registry</span>
+    <h1>Permissionless protocol.<br><em>Legible</em> trust.</h1>
+    <p>The Laplace core never whitelists — a maker can target any criterion program. So trust can't live in the protocol; it lives here, in the open: every criterion and SP1 guest carries a trust tier, its audit and build provenance, and its track record. Nothing is hidden, and friction scales with risk.</p>
+  </div>
+</header>
+
+<section class="block" style="padding-bottom: 56px;">
+  <div class="wrap">
+    <div class="sec-head reveal" style="margin-bottom: 36px;">
+      <div><span class="label">The trust model</span><h2 class="sec-title">What's automatic,<br>what's on you.</h2></div>
+      <p class="sec-sub">The protocol guarantees the <em>binding</em> cryptographically. Whether a criterion's <em>logic</em> is honest is a human judgment — the registry exists to inform it.</p>
+    </div>
+    <div class="trustsplit reveal">
+      <div class="half auto">
+        <div class="ico"><iconify-icon icon="eva:lock-outline"></iconify-icon></div>
+        <div class="tagline">Automatic · cryptographic</div>
+        <h3>Binding is guaranteed</h3>
+        <p>A fulfillment is bound to your exact intent — intent ID, parties, asset, amount, expiry, and criterion commitment all sit in the verification request. A proof or preimage accepted for one intent can never be replayed against another. The core enforces this; you don't have to check it.</p>
+      </div>
+      <div class="half human">
+        <div class="ico"><iconify-icon icon="eva:eye-outline"></iconify-icon></div>
+        <div class="tagline">Human · judgment</div>
+        <h3>Logic is your call</h3>
+        <p>Whether a criterion releases <em>only</em> when it should is a property of its code. A buggy or malicious criterion could accept a fulfillment it shouldn't — releasing your escrow. The registry surfaces audits, verifiable builds, and track record so you can judge before you escrow.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" style="padding-top: 0; padding-bottom: 56px;">
+  <div class="wrap">
+    <div class="sec-head reveal" style="margin-bottom: 32px;">
+      <div><span class="label">Trust tiers</span><h2 class="sec-title">Five tiers.<br>Each earns its badge.</h2></div>
+      <p class="sec-sub">A tier is assigned from evidence, not opinion: public source, a reproducible build that matches deployed bytecode, and an independent audit. Friction in the console scales with the tier.</p>
+    </div>
+    <div class="tierlegend reveal">
+      <div class="tl"><span class="tier official"><span class="td"></span>Official</span><p>In-repo, maintained by Laplace, audited, reproducible build. One-click in the console.</p></div>
+      <div class="tl"><span class="tier audited"><span class="td"></span>Audited</span><p>Third-party audit on file, verified build, public source. Trusted, with the report linked.</p></div>
+      <div class="tl"><span class="tier community"><span class="td"></span>Community</span><p>Source public &amp; build verified, but no audit. Usable — after you review the code.</p></div>
+      <div class="tl"><span class="tier unverified"><span class="td"></span>Unverified</span><p>Only a program ID; no source, build, or audit. Heavy warning + typed acknowledgment.</p></div>
+      <div class="tl"><span class="tier flagged"><span class="td"></span>Flagged</span><p>A known incident or deprecation. Hard-gated — the console blocks new intents.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="catalog-sec" style="padding-top: 0;">
+  <div class="wrap">
+    <div class="reg-tabs reveal">
+      <button data-tab="criteria" class="active">Criteria</button>
+      <button data-tab="guests">Validity guests</button>
+    </div>
+    <div class="reg-toolbar">
+      <span class="hint" id="tabHint">Deployed Solana programs that plug into the verify_criterion interface.</span>
+      <div class="tfilters">
+        <button class="tfilter active" data-tier="all">All tiers</button>
+        <button class="tfilter" data-tier="official">Official</button>
+        <button class="tfilter" data-tier="audited">Audited</button>
+        <button class="tfilter" data-tier="community">Community</button>
+        <button class="tfilter" data-tier="unverified">Unverified</button>
+      </div>
+    </div>
+    <div class="rcatalog" id="catalog"></div>
+  </div>
+</section>
+
+<section class="block" id="submit" style="padding-top: 0;">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div><span class="label">List your criterion</span><h2 class="sec-title">Submission is a<br>review pipeline.</h2></div>
+      <p class="sec-sub">Authoring happens out-of-band (deploy a program, or build an SP1 guest + vkey). Listing it here is a transparent, staged review — automated checks first, humans and auditors after. The tier is the outcome, not the input.</p>
+    </div>
+    <div class="pipeline reveal">
+      <div class="pstep">
+        <div class="pn">1</div><h4>Submit</h4>
+        <p>Link the program ID + cluster (or guest ELF + vkey), the public source repo, and a commit.</p>
+        <ul><li>program / vkey</li><li>source @ commit</li><li>declared interface</li></ul>
+      </div>
+      <div class="pstep">
+        <div class="pn">2</div><h4>Automated checks</h4>
+        <p>Run before any human looks. A failure stops the listing.</p>
+        <ul><li>bytecode == source</li><li>verify discriminator</li><li>account-count declared</li><li>replay-binding self-test</li></ul>
+      </div>
+      <div class="pstep">
+        <div class="pn">3</div><h4>Review</h4>
+        <p>Maintainers review the PR for interface conformance and intent-field binding.</p>
+        <ul><li>conformance read</li><li>binding review</li><li>metadata + warnings</li></ul>
+      </div>
+      <div class="pstep">
+        <div class="pn">4</div><h4>Audit &amp; list</h4>
+        <p>An audit promotes the tier from Community to Audited. Listed with its full dossier.</p>
+        <ul><li>tier assigned</li><li>dossier published</li><li>usage tracked</li></ul>
+      </div>
+    </div>
+    <div style="margin-top:28px; display:flex; gap:16px; align-items:center; flex-wrap:wrap;" class="reveal">
+      <a class="btn btn--accent" href="https://github.com/LaplaceOne/Laplace" target="_blank" rel="noopener">Submit a PR <iconify-icon icon="mdi:github"></iconify-icon></a>
+      <a class="arrow-link" href="docs.html#interface">Read the criterion interface <iconify-icon icon="eva:arrow-forward-outline"></iconify-icon></a>
+    </div>
+    <p class="sec-sub reveal" style="margin-top:32px; max-width:none; font-size:14px; border-top:1px solid var(--border-light); padding-top:24px;">
+      <strong style="color:var(--text);font-weight:var(--fw-semibold)">On the roadmap:</strong> the registry is a curated, PR-reviewed dataset today. As curation needs to be trust-minimized, an on-chain registry with reputation and governance can back the same interface — open questions remain on who governs listings and how deprecations are signaled. The UI above is designed to be unchanged when that backing moves on-chain.
+    </p>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="cta-line"></div>
+      <h2>Trust, made <em>legible</em>.</h2>
+      <p>Browse criteria and guests with their provenance in the open, then escrow in the console with friction that matches the risk.</p>
+      <div class="cta-btns">
+        <a class="btn btn--accent btn--lg" href="app.html">Launch console <iconify-icon icon="eva:arrow-forward-outline"></iconify-icon></a>
+        <a class="btn btn--lg" href="docs.html#interface">Criterion interface</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="index.html" style="text-decoration:none; margin-bottom:16px;">
+          <svg class="mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="width:28px;height:28px;">
+            <rect x="4" y="4" width="40" height="40" rx="13" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M31 14.5c-3.2 0-4.4 2-5 5.3l-2.4 8.4c-.6 3.3-1.8 5.3-5 5.3" stroke="var(--primary-solid)" stroke-width="1.9" stroke-linecap="round"/>
+            <circle cx="31" cy="14.5" r="2" fill="var(--primary-solid)"/><circle cx="18.6" cy="33.5" r="2" fill="var(--primary-solid)"/>
+          </svg> Laplace
+        </a>
+        <p style="font-size:13.5px; color:var(--text-secondary); max-width:25em; line-height:1.6;">Intent-based atomic settlement on Solana. Devnet · SOL + SPL · hashlock &amp; validity criteria.</p>
+      </div>
+      <div><h4>Docs</h4><a href="docs.html#lifecycle">Lifecycle</a><a href="docs.html#interface">Criterion interface</a><a href="docs.html#hashlock">Hashlock</a><a href="docs.html#validity">Validity</a></div>
+      <div><h4>Registry</h4><a href="registry.html#catalog-sec">Criteria</a><a href="registry.html#catalog-sec">Validity guests</a><a href="registry.html#submit">List a criterion</a></div>
+      <div><h4>Lab</h4><a href="lab.html#products">Products</a><a href="lab.html#future">Future verticals</a><a href="app.html">Console</a></div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 laplace protocol</span>
+      <span>devnet · SOL + SPL</span>
+    </div>
+  </div>
+</footer>
+
+<script src="styles/bg.js"></script>
+<script src="styles/laplace.js"></script>
+<script src="registry.js"></script>
+</body>
+</html>

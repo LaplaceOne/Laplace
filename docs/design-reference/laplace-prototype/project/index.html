@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Laplace · Intent-based atomic settlement on Solana</title>
+<script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('laplace-theme')||'light');}catch(e){}</script>
+<link rel="stylesheet" href="styles/anyui-tokens.css" />
+<link rel="stylesheet" href="styles/laplace.css" />
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+  /* landing-only additions */
+  .crit2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1px solid var(--border-light); border-left: 1px solid var(--border-light); }
+  .crit2 .cell { padding: 34px; border-right: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light); transition: background .2s; }
+  .crit2 .cell:hover { background: var(--primary-04); }
+  .crit2 .cell .top { display: flex; align-items: center; gap: 13px; margin-bottom: 14px; }
+  .crit2 .cell .ico { width: 46px; height: 46px; border: 1px solid var(--border); border-radius: var(--radius-sm); display: grid; place-items: center; color: var(--primary-solid); }
+  .crit2 .cell .ico iconify-icon { font-size: 23px; }
+  .crit2 .cell h3 { font-size: 20px; margin: 0; font-weight: var(--fw-semibold); }
+  .crit2 .cell .tag { font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); border: 1px solid var(--border-light); border-radius: var(--radius-pill); padding: 3px 9px; margin-left: auto; }
+  .crit2 .cell p { font-size: 14.5px; color: var(--text-secondary); line-height: 1.6; margin: 0 0 14px; }
+  .crit2 .cell code { font-family: var(--font-mono); font-size: 12px; color: var(--text); border: 1px solid var(--border-light); padding: 4px 9px; border-radius: 5px; }
+  .products { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .product { border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 28px; transition: border-color .2s, transform .2s; }
+  .product:hover { border-color: var(--primary-40); transform: translateY(-3px); }
+  .product .pbadge { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-secondary); border: 1px solid var(--border-light); border-radius: var(--radius-pill); padding: 3px 9px; display: inline-block; margin-bottom: 16px; }
+  .product .pbadge.live { color: var(--success); border-color: color-mix(in srgb, var(--success) 38%, transparent); }
+  .product h3 { font-size: 19px; margin: 0 0 8px; font-weight: var(--fw-semibold); }
+  .product p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin: 0; }
+  .statline { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--border-light); border-radius: var(--radius-md); overflow: hidden; }
+  .statline .s { padding: 24px 26px; border-right: 1px solid var(--border-light); }
+  .statline .s:last-child { border-right: 0; }
+  .statline .s .k { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 10px; }
+  .statline .s .v { font-size: 30px; font-weight: var(--fw-semibold); letter-spacing: -.02em; }
+  .statline .s .v small { font-size: 13px; color: var(--text-secondary); font-weight: var(--fw-medium); margin-left: 4px; }
+  @media (max-width: 900px) { .crit2, .products { grid-template-columns: 1fr; } .statline { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-inner">
+    <a class="brand" href="index.html" style="text-decoration:none;">
+      <svg class="mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="4" y="4" width="40" height="40" rx="13" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M31 14.5c-3.2 0-4.4 2-5 5.3l-2.4 8.4c-.6 3.3-1.8 5.3-5 5.3" stroke="var(--primary-solid)" stroke-width="1.9" stroke-linecap="round"/>
+        <circle cx="31" cy="14.5" r="2" fill="var(--primary-solid)"/>
+        <circle cx="18.6" cy="33.5" r="2" fill="var(--primary-solid)"/>
+      </svg>
+      Laplace
+    </a>
+    <div class="nav-links">
+      <a href="docs.html">Docs</a>
+      <a href="lab.html">Lab</a>
+      <a href="registry.html">Registry</a>
+    </div>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme"><iconify-icon icon="eva:moon-outline"></iconify-icon></button>
+      <a class="btn btn--accent" href="app.html">Launch console <iconify-icon icon="eva:arrow-forward-outline"></iconify-icon></a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow label"><span class="tick"></span> Intent-based atomic settlement · Solana · Devnet</span>
+      <h1 class="hero-title">Escrow that releases <em>only on proof</em>, refunds on expiry.</h1>
+      <p class="hero-sub">Laplace is a Solana protocol for intent-based atomic settlement. A maker locks assets in an escrow that releases to a recipient only when a pluggable on-chain criterion is provably satisfied before expiry — otherwise the maker is refunded.</p>
+      <div class="hero-cta">
+        <a class="btn btn--accent btn--lg" href="app.html">Launch console <iconify-icon icon="eva:arrow-forward-outline"></iconify-icon></a>
+        <a class="arrow-link" href="docs.html">Read the docs <iconify-icon icon="eva:arrow-forward-outline"></iconify-icon></a>
+      </div>
+    </div>
+
+    <div>
+      <svg class="diagram" viewBox="0 0 480 400" role="img" aria-label="Intent lifecycle line diagram">
+        <rect class="box draw" pathLength="100" x="150" y="14" width="180" height="58" rx="10"/>
+        <text class="t-label" x="166" y="36">create_intent</text>
+        <text class="t-title" x="166" y="56">Lock → escrow PDA</text>
+
+        <path class="ln draw" pathLength="100" d="M240 72 V104"/>
+        <circle class="dot" cx="240" cy="108" r="3.5"/>
+        <path class="ln draw" pathLength="100" d="M240 112 V120"/>
+
+        <rect class="box-accent draw" pathLength="100" x="150" y="120" width="180" height="74" rx="10"/>
+        <text class="t-label" x="166" y="144" style="fill:var(--primary-solid)">criterion · CPI</text>
+        <text class="t-mono" x="166" y="163">verify_criterion()</text>
+        <text class="t-mono" x="166" y="177">→ accept | reject</text>
+        <circle class="dot dot-accent pulse-dot" cx="316" cy="139" r="4"/>
+
+        <path class="ln-dash draw" pathLength="100" d="M150 157 H70 V99"/>
+        <circle class="dot" cx="70" cy="86" r="13"/>
+        <text x="70" y="90" text-anchor="middle" font-family="monospace" font-size="13" fill="var(--text-secondary)">#</text>
+        <text class="t-label" x="70" y="64" text-anchor="middle">hashlock</text>
+
+        <path class="ln-dash draw" pathLength="100" d="M330 157 H410 V99"/>
+        <circle class="dot" cx="410" cy="86" r="13"/>
+        <text x="410" y="91" text-anchor="middle" font-size="14" fill="var(--text-secondary)">π</text>
+        <text class="t-label" x="410" y="64" text-anchor="middle">validity</text>
+
+        <path class="ln draw" pathLength="100" d="M240 194 V250"/>
+        <circle class="dot dot-accent" cx="240" cy="222" r="4"/>
+
+        <path class="ln draw" pathLength="100" d="M240 250 H360 V290"/>
+        <path class="ln-accent draw" pathLength="100" d="M240 250 H120 V290"/>
+
+        <rect class="box-accent draw" pathLength="100" x="36" y="290" width="168" height="58" rx="10"/>
+        <text class="t-label" x="52" y="313" style="fill:var(--primary-solid)">fulfilled</text>
+        <text class="t-title" x="52" y="333" style="fill:var(--primary-solid)">Release → receiver</text>
+
+        <rect class="box draw" pathLength="100" x="276" y="290" width="168" height="58" rx="10"/>
+        <text class="t-label" x="292" y="313">refunded</text>
+        <text class="t-title" x="292" y="333">Refund → maker</text>
+
+        <text class="t-mono" x="240" y="384" text-anchor="middle">— one intent, two terminal outcomes —</text>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<section class="block" id="guarantees" style="padding-bottom: 64px;">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div><span class="label">Guarantees</span><h2 class="sec-title">Enforced by the program,<br>not by trust.</h2></div>
+      <p class="sec-sub">Every property below holds on-chain — there is no operator, relayer, or admin key in a position to weaken them.</p>
+    </div>
+    <div class="principles reveal">
+      <div class="principle">
+        <div class="pico"><iconify-icon icon="eva:lock-outline"></iconify-icon></div>
+        <h3>Non-custodial</h3>
+        <p>Assets sit in a program-derived escrow from the moment they're locked. No operator, relayer, or admin key can move them.</p>
+      </div>
+      <div class="principle">
+        <div class="pico"><iconify-icon icon="eva:cube-outline"></iconify-icon></div>
+        <h3>Atomic</h3>
+        <p>Settlement is a single instruction — release to the receiver or refund the maker. Never a partial transfer, never a stuck state.</p>
+      </div>
+      <div class="principle">
+        <div class="pico"><iconify-icon icon="eva:clock-outline"></iconify-icon></div>
+        <h3>Refund-guaranteed</h3>
+        <p>If no valid fulfillment lands by the expiry slot, the refund recipient reclaims the escrow in full. A failed intent is never a lost deposit.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="how" style="padding-top: 20px;">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div><span class="label">How it works</span><h2 class="sec-title">The lifecycle<br>is the product.</h2></div>
+      <p class="sec-sub">Every Laplace intent is a small on-chain state machine: <span class="mono" style="color:var(--text)">create → fulfill | refund → close</span>. The escrow core is criterion-agnostic. <a class="arrow-link" href="docs.html#lifecycle" style="margin-top:14px;">Read the protocol <iconify-icon icon="eva:arrow-forward-outline"></iconify-icon></a></p>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <span class="n">01</span>
+        <h3><iconify-icon icon="eva:lock-outline"></iconify-icon> Create</h3>
+        <p>The maker locks SOL or SPL into an intent PDA and binds a criterion program, receiver, refund recipient, and expiry slot. Funds are non-custodial from this point on.</p>
+      </div>
+      <div class="step reveal">
+        <span class="n">02</span>
+        <h3><iconify-icon icon="eva:checkmark-square-outline"></iconify-icon> Fulfill</h3>
+        <p>A fulfiller submits evidence. The core forwards a canonical request to the criterion program by CPI and releases the escrow to the receiver only if that CPI accepts — atomically.</p>
+      </div>
+      <div class="step reveal">
+        <span class="n">03</span>
+        <h3><iconify-icon icon="eva:flip-2-outline"></iconify-icon> Refund or close</h3>
+        <p>No valid fulfillment by expiry? Anyone can crank the refund to the refund recipient. After a terminal state, the maker closes the intent to reclaim rent.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="criteria" style="padding-top: 0;">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div><span class="label">Pluggable criteria</span><h2 class="sec-title">One protocol,<br>many faces.</h2></div>
+      <p class="sec-sub">A criterion is any program implementing the <span class="mono" style="color:var(--text)">verify_criterion</span> interface. Two ship today; more are named in the design. <a class="arrow-link" href="docs.html#hashlock" style="margin-top:14px;">All criteria <iconify-icon icon="eva:arrow-forward-outline"></iconify-icon></a></p>
+    </div>
+    <div class="crit2">
+      <div class="cell">
+        <div class="top"><div class="ico"><iconify-icon icon="eva:hash-outline"></iconify-icon></div><h3>Hashlock</h3><span class="tag">official</span></div>
+        <p>Release when a preimage hashing to a committed digest is revealed on-chain. Stateless — the primitive behind trustless atomic swaps and public unlocks.</p>
+        <code>SHA256(secret) == criterion_data_hash</code>
+      </div>
+      <div class="cell">
+        <div class="top"><div class="ico"><iconify-icon icon="eva:shield-outline"></iconify-icon></div><h3>Validity · SP1</h3><span class="tag">official</span></div>
+        <p>Release against a Groth16 proof verified on-chain by a committed verifying key. Settle on private or complex computation without revealing the witness.</p>
+        <code>sp1_verify(proof, vkey_hash)</code>
+      </div>
+    </div>
+    <p class="sec-sub reveal" style="margin-top:22px; font-size:14.5px;">Named for future releases — each a criterion program plus a front-end, never a fork of the core: <strong style="color:var(--text);font-weight:var(--fw-semibold)">Signature</strong>, <strong style="color:var(--text);font-weight:var(--fw-semibold)">Encrypted disclosure</strong>, <strong style="color:var(--text);font-weight:var(--fw-semibold)">Cross-chain lock proof</strong>, <strong style="color:var(--text);font-weight:var(--fw-semibold)">Multi-criterion</strong>.</p>
+  </div>
+</section>
+
+<section class="block" id="products" style="padding-top: 0;">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div><span class="label">The app family</span><h2 class="sec-title">The protocol stays general.<br>The products stay narrow.</h2></div>
+      <p class="sec-sub">The main site exposes every criterion for developers and power users. Each spin-off hides the protocol behind one polished use case. <a class="arrow-link" href="lab.html" style="margin-top:14px;">Explore the Lab <iconify-icon icon="eva:arrow-forward-outline"></iconify-icon></a></p>
+    </div>
+    <div class="products reveal">
+      <a class="product" href="app.html" style="text-decoration:none;">
+        <span class="pbadge live">● Live · devnet</span>
+        <h3>Main site &amp; console</h3>
+        <p>The protocol hub: docs, the criterion catalog, and a general console to create, track, fulfill, refund, and close intents — for SOL and SPL, with both official criteria.</p>
+      </a>
+      <div class="product">
+        <span class="pbadge">Roadmap</span>
+        <h3>Laplace Bridge</h3>
+        <p>Cross-chain atomic swap. Two chains running Laplace swap tokens with a shared hashlock and asymmetric timeouts; relayers add discovery and propagation, never custody.</p>
+      </div>
+      <div class="product">
+        <span class="pbadge">Roadmap</span>
+        <h3>Laplace Disclosure</h3>
+        <p>Buy a verifiable secret. A seller is paid only after publishing an encrypted secret plus an SP1 proof that the plaintext satisfies the buyer's criteria and is bound to that ciphertext.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="build" style="padding-top: 0;">
+  <div class="wrap build-grid">
+    <div class="reveal">
+      <span class="label">For developers</span>
+      <h2 class="sec-title" style="margin:16px 0 18px;">A single typed SDK<br>talks to the chain.</h2>
+      <p class="sec-sub" style="margin-bottom:28px;">UIs never hand-build instructions. The SDK derives PDAs, assembles criterion + settlement accounts, and pins the protocol constants. Role discovery is client-side, swappable for an indexer.</p>
+      <div style="display:flex; gap:18px; align-items:center; flex-wrap:wrap;">
+        <a class="btn btn--accent" href="docs.html#quickstart">SDK quickstart <iconify-icon icon="eva:arrow-forward-outline"></iconify-icon></a>
+        <a class="arrow-link" href="https://github.com/LaplaceOne/Laplace" target="_blank" rel="noopener">GitHub <iconify-icon icon="mdi:github"></iconify-icon></a>
+      </div>
+    </div>
+    <div class="code reveal">
+      <div class="code__bar"><span class="label">create-intent.ts</span><span class="dotrow"><i></i><i></i><i></i></span></div>
+<pre class="code__body"><span class="c">// lock 1,200 USDC, release on a revealed secret</span>
+<span class="k">const</span> intent = <span class="k">await</span> laplace.<span class="n">createIntent</span>({
+  asset:     { spl: USDC }, amount: <span class="n">1_200e6</span>,
+  receiver:  bob, refundRecipient: alice,
+  criterion: Condition.<span class="n">hashlock</span>({ secret }),
+  expirySlot: currentSlot + <span class="n">minutesToSlots</span>(<span class="n">60</span>),
+});
+
+<span class="c">// anyone reveals the preimage → atomic release</span>
+<span class="k">await</span> laplace.<span class="n">fulfillIntent</span>(intent, { secret });
+</pre>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="stats" style="padding-top: 0;">
+  <div class="wrap">
+    <div class="sec-head reveal" style="margin-bottom: 32px;">
+      <div><span class="label">Live protocol stats</span><h2 class="sec-title">On devnet now.</h2></div>
+      <p class="sec-sub">Best-effort counts from client-side indexing. Slots are the source of truth.</p>
+    </div>
+    <div class="statline reveal">
+      <div class="s"><div class="k">Intents created</div><div class="v">1,284</div></div>
+      <div class="s"><div class="k">Fulfilled</div><div class="v">947</div></div>
+      <div class="s"><div class="k">Refunded</div><div class="v">112</div></div>
+      <div class="s"><div class="k">Escrowed · active</div><div class="v">3.1k<small>SOL</small></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="cta-line"></div>
+      <h2>Settle on <em>certainty</em>.</h2>
+      <p>Create intent-based escrows where the only outcomes are a proven release or a clean refund. Permissionless and non-custodial, live on Solana devnet.</p>
+      <div class="cta-btns">
+        <a class="btn btn--accent btn--lg" href="app.html">Launch console <iconify-icon icon="eva:arrow-forward-outline"></iconify-icon></a>
+        <a class="btn btn--lg" href="https://github.com/LaplaceOne/Laplace" target="_blank" rel="noopener"><iconify-icon icon="mdi:github"></iconify-icon> View on GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="index.html" style="text-decoration:none; margin-bottom:16px;">
+          <svg class="mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="width:28px;height:28px;">
+            <rect x="4" y="4" width="40" height="40" rx="13" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M31 14.5c-3.2 0-4.4 2-5 5.3l-2.4 8.4c-.6 3.3-1.8 5.3-5 5.3" stroke="var(--primary-solid)" stroke-width="1.9" stroke-linecap="round"/>
+            <circle cx="31" cy="14.5" r="2" fill="var(--primary-solid)"/><circle cx="18.6" cy="33.5" r="2" fill="var(--primary-solid)"/>
+          </svg> Laplace
+        </a>
+        <p style="font-size:13.5px; color:var(--text-secondary); max-width:25em; line-height:1.6;">Intent-based atomic settlement on Solana. Devnet · SOL + SPL · hashlock &amp; validity criteria.</p>
+      </div>
+      <div><h4>Docs</h4><a href="docs.html#lifecycle">Lifecycle</a><a href="docs.html#interface">Criterion interface</a><a href="docs.html#hashlock">Hashlock</a><a href="docs.html#validity">Validity</a></div>
+      <div><h4>Build</h4><a href="docs.html#quickstart">SDK quickstart</a><a href="docs.html#programs">Program IDs</a><a href="registry.html">Registry</a><a href="https://github.com/LaplaceOne/Laplace" target="_blank" rel="noopener">GitHub</a></div>
+      <div><h4>Products</h4><a href="lab.html">Laplace Lab</a><a href="app.html">Main site &amp; console</a><a href="lab.html#products">Laplace Bridge</a><a href="lab.html#products">Laplace Disclosure</a></div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 laplace protocol</span>
+      <span>devnet · SOL + SPL</span>
+    </div>
+  </div>
+</footer>
+
+<script src="styles/bg.js"></script>
+<script src="styles/laplace.js"></script>
+</body>
+</html>
