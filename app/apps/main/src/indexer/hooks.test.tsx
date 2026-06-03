@@ -1,11 +1,14 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import * as React from 'react';
 
+// Stable mock references: returning fresh objects each render would churn the hooks'
+// effect dependency arrays ([idx], [rpc]) into a setState/render loop. In production
+// IndexerProvider memoizes the client and LaplaceProvider memoizes rpc, so both are stable.
 const listIntents = vi.fn();
-vi.mock('./IndexerProvider', () => ({
-  useIndexer: () => ({ baseUrl: 'x', listIntents, health: async () => true, getIntent: vi.fn(), stats: vi.fn(), validityConfigs: vi.fn() }),
-}));
-vi.mock('@laplace/sdk/react', () => ({ useLaplaceContext: () => ({ rpc: {}, cluster: 'devnet', signer: { address: 'ME' } }) }));
+const indexerMock = { baseUrl: 'x', listIntents, health: async () => true, getIntent: vi.fn(), stats: vi.fn(), validityConfigs: vi.fn() };
+const sdkCtx = { rpc: {}, cluster: 'devnet', signer: { address: 'ME' } };
+
+vi.mock('./IndexerProvider', () => ({ useIndexer: () => indexerMock }));
+vi.mock('@laplace/sdk/react', () => ({ useLaplaceContext: () => sdkCtx }));
 
 import { useIntentList } from './hooks';
 
