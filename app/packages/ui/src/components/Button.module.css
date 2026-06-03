@@ -1,0 +1,64 @@
+/* Port of .btn, .btn:hover, .btn iconify-icon, .btn--accent, .btn--ghost, .btn--lg
+   from laplace.css lines 52–62. iconify-icon selectors → svg. */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  height: 44px;
+  padding: 0 22px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: .01em;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  border: 1px solid var(--border-darker);
+  background: transparent;
+  color: var(--text);
+  transition: background .18s, color .18s, border-color .18s, transform .18s;
+}
+
+.btn:hover {
+  background: var(--text);
+  color: var(--bg-bright);
+  border-color: var(--text);
+}
+
+:global([data-theme="dark"]) .btn:hover {
+  color: var(--bg);
+}
+
+.btn svg {
+  font-size: 17px;
+}
+
+.accent {
+  border-color: var(--primary-solid);
+  color: var(--primary-solid);
+}
+
+.accent:hover {
+  background: var(--primary-solid);
+  color: #fff;
+  border-color: var(--primary-solid);
+}
+
+.ghost {
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+
+.ghost:hover {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--border-darker);
+}
+
+.lg {
+  height: 50px;
+  padding: 0 26px;
+  font-size: 15px;
+}
