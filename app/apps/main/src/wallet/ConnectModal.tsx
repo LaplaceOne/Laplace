@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { createPortal } from 'react-dom';
 import { useConnect } from '@wallet-standard/react';
 import type { UiWallet } from '@wallet-standard/react';
 import { useLaplaceContext } from '@laplace/sdk/react';
@@ -55,7 +56,9 @@ function AirdropButton() {
 
 export function ConnectModal({ onClose }: { onClose: () => void }) {
   const { wallets, selectedAccount } = useWallet();
-  return (
+  // Portal to <body>: the appbar's backdrop-filter creates a containing block that would
+  // otherwise trap this position:fixed overlay inside the 64px header.
+  return createPortal(
     <div className={styles.overlay} onClick={onClose} role="presentation">
       <div className={styles.sheet} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
         <div className={styles.head}>
@@ -71,6 +74,7 @@ export function ConnectModal({ onClose }: { onClose: () => void }) {
         </div>
         {selectedAccount && env.cluster === 'devnet' && <AirdropButton />}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

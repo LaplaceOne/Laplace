@@ -46,7 +46,7 @@ export function ConsoleLayout() {
           </div>
         </div>
       </header>
-      <main>
+      <main className={styles.appMain}>
         <Outlet />
       </main>
     </>

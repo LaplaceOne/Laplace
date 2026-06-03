@@ -1,4 +1,10 @@
-/* ConsoleLayout — ported from app.css lines 6–31 */
+/* ConsoleLayout — ported from app.css lines 6–34 */
+
+/* Console canvas — top/bottom breathing room below the sticky appbar.
+   Horizontal centering is handled by each page's .wrap. */
+.appMain {
+  padding: 36px 0 80px;
+}
 
 .appbar {
   position: sticky;

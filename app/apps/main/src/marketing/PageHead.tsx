@@ -13,9 +13,11 @@ export function PageHead({
 }) {
   return (
     <header className={styles.pageHead}>
-      <Eyebrow>{eyebrow}</Eyebrow>
-      <h1>{title}</h1>
-      {children && <p>{children}</p>}
+      <div className="wrap">
+        <Eyebrow>{eyebrow}</Eyebrow>
+        <h1>{title}</h1>
+        {children && <p>{children}</p>}
+      </div>
     </header>
   );
 }
