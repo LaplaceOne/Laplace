@@ -45,3 +45,23 @@ export async function fetchIntents(
   if (args.role === 'refund') out = out.filter((r) => refundPostFilter(r.data, args.owner));
   return out;
 }
+
+// Reconcile a known set of intent PDAs against the chain in one batched call. The indexer cron can
+// lag a couple of minutes, so the dashboard uses this to take the freshest status/closed straight
+// from the accounts. Absent (null) entries are skipped — the account was closed or never existed —
+// so the caller keeps its prior (indexer) value for those.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function fetchIntentsByAddresses(rpc: any, pdas: Address[]): Promise<Map<string, Intent>> {
+  const out = new Map<string, Intent>();
+  const decoder = getIntentDecoder();
+  const b64 = getBase64Encoder();
+  for (let i = 0; i < pdas.length; i += 100) {
+    const chunk = pdas.slice(i, i + 100);
+    const { value } = await rpc.getMultipleAccounts(chunk, { encoding: 'base64' }).send();
+    (value as Array<{ data: [string, string] } | null>).forEach((acct, j) => {
+      if (!acct) return; // closed/absent on-chain — caller keeps its prior value
+      out.set(String(chunk[j]), decoder.decode(new Uint8Array(b64.encode(acct.data[0]))));
+    });
+  }
+  return out;
+}

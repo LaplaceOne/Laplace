@@ -11,7 +11,6 @@ import Create from './routes/console/Create';
 import IntentDetail from './routes/console/IntentDetail';
 import PublicIntent from './routes/console/PublicIntent';
 import Manual from './routes/console/Manual';
-import ValidityNew from './routes/console/ValidityNew';
 
 export const router = createBrowserRouter([
   {
@@ -32,7 +31,6 @@ export const router = createBrowserRouter([
       { path: 'intent/:pda', element: <IntentDetail /> },
       { path: 'i/:pda', element: <PublicIntent /> },
       { path: 'manual', element: <Manual /> },
-      { path: 'validity/new', element: <ValidityNew /> },
     ],
   },
   { path: '*', element: <NotFound /> },
