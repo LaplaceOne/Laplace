@@ -1,0 +1,111 @@
+/* ============================================================
+   Console Create Wizard — ported from app.css (lines 178–222)
+   .create-wrap / .steps-bar / .stepdot* / .stepline* / .seg-asset /
+   .recipe* / .submode* / .secret-box / .review-* / .create-nav
+   plus supporting .field* / .warn-box / .act-btn / .market* / .serialized
+   ============================================================ */
+
+/* ---------- WRAP + STEPS BAR ---------- */
+.createWrap { max-width: 720px; margin: 0 auto; }
+.stepsBar { display: flex; align-items: center; gap: 0; margin-bottom: 34px; }
+.stepdot { display: flex; align-items: center; gap: 11px; }
+.stepdot .num { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--border); display: grid; place-items: center; font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); flex-shrink: 0; transition: all .2s; }
+.stepdot .stxt { font-size: 13px; font-weight: var(--fw-medium); color: var(--text-secondary); }
+.stepdot.active .num { border-color: var(--primary-solid); color: var(--primary-solid); }
+.stepdot.active .stxt { color: var(--text); }
+.stepdot.done .num { background: var(--primary-solid); border-color: var(--primary-solid); color: #fff; }
+.stepline { flex: 1; height: 1px; background: var(--border); margin: 0 16px; }
+.stepline.done { background: var(--primary-solid); }
+
+/* ---------- ASSET SEGMENT ---------- */
+.segAsset { display: inline-flex; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 4px; }
+.segAsset button { font-family: inherit; font-size: 13.5px; font-weight: var(--fw-medium); padding: 9px 20px; border: 0; border-right: 1px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer; }
+.segAsset button:last-child { border-right: 0; }
+.segAsset button.active { background: var(--primary-solid); color: #fff; }
+
+/* ---------- RECIPE CARDS ---------- */
+.recipeGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.recipe { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 22px; cursor: pointer; transition: border-color .2s, background .2s; }
+.recipe:hover { border-color: var(--primary-40); }
+.recipe.sel { border-color: var(--primary-solid); background: var(--primary-04); }
+.recipeIco { width: 42px; height: 42px; border: 1px solid var(--border); border-radius: var(--radius-sm); display: grid; place-items: center; color: var(--primary-solid); margin-bottom: 16px; }
+.recipeIco svg { font-size: 22px; }
+.recipe h3 { font-size: 17px; margin: 0 0 7px; font-weight: var(--fw-semibold); display: flex; align-items: center; }
+.recipe p { font-size: 13px; color: var(--text-secondary); line-height: 1.55; margin: 0; }
+.recipeTag { display: inline-block; font-family: var(--font-mono); font-size: 10.5px; color: var(--text-secondary); border: 1px solid var(--border-light); border-radius: 5px; padding: 2px 7px; margin-top: 12px; }
+.rtier { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: var(--fw-semibold); padding: 2px 9px; border-radius: var(--radius-pill); border: 1px solid; letter-spacing: .01em; vertical-align: middle; margin-left: 6px; }
+.rtier.official { color: var(--info); border-color: color-mix(in srgb, var(--info) 38%, transparent); background: color-mix(in srgb, var(--info) 9%, transparent); }
+.rtier.unverified { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 45%, transparent); background: color-mix(in srgb, var(--warn) 10%, transparent); }
+.ackOk { display: inline-flex; align-items: center; gap: 6px; color: var(--success); font-size: 12px; font-weight: var(--fw-semibold); }
+.ackOk svg { font-size: 15px; }
+.recipeNote { display: flex; gap: 11px; align-items: flex-start; margin-top: 18px; padding: 14px 16px; border: 1px solid var(--border-light); border-radius: var(--radius-sm); font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+.recipeNote svg { font-size: 17px; color: var(--primary-solid); flex-shrink: 0; margin-top: 1px; }
+.recipeNote a { color: var(--primary-solid); text-decoration: none; font-weight: var(--fw-semibold); white-space: nowrap; }
+
+/* ---------- SUBMODE + SECRET BOX ---------- */
+.submode { display: flex; gap: 10px; margin: 18px 0; }
+.submode button { flex: 1; font-family: inherit; font-size: 13px; font-weight: var(--fw-medium); padding: 11px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: transparent; color: var(--text-secondary); cursor: pointer; transition: all .15s; }
+.submode button.active { border-color: var(--primary-solid); color: var(--primary-solid); background: var(--primary-04); }
+.secretBox { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; background: var(--bg-alter); font-family: var(--font-mono); font-size: 12px; word-break: break-all; line-height: 1.6; color: var(--text); margin-bottom: 10px; }
+
+/* ---------- REVIEW TABLE ---------- */
+.reviewTable { border: 1px solid var(--border-light); border-radius: var(--radius-md); overflow: hidden; }
+.reviewRow { display: grid; grid-template-columns: 180px 1fr; gap: 16px; padding: 14px 18px; border-bottom: 1px solid var(--border-light); }
+.reviewRow:last-child { border-bottom: 0; }
+.reviewRow dt { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-secondary); margin: 0; }
+.reviewRow dd { margin: 0; font-family: var(--font-mono); font-size: 13px; color: var(--text); word-break: break-all; }
+
+/* ---------- NAV ---------- */
+.createNav { display: flex; justify-content: space-between; gap: 12px; margin-top: 28px; }
+
+/* ---------- HEAD (reused .app-head) ---------- */
+.head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 26px; flex-wrap: wrap; }
+.head h1 { font-size: 30px; margin: 0 0 6px; font-weight: var(--fw-semibold); letter-spacing: -.02em; }
+.head p { margin: 0; font-size: 14.5px; color: var(--text-secondary); }
+
+/* ---------- FIELD (ported from app.css .field*) ---------- */
+.field { margin-bottom: 16px; }
+.field label { display: block; font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 8px; }
+.field input, .field select, .field textarea { width: 100%; height: 42px; padding: 0 13px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-bright); color: var(--text); font-family: var(--font-mono); font-size: 13px; transition: border-color .15s, box-shadow .15s; }
+:global([data-theme="dark"]) .field input, :global([data-theme="dark"]) .field select, :global([data-theme="dark"]) .field textarea { background: var(--bg-light); }
+.field textarea { height: auto; padding: 12px 13px; line-height: 1.5; resize: vertical; min-height: 78px; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--primary-80); box-shadow: 0 0 0 3px var(--primary-12); }
+.hint { font-size: 11.5px; color: var(--text-secondary); margin-top: 7px; line-height: 1.45; }
+
+/* ---------- WARN BOX (ported from app.css .warn-box) ---------- */
+.warnBox { display: flex; gap: 11px; padding: 14px; border: 1px solid color-mix(in srgb, var(--warn) 40%, transparent); background: color-mix(in srgb, var(--warn) 8%, transparent); border-radius: var(--radius-sm); margin-bottom: 16px; }
+.warnBox svg { font-size: 18px; color: var(--warn); flex-shrink: 0; margin-top: 1px; }
+.warnBox p { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--text); }
+
+/* ---------- ACTION BUTTON (ported from app.css .act-btn) ---------- */
+.actBtn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 34px; padding: 0 15px; border-radius: var(--radius-sm); font-family: inherit; font-size: 13px; font-weight: var(--fw-semibold); cursor: pointer; border: 1px solid var(--primary-solid); background: var(--primary-solid); color: #fff; transition: filter .15s, background .15s; white-space: nowrap; }
+.actBtn:hover { filter: brightness(1.08); }
+.actBtn.ghost { background: transparent; color: var(--primary-solid); }
+.actBtn.ghost:hover { background: var(--primary-08); filter: none; }
+.actBtn.neutral { background: transparent; border-color: var(--border-darker); color: var(--text); }
+.actBtn.neutral:hover { background: var(--text); color: var(--bg-bright); filter: none; }
+:global([data-theme="dark"]) .actBtn.neutral:hover { color: var(--bg); }
+.actBtn:disabled { background: transparent; border-color: var(--border-light); color: var(--text-disabled); cursor: not-allowed; filter: none; }
+
+/* ---------- CRITERION MARKET (ported from app.css .market*) ---------- */
+.market { display: flex; flex-direction: column; border: 1px solid var(--border-light); border-radius: var(--radius-sm); overflow: hidden; }
+.marketItem { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 11px 13px; border: 0; border-bottom: 1px solid var(--border-light); background: transparent; cursor: pointer; font-family: inherit; transition: background .15s; }
+.marketItem:last-child { border-bottom: 0; }
+.marketItem:hover { background: var(--primary-04); }
+.marketItem.sel { background: var(--primary-08); }
+.marketItem .mname { font-size: 13.5px; font-weight: var(--fw-semibold); color: var(--text); }
+.marketItem .mtier { font-family: var(--font-mono); font-size: 10px; padding: 2px 7px; border-radius: 999px; border: 1px solid; letter-spacing: .02em; }
+.marketItem .mtier.audited { color: var(--success); border-color: color-mix(in srgb, var(--success) 40%, transparent); }
+.marketItem .mtier.community { color: var(--text-secondary); border-color: var(--border); }
+.marketItem .mpid { font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); margin-left: auto; }
+.marketItem .mcheck { color: var(--primary-solid); font-size: 16px; display: none; }
+.marketItem.sel .mcheck { display: inline-flex; }
+.marketItem.sel .mpid { display: none; }
+
+/* ---------- SERIALIZED (ported from app.css .serialized) ---------- */
+.serialized { font-family: var(--font-mono); font-size: 12px; line-height: 1.7; color: var(--text-secondary); background: var(--bg-alter); border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 16px; word-break: break-all; }
+
+@media (max-width: 900px) {
+  .recipeGrid { grid-template-columns: 1fr; }
+  .reviewRow { grid-template-columns: 1fr; gap: 4px; }
+}
