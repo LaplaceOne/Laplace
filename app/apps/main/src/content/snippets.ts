@@ -59,7 +59,7 @@ export const createIntentFull: Token[] = [
   { text: '  criterion: Condition.' },
   { text: 'hashlock', cls: 'n' },
   { text: '({ secret }),  ' },
-  { text: '// sha256(secret)\n', cls: 'c' },
+  { text: '// commitment binds to this intent\n', cls: 'c' },
   { text: '  expirySlot: currentSlot + ' },
   { text: 'minutesToSlots', cls: 'n' },
   { text: '(' },

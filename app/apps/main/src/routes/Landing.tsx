@@ -191,7 +191,7 @@ export default function Landing() {
                 Release when a preimage hashing to a committed digest is revealed on-chain.
                 Stateless — the primitive behind trustless atomic swaps and public unlocks.
               </p>
-              <code>SHA256(secret) == criterion_data_hash</code>
+              <code>criterion_data_hash = SHA256(intent_bind ‖ SHA256(secret))</code>
             </div>
             <div className={styles.cell}>
               <div className={styles.top}>

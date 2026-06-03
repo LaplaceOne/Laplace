@@ -251,23 +251,27 @@ export default function Docs() {
               <div className={styles.defrow}>
                 <dt>commitment</dt>
                 <dd>
-                  <code>criterion_data_hash = SHA256(secret)</code>
+                  <code>criterion_data_hash = SHA256(intent_binding_hash ‖ hash_fn_id ‖ SHA256(secret))</code>
                 </dd>
               </div>
               <div className={styles.defrow}>
                 <dt>fulfillment</dt>
                 <dd>
-                  <code>fulfillment_data = secret</code>; accepted iff{' '}
-                  <code>SHA256(fulfillment_data) == criterion_data_hash</code>
+                  <code>fulfillment_data = secret</code>; the adapter recomputes the intent-bound
+                  commitment from the live request and accepts iff it equals{' '}
+                  <code>criterion_data_hash</code>
                 </dd>
               </div>
             </dl>
             <div className={styles.warnBox} style={{ marginTop: 20, maxWidth: '64ch' }}>
               <Icon icon="eva:alert-triangle-outline" />
               <p>
-                The current adapter checks only the preimage; it does not bind to intent fields.{' '}
-                <strong>Secrets must be unique and high-entropy</strong>, generated client-side.
-                Revealing a preimage on-chain is public and irreversible.
+                The adapter binds every fulfillment to the exact intent via{' '}
+                <code>intent_binding_hash</code> (domain <code>laplace-intent-bind-v1</code>): a
+                revealed secret <strong>cannot be replayed against any other intent</strong> — yet a
+                shared secret still unlocks every leg of an atomic swap, since each leg recomputes the
+                commitment from its own fields. Revealing a preimage on-chain is public and
+                irreversible, so use <strong>high-entropy</strong> secrets generated client-side.
               </p>
             </div>
           </Reveal>
@@ -316,10 +320,12 @@ export default function Docs() {
               </div>
             </dl>
             <p style={{ marginTop: 18 }}>
-              The maker fixes the public-input prefix in the config; the fulfiller supplies the
-              suffix. Proof generation happens off-app for the MVP. The encrypted-disclosure profile
-              builds on this criterion — a guest proves the plaintext satisfies the buyer's criteria
-              and is bound to the published ciphertext.
+              The adapter prepends the 32-byte <code>intent_binding_hash</code> as the leading public
+              input, binding the proof to this exact intent; the config's{' '}
+              <code>fixed_public_inputs</code> carries only criterion constants, and the fulfiller
+              supplies the suffix. Proof generation happens off-app for the MVP. The
+              encrypted-disclosure profile builds on this criterion — a guest proves the plaintext
+              satisfies the buyer's criteria and is bound to the published ciphertext.
             </p>
           </Reveal>
         </section>
