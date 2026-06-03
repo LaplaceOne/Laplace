@@ -63,3 +63,8 @@ hr.rule { border: 0; border-top: 1px solid var(--border-light); margin: 0; }
 .btn--ghost { border-color: var(--border); color: var(--text-secondary); }
 .btn--ghost:hover { background: transparent; color: var(--text); border-color: var(--border-darker); }
 .btn--lg { height: 50px; padding: 0 26px; font-size: 15px; }
+
+/* ---------- SECTION RHYTHM (global, ported from laplace.css section.block) ----------
+   Marketing pages mark vertical sections with `className="block"`; the 84px vertical
+   padding is the site's section rhythm. Pages may override per-section via inline padding. */
+.block { padding: 84px 0; }
