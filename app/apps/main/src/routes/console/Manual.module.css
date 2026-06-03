@@ -4,6 +4,11 @@
    (+ .field / .act-btn / .detail-top form chrome used by the markup)
    ============================================================ */
 
+/* ---------- HEAD (matches Dashboard/Create for consistent spacing) ---------- */
+.head { margin-bottom: 26px; }
+.head h1 { font-size: 30px; margin: 0 0 6px; font-weight: var(--fw-semibold); letter-spacing: -.02em; }
+.head p { margin: 0; font-size: 14.5px; color: var(--text-secondary); }
+
 /* ---------- GRID ---------- */
 .manualGrid { display: grid; grid-template-columns: 240px 1fr; gap: 28px; align-items: start; }
 

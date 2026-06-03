@@ -140,7 +140,7 @@ export default function Manual() {
 
   return (
     <section className="wrap">
-      <div>
+      <div className={styles.head}>
         <h1>Manual operations</h1>
         <p>Power-user escape hatch — build, serialize, simulate, and send any protocol instruction on {env.cluster}.</p>
       </div>
