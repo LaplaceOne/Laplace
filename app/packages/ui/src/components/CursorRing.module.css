@@ -1,0 +1,58 @@
+/* Accent-ring cursor CSS — ported from the design-reference laplace.js
+   `initCursor` injected <style> block. `.ring` = #lp-cursor (brand-blue ring),
+   `.dot` = #lp-cursor-dot (small solid dot). `.hot` grows + fills the ring over
+   interactive elements; `.tap` shrinks it on pointerdown. The size/colour
+   transitions are dropped under prefers-reduced-motion (the ring also snaps to
+   the pointer instead of rAF-lerping, handled in CursorRing.tsx). */
+
+.ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid var(--primary-solid);
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0;
+  transform: translate3d(-50px, -50px, 0) translate(-50%, -50%);
+  will-change: transform, opacity;
+  transition: opacity 0.25s ease, width 0.18s ease, height 0.18s ease,
+    background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.ring.hot {
+  width: 40px;
+  height: 40px;
+  background: var(--primary-08);
+  border-color: var(--primary-70);
+}
+
+.ring.tap {
+  width: 18px;
+  height: 18px;
+  background: var(--primary-12);
+}
+
+.dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--primary-solid);
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transform: translate3d(-50px, -50px, 0) translate(-50%, -50%);
+  will-change: transform, opacity;
+  transition: opacity 0.25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ring {
+    transition: opacity 0.25s ease;
+  }
+}
