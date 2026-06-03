@@ -60,14 +60,14 @@ export function CursorRing() {
       const target = e.target;
       const over =
         target instanceof Element && target.closest ? target.closest(HOT) : null;
-      ring.classList.toggle(styles.hot, !!over);
+      if (styles.hot) ring.classList.toggle(styles.hot, !!over);
     };
 
     const onPointerDown = (e: PointerEvent) => {
-      if (e.pointerType !== 'touch') ring.classList.add(styles.tap);
+      if (e.pointerType !== 'touch' && styles.tap) ring.classList.add(styles.tap);
     };
     const onPointerUp = () => {
-      ring.classList.remove(styles.tap);
+      if (styles.tap) ring.classList.remove(styles.tap);
     };
 
     const hide = () => {

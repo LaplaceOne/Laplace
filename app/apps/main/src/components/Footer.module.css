@@ -1,0 +1,55 @@
+/* Footer — ported from laplace.css lines 222–228 */
+
+.footer {
+  border-top: 1px solid var(--border-light);
+  padding: 56px 0 40px;
+}
+
+.footGrid {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr 1fr 1fr;
+  gap: 36px;
+}
+
+.footGrid h4 {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--text-secondary);
+  margin: 0 0 18px;
+  font-weight: var(--fw-medium);
+}
+
+.footGrid a {
+  display: block;
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  margin-bottom: 12px;
+  transition: color 0.15s;
+}
+
+.footGrid a:hover {
+  color: var(--text);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-size: 18px;
+  color: var(--text);
+}
+
+.footBottom {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 48px;
+  padding-top: 26px;
+  border-top: 1px solid var(--border-light);
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
