@@ -1,7 +1,7 @@
 export interface IntentRow {
   pda: string; id: string; maker: string; receiver: string; refundRecipient: string;
   criterionProgram: string;
-  asset: { kind: 'NativeSol' } | { kind: 'SplToken'; mint: string; tokenProgram: string; vault: string };
+  asset: { __kind: 'NativeSol' } | { __kind: 'SplToken'; mint: string; tokenProgram: string; vault: string };
   amount: string; expirySlot: number; createdSlot: number;
   status: 'active' | 'fulfilled' | 'refunded'; closed: boolean;
   createdSig: string; settledSig?: string; settledSlot?: number; closedSig?: string; closedSlot?: number; updatedSlot: number;

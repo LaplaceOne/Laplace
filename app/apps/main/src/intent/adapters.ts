@@ -7,8 +7,12 @@ const STATUS: Record<IntentRow['status'], IntentStatusKind> = {
 };
 
 function assetView(a: IntentRow['asset']): IntentAssetView {
-  if (a.kind === 'NativeSol') return { kind: 'NativeSol', symbol: 'SOL', decimals: 9 };
-  return { kind: 'SplToken', mint: a.mint, symbol: `${a.mint.slice(0, 4)}…`, decimals: 0 };
+  // The SDK/indexer serialize the asset enum with `__kind` (kit discriminated union). Accept both,
+  // and guard the mint so a malformed asset can never crash the whole list.
+  const kind = (a as { __kind?: string; kind?: string }).__kind ?? (a as { kind?: string }).kind;
+  if (kind === 'NativeSol') return { kind: 'NativeSol', symbol: 'SOL', decimals: 9 };
+  const mint = String((a as { mint?: string }).mint ?? '');
+  return { kind: 'SplToken', mint, symbol: mint ? `${mint.slice(0, 4)}…` : 'SPL', decimals: 0 };
 }
 
 export function fromIndexerRow(r: IntentRow): IntentView {
