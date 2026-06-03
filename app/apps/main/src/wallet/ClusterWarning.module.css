@@ -1,0 +1,20 @@
+.banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 13px 28px;
+  border: 1px solid color-mix(in srgb, var(--warn) 40%, transparent);
+  background: color-mix(in srgb, var(--warn) 9%, transparent);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.banner svg {
+  font-size: 18px;
+  color: var(--warn);
+  flex-shrink: 0;
+  margin-top: 1px;
+}

@@ -1,16 +1,9 @@
 import { useWalletAccountTransactionSendingSigner } from '@solana/react';
 import type { UiWalletAccount } from '@wallet-standard/react';
 import { LaplaceProvider } from '@laplace/wallet';
-import type { Cluster } from '@laplace/registry';
 import type { TransactionSigner } from '@solana/kit';
 import { env } from '../env';
-
-// Wallet Standard Solana chain ids. Note 'mainnet-beta' (our Cluster) maps to 'solana:mainnet'.
-const CHAIN = {
-  localnet: 'solana:localnet',
-  devnet: 'solana:devnet',
-  'mainnet-beta': 'solana:mainnet',
-} as const satisfies Record<Cluster, `solana:${string}`>;
+import { CHAIN } from './cluster';
 
 /** Renders LaplaceProvider with a signer derived from the selected account, or none. */
 export function SignerGate({ account, children }: { account: UiWalletAccount | undefined; children: React.ReactNode }) {

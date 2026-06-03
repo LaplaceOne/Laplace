@@ -2,6 +2,7 @@ import { Outlet, NavLink, Link } from 'react-router-dom';
 import { CursorRing, ThemeToggle } from '@laplace/ui';
 import { BrandMark } from '../components/BrandMark';
 import { WalletButton } from '../wallet/WalletButton';
+import { ClusterWarning } from '../wallet/ClusterWarning';
 import { env } from '../env';
 import styles from './ConsoleLayout.module.css';
 
@@ -46,6 +47,7 @@ export function ConsoleLayout() {
           </div>
         </div>
       </header>
+      <ClusterWarning />
       <main className={styles.appMain}>
         <Outlet />
       </main>
