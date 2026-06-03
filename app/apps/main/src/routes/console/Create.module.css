@@ -24,7 +24,7 @@
 .segAsset button.active { background: var(--primary-solid); color: #fff; }
 
 /* ---------- RECIPE CARDS ---------- */
-.recipeGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.recipeGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
 .recipe { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 22px; cursor: pointer; transition: border-color .2s, background .2s; }
 .recipe:hover { border-color: var(--primary-40); }
 .recipe.sel { border-color: var(--primary-solid); background: var(--primary-04); }
@@ -43,10 +43,16 @@
 .recipeNote a { color: var(--primary-solid); text-decoration: none; font-weight: var(--fw-semibold); white-space: nowrap; }
 
 /* ---------- SUBMODE + SECRET BOX ---------- */
-.submode { display: flex; gap: 10px; margin: 18px 0; }
+.submode { display: flex; gap: 10px; margin: 0 0 18px; }
 .submode button { flex: 1; font-family: inherit; font-size: 13px; font-weight: var(--fw-medium); padding: 11px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: transparent; color: var(--text-secondary); cursor: pointer; transition: all .15s; }
 .submode button.active { border-color: var(--primary-solid); color: var(--primary-solid); background: var(--primary-04); }
 .secretBox { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; background: var(--bg-alter); font-family: var(--font-mono); font-size: 12px; word-break: break-all; line-height: 1.6; color: var(--text); margin-bottom: 10px; }
+
+/* ---------- VALIDITY REGISTER ---------- */
+.registerBox { border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 18px; margin-top: 14px; background: var(--bg-alter); }
+.registerBox .field:last-of-type { margin-bottom: 18px; }
+.disclosure { display: inline-flex; align-items: center; gap: 7px; margin-top: 14px; background: transparent; border: 0; padding: 0; font-family: inherit; font-size: 13px; font-weight: var(--fw-semibold); color: var(--primary-solid); cursor: pointer; }
+.disclosure svg { font-size: 16px; }
 
 /* ---------- REVIEW TABLE ---------- */
 .reviewTable { border: 1px solid var(--border-light); border-radius: var(--radius-md); overflow: hidden; }

@@ -18,6 +18,7 @@ import {
   computeExpirySlot,
   buildAsset,
   buildCriterion,
+  hexToBytes,
   toBytes32Hex,
   type CreateState,
   type Recipe,
@@ -398,27 +399,11 @@ function Step2({
       )}
 
       {s.recipe === 'validity' && (
-        <div className={styles.field}>
-          <label>ValidityConfig</label>
-          <select
-            value={s.configHash}
-            onChange={(e) => set('configHash', e.target.value)}
-          >
-            <option value="">Select a config hash…</option>
-            {configs.map((c) => (
-              <option key={c.configHash} value={c.configHash}>
-                {c.configHash.slice(0, 8)}… · elf {c.guestElfHash.slice(0, 6)}…
-              </option>
-            ))}
-          </select>
-          <input
-            style={{ marginTop: 8 }}
-            placeholder="…or paste a 64-hex config hash"
-            value={s.configHash}
-            onChange={(e) => set('configHash', e.target.value.trim().replace(/^0x/i, ''))}
-          />
-          <div className={styles.hint}>The intent's criterion_data_hash = the config's config_hash. Fulfillment requires a Groth16 proof + public-input suffix, generated off-app.</div>
-        </div>
+        <ValiditySection
+          value={s.configHash}
+          onChange={(v) => set('configHash', v)}
+          configs={configs}
+        />
       )}
 
       {s.recipe === 'custom' && (
@@ -461,6 +446,112 @@ function Step2({
             </div>
           </div>
         </>
+      )}
+    </div>
+  );
+}
+
+/** Validity criterion: pick a registered ValidityConfig, paste a hash, or register a new one. */
+function ValiditySection({
+  value,
+  onChange,
+  configs,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  configs: Array<{ configHash: string; guestElfHash: string }>;
+}) {
+  const client = useClient();
+  const { signer } = useLaplaceContext() as { signer?: { address: string } };
+  const { toast } = useToast();
+  const [open, setOpen] = React.useState(false);
+  const [elf, setElf] = React.useState('');
+  const [vkey, setVkey] = React.useState('');
+  const [fpi, setFpi] = React.useState('');
+  const [busy, setBusy] = React.useState(false);
+  // Optimistically surface a just-registered config: the indexer's cron can lag a couple of minutes
+  // behind the ValidityConfigCreated event, so we add it locally so it's selectable immediately.
+  const [extra, setExtra] = React.useState<Array<{ configHash: string; guestElfHash: string }>>([]);
+
+  const all = [...configs, ...extra.filter((e) => !configs.some((c) => c.configHash === e.configHash))];
+  const is64hex = (v: string) => /^[0-9a-fA-F]{64}$/.test(v);
+  const isHexEven = (v: string) => v === '' || (/^[0-9a-fA-F]*$/.test(v) && v.length % 2 === 0);
+  const canRegister = is64hex(elf) && is64hex(vkey) && isHexEven(fpi);
+
+  async function register() {
+    if (!signer) { toast('Connect your wallet first', 'error'); return; }
+    setBusy(true);
+    try {
+      const res = await client.createValidityConfig(
+        {
+          guestElfHash: hexToBytes(elf),
+          sp1VkeyHash: hexToBytes(vkey),
+          fixedPublicInputs: hexToBytes(fpi),
+        },
+        { payer: signer as never },
+      );
+      const hash = toBytes32Hex(res.configHash);
+      setExtra((p) => [{ configHash: hash, guestElfHash: elf }, ...p]);
+      onChange(hash);
+      toast(`ValidityConfig registered · ${hash.slice(0, 8)}…`);
+      setOpen(false);
+      setElf(''); setVkey(''); setFpi('');
+    } catch (e) {
+      toast(mapLaplaceError(e).message, 'error');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div>
+      <div className={styles.field}>
+        <label>ValidityConfig</label>
+        <select value={value} onChange={(e) => onChange(e.target.value)}>
+          <option value="">Select a config hash…</option>
+          {all.map((c) => (
+            <option key={c.configHash} value={c.configHash}>
+              {c.configHash.slice(0, 8)}… · elf {c.guestElfHash.slice(0, 6)}…
+            </option>
+          ))}
+        </select>
+        <input
+          style={{ marginTop: 8 }}
+          placeholder="…or paste a 64-hex config hash"
+          value={value}
+          onChange={(e) => onChange(e.target.value.trim().replace(/^0x/i, ''))}
+        />
+        <div className={styles.hint}>
+          {all.length === 0
+            ? `No ValidityConfigs registered on ${env.cluster} yet — register one below, or paste a hash.`
+            : "The intent's criterion_data_hash = the config's config_hash. Fulfillment requires a Groth16 proof + public-input suffix, generated off-app."}
+        </div>
+      </div>
+
+      <button type="button" className={styles.disclosure} onClick={() => setOpen((o) => !o)}>
+        <Icon icon={open ? 'eva:minus-square-outline' : 'eva:plus-square-outline'} />
+        Register a ValidityConfig
+      </button>
+
+      {open && (
+        <div className={styles.registerBox}>
+          <div className={styles.field}>
+            <label>guest_elf_hash (32-byte hex)</label>
+            <input placeholder="64 hex chars" value={elf} onChange={(e) => setElf(e.target.value.trim().replace(/^0x/i, ''))} />
+          </div>
+          <div className={styles.field}>
+            <label>sp1_vkey_hash (32-byte hex)</label>
+            <input placeholder="64 hex chars" value={vkey} onChange={(e) => setVkey(e.target.value.trim().replace(/^0x/i, ''))} />
+          </div>
+          <div className={styles.field}>
+            <label>fixed_public_inputs (hex · optional)</label>
+            <input placeholder="bytes bound into every proof — leave blank for none" value={fpi} onChange={(e) => setFpi(e.target.value.trim().replace(/^0x/i, ''))} />
+            <div className={styles.hint}>config_hash = SHA256(domain ‖ spec ‖ elf ‖ vkey ‖ len ‖ fixed). Registering submits a transaction that publishes the config on-chain, then selects it above.</div>
+          </div>
+          <button type="button" className={styles.actBtn} disabled={busy || !signer || !canRegister} onClick={register}>
+            {busy ? 'Registering…' : signer ? 'Register config' : 'Connect wallet'}
+          </button>
+        </div>
       )}
     </div>
   );
