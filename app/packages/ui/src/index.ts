@@ -9,3 +9,4 @@ export { CopyButton } from './components/CopyButton.js';
 export { CodeBlock } from './components/CodeBlock.js';
 export { Reveal } from './components/Reveal.js';
 export { useInView } from './components/useInView.js';
+export { AmbientBackground } from './components/AmbientBackground.js';

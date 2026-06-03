@@ -1,0 +1,64 @@
+/* Port of the glows + canvas CSS from bg.js (the inline <style> block).
+   The two drifting brand glows are CSS (keyframes lpDrift1 / lpDrift2);
+   the flow-field segments are drawn on the canvas. */
+
+.glows {
+  position: fixed;
+  inset: 0;
+  z-index: -3;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.glows .g {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: .62;
+}
+
+.glows .g1 {
+  width: 46vw;
+  height: 46vw;
+  background: radial-gradient(closest-side, var(--primary-20), transparent 70%);
+  left: -8vw;
+  top: -10vw;
+  animation: lpDrift1 34s ease-in-out infinite;
+}
+
+.glows .g2 {
+  width: 40vw;
+  height: 40vw;
+  background: radial-gradient(closest-side, var(--secondary-20), transparent 70%);
+  right: -6vw;
+  top: 14vh;
+  animation: lpDrift2 42s ease-in-out infinite;
+}
+
+:global([data-theme="dark"]) .glows .g {
+  opacity: .52;
+}
+
+.canvas {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  filter: blur(0.7px);
+}
+
+@keyframes lpDrift1 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(8vw, 6vh); }
+}
+
+@keyframes lpDrift2 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-7vw, 9vh); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glows .g {
+    animation: none;
+  }
+}
