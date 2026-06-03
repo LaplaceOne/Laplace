@@ -7,3 +7,5 @@ export { Button, type ButtonProps } from './components/Button.js';
 export { ArrowLink } from './components/ArrowLink.js';
 export { CopyButton } from './components/CopyButton.js';
 export { CodeBlock } from './components/CodeBlock.js';
+export { Reveal } from './components/Reveal.js';
+export { useInView } from './components/useInView.js';
