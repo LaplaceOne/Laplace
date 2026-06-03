@@ -53,8 +53,9 @@ Laplace app family (main site + derived products).
 
 ## Open action items
 
-- Deploy `laplace`, `hashlock`, `validity` to **devnet** and record addresses in
-  `@laplace/registry` (`cluster: "devnet"`). Docs currently use the `Anchor.toml`
-  localnet IDs as placeholders.
+- ✅ **Done.** `laplace`, `hashlock`, `validity` are deployed to **devnet** at the
+  addresses already in `@laplace/registry` (`cluster: "devnet"`). The program keypair
+  fixes the address, so localnet / devnet / mainnet-beta share the same IDs — no
+  per-cluster placeholder swap was needed.
 - Decide validity proof generation strategy (hosted prover vs client WASM) —
   deferred; not needed for the hashlock-first slice.
