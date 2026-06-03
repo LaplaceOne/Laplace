@@ -16,9 +16,16 @@ function configPdaOf(e: LaplaceEvent): string | null {
   return e.kind === 'ValidityConfigCreated' ? (e.config as string) : null;
 }
 
-// JSON-safe payload: stringify bigints (amount, slots) so jsonb can store them losslessly.
+// JSON-safe payload: bigints (amount, slots) → strings; raw byte fields (e.g. the 32-byte intent
+// `id`) → hex, instead of the default `{"0":..}` object form that stringifies to "[object Object]".
 function toPayload(e: LaplaceEvent): unknown {
-  return JSON.parse(JSON.stringify(e, (_k, v) => (typeof v === 'bigint' ? v.toString() : v)));
+  return JSON.parse(
+    JSON.stringify(e, (_k, v) => {
+      if (typeof v === 'bigint') return v.toString();
+      if (v instanceof Uint8Array) return Array.from(v, (b) => b.toString(16).padStart(2, '0')).join('');
+      return v;
+    }),
+  );
 }
 
 /** Decode a confirmed transaction's logs into event rows. Failed txs yield none. */
