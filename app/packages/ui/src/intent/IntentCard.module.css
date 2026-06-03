@@ -1,0 +1,92 @@
+/* Ported from app.css .icard* lines 66–78 */
+.icard {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  cursor: pointer;
+  transition: border-color .2s, box-shadow .2s, transform .2s;
+  background: var(--bg-bright);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+:global([data-theme="dark"]) .icard {
+  background: var(--bg-light);
+}
+
+.icard:hover {
+  border-color: var(--primary-40);
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px var(--shadow-12);
+}
+
+.top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.amt {
+  font-size: 25px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: -.02em;
+  line-height: 1;
+}
+
+.amt :global(.asset) {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: var(--fw-medium);
+  margin-left: 5px;
+}
+
+.crit {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-pill);
+  padding: 4px 9px;
+}
+
+.crit svg {
+  font-size: 13px;
+  color: var(--primary-solid);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.lbl {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.val {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--text);
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-light);
+}

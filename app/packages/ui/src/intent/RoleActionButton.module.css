@@ -1,0 +1,69 @@
+/* Ported from app.css .act-btn*, .act-note lines 95–103 */
+.wrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.actBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 15px;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: var(--fw-semibold);
+  cursor: pointer;
+  border: 1px solid var(--primary-solid);
+  background: var(--primary-solid);
+  color: #fff;
+  transition: filter .15s, background .15s;
+  white-space: nowrap;
+}
+
+.actBtn:hover {
+  filter: brightness(1.08);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--primary-solid);
+}
+
+.ghost:hover {
+  background: var(--primary-08);
+  filter: none;
+}
+
+.neutral {
+  background: transparent;
+  border-color: var(--border-darker);
+  color: var(--text);
+}
+
+.neutral:hover {
+  background: var(--text);
+  color: var(--bg-bright);
+  filter: none;
+}
+
+:global([data-theme="dark"]) .neutral:hover {
+  color: var(--bg);
+}
+
+.actBtn:disabled {
+  background: transparent;
+  border-color: var(--border-light);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+  filter: none;
+}
+
+.note {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+}
