@@ -15,6 +15,12 @@ main = "src/index.ts"
 compatibility_date = "2024-11-06"
 compatibility_flags = ["nodejs_compat"]
 
+# Serve the worker on a custom domain. `laplace.one` must be a zone in THIS Cloudflare account —
+# Cloudflare then auto-provisions the DNS record + TLS cert for the subdomain on deploy.
+[[routes]]
+pattern = "indexer.laplace.one"
+custom_domain = true
+
 [[d1_databases]]
 binding = "DB"
 database_name = "laplace-indexer"
