@@ -47,6 +47,15 @@ function preimageToBytes(input: string): Uint8Array {
   return Uint8Array.from(bytes);
 }
 
+/** Read a proof file as bytes — accepts a raw binary proof (.bin) or a hex / 0x-hex text file. */
+async function bytesFromFile(file: File): Promise<Uint8Array> {
+  const raw = new Uint8Array(await file.arrayBuffer());
+  const text = new TextDecoder().decode(raw).trim();
+  const hex = text.replace(/^0x/i, '').replace(/\s+/g, '');
+  if (hex.length > 0 && hex.length % 2 === 0 && /^[0-9a-fA-F]+$/.test(hex)) return preimageToBytes(hex);
+  return raw;
+}
+
 export function IntentDetailView({
   view,
   timeline,
@@ -200,6 +209,7 @@ function ActionPanel({
   const { busy } = actions;
   const [preimage, setPreimage] = React.useState('');
   const [proofHex, setProofHex] = React.useState('');
+  const [proofFile, setProofFile] = React.useState<{ name: string; bytes: Uint8Array } | null>(null);
   const [suffixHex, setSuffixHex] = React.useState('');
   const [err, setErr] = React.useState<string | undefined>(undefined);
 
@@ -266,16 +276,46 @@ function ActionPanel({
           <label htmlFor="proof">Groth16 proof</label>
           <textarea
             id="proof"
-            placeholder="proof bytes (hex) — generated off-app"
+            placeholder="proof bytes (hex) — or upload a file below"
             value={proofHex}
-            onChange={(e) => setProofHex(e.target.value)}
+            onChange={(e) => { setProofHex(e.target.value); setProofFile(null); }}
           />
+          <div className={styles.fileRow}>
+            <label className={styles.fileBtn}>
+              <Icon icon="eva:upload-outline" /> Upload proof file
+              <input
+                type="file"
+                hidden
+                onChange={async (e) => {
+                  const f = e.target.files?.[0];
+                  e.target.value = ''; // allow re-selecting the same file
+                  if (!f) return;
+                  try {
+                    setErr(undefined);
+                    setProofFile({ name: f.name, bytes: await bytesFromFile(f) });
+                    setProofHex('');
+                  } catch {
+                    setErr('Could not read that file');
+                  }
+                }}
+              />
+            </label>
+            {proofFile && (
+              <span className={styles.fileChip}>
+                <Icon icon="eva:file-text-outline" />
+                {proofFile.name} · {proofFile.bytes.length} bytes
+                <button type="button" aria-label="Remove proof file" onClick={() => setProofFile(null)}>
+                  <Icon icon="eva:close-outline" />
+                </button>
+              </span>
+            )}
+          </div>
         </div>
         <div className={styles.field}>
           <label htmlFor="suffix">Public-input suffix</label>
           <input
             id="suffix"
-            placeholder="0x…"
+            placeholder="0x… (optional)"
             value={suffixHex}
             onChange={(e) => setSuffixHex(e.target.value)}
           />
@@ -284,11 +324,12 @@ function ActionPanel({
         <button
           type="button"
           className={`${styles.actBtn} ${styles.bigBtn}`}
-          disabled={!act.enabled || busy || proofHex.trim() === ''}
+          disabled={!act.enabled || busy || (!proofFile && proofHex.trim() === '')}
           onClick={() => {
             try {
               setErr(undefined);
-              actions.fulfillValidity(preimageToBytes(proofHex), preimageToBytes(suffixHex || ''), signer);
+              const proof = proofFile ? proofFile.bytes : preimageToBytes(proofHex);
+              actions.fulfillValidity(proof, preimageToBytes(suffixHex || ''), signer);
             } catch (e) {
               setErr(e instanceof Error ? e.message : 'Invalid proof bytes');
             }
@@ -297,7 +338,8 @@ function ActionPanel({
           Submit proof & fulfill
         </button>
         <div className={styles.hint}>
-          The ValidityConfig PDA is passed as the single criterion account.
+          The ValidityConfig PDA is passed as the single criterion account. A proof file may be raw
+          bytes (.bin) or hex text.
         </div>
         {act.reason && <div className={styles.hint}>{act.reason}</div>}
       </>
