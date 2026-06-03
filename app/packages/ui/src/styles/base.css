@@ -1,0 +1,65 @@
+/* ============================================================
+   @laplace/ui — Base globals
+   Re-authored from laplace.css (lines 1–31)
+   ============================================================ */
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; scroll-behavior: smooth; }
+html { background: var(--bg-bright); }
+[data-theme="dark"] html { background: var(--bg); }
+body {
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-normal);
+  letter-spacing: var(--tracking-normal);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- CUSTOM SCROLLBAR ---------- */
+html { scrollbar-width: thin; scrollbar-color: var(--primary-40) transparent; }
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--primary-30);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  transition: background .2s;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--primary-60); background-clip: padding-box; }
+::-webkit-scrollbar-corner { background: transparent; }
+
+.wrap { max-width: 1140px; margin: 0 auto; padding: 0 36px; }
+a { color: inherit; }
+.mono { font-family: var(--font-mono); }
+.label {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+hr.rule { border: 0; border-top: 1px solid var(--border-light); margin: 0; }
+
+/* ---------- BUTTONS (global utility classes, ported from laplace.css 51–66) ----------
+   The <Button> component carries its own scoped styles; these globals back the literal
+   `className="btn btn--accent"` usages (empty-state CTAs, submit buttons) so they match
+   the design system. iconify-icon selectors → svg. */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+  height: 44px; padding: 0 22px; border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: var(--fw-semibold); letter-spacing: .01em;
+  cursor: pointer; white-space: nowrap; text-decoration: none;
+  border: 1px solid var(--border-darker); background: transparent; color: var(--text);
+  font-family: inherit;
+  transition: background .18s, color .18s, border-color .18s, transform .18s;
+}
+.btn:hover { background: var(--text); color: var(--bg-bright); border-color: var(--text); }
+[data-theme="dark"] .btn:hover { color: var(--bg); }
+.btn svg { font-size: 17px; }
+.btn--accent { border-color: var(--primary-solid); color: var(--primary-solid); }
+.btn--accent:hover { background: var(--primary-solid); color: #fff; border-color: var(--primary-solid); }
+.btn--ghost { border-color: var(--border); color: var(--text-secondary); }
+.btn--ghost:hover { background: transparent; color: var(--text); border-color: var(--border-darker); }
+.btn--lg { height: 50px; padding: 0 26px; font-size: 15px; }

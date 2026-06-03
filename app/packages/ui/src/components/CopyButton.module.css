@@ -1,0 +1,21 @@
+/* Port of .copy-btn and .copy-btn:hover from laplace.css lines 167–168. */
+
+.copyBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: var(--fw-semibold);
+  border: 1px solid var(--border);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: color .15s, border-color .15s;
+}
+
+.copyBtn:hover {
+  color: var(--text);
+  border-color: var(--border-darker);
+}

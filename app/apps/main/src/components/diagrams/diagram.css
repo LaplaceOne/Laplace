@@ -1,0 +1,29 @@
+/* ---------- LINE DIAGRAM ----------
+   Global (non-module) stylesheet ported from laplace.css lines 94–115.
+   These classes are referenced by literal class strings on inline SVG nodes,
+   so they must stay global to match. Imported once (e.g. by LifecycleDiagram).
+   Strokes are statically visible (no draw-on animation gating). */
+.diagram { width: 100%; height: auto; color: var(--text); overflow: visible; }
+.diagram .box { fill: none; stroke: var(--border-darker); stroke-width: 1.25; }
+.diagram .box-accent { fill: none; stroke: var(--primary-solid); stroke-width: 1.5; }
+.diagram .ln { stroke: var(--border-darker); stroke-width: 1.25; fill: none; }
+.diagram .ln-dash { stroke: var(--border-dark); stroke-width: 1.1; stroke-dasharray: 3 4; fill: none; }
+.diagram .ln-accent { stroke: var(--primary-solid); stroke-width: 1.5; fill: none; }
+.diagram .dot { fill: var(--bg-bright); stroke: var(--text); stroke-width: 1.2; }
+.diagram .dot-accent { fill: var(--primary-solid); }
+[data-theme="dark"] .diagram .dot { fill: var(--bg); }
+[data-theme="dark"] .diagram .dot-accent { fill: var(--primary-solid); }
+[data-theme="dark"] .diagram .box,
+[data-theme="dark"] .diagram .ln,
+[data-theme="dark"] .diagram .ln-dash { stroke: var(--text); }
+.diagram text { fill: var(--text); font-family: var(--font-normal); }
+.diagram .t-label { fill: var(--text-secondary); font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; }
+.diagram .t-mono { fill: var(--text-secondary); font-family: var(--font-mono); font-size: 10px; }
+.diagram .t-title { font-weight: 600; font-size: 13px; }
+.diagram .draw { stroke-dasharray: none; stroke-dashoffset: 0; }
+.diagram .pulse-dot { animation: dpulse 2.4s ease-in-out infinite; }
+@keyframes dpulse { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
+@media (prefers-reduced-motion: reduce) {
+  .diagram .draw { stroke-dashoffset: 0; animation: none; }
+  .diagram .pulse-dot { animation: none; }
+}

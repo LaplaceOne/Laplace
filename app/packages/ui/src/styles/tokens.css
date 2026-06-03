@@ -1,0 +1,455 @@
+/* ============================================================
+   @laplace/ui — Design Tokens
+   Re-authored from AnyUI Design System (anyui-tokens.css)
+   Preserves every value exactly.
+   ============================================================ */
+
+/* -------- Webfont -------- */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* ---------- Brand ---------- */
+  --primary:        rgba(15, 111, 239, 0.9);
+  --primary-solid:  rgb(15, 111, 239);
+  --secondary:      rgba(17, 205, 239, 0.9);
+  --secondary-solid: rgb(17, 205, 239);
+
+  /* gradient text / button uses primary -> secondary at ~42deg */
+  --gradient-brand: linear-gradient(42deg, var(--primary), var(--secondary));
+  --gradient-brand-reverse: linear-gradient(42deg, var(--secondary), var(--primary));
+
+  /* ---------- Surfaces / backgrounds ---------- */
+  --bg:             #f8f8fa;
+  --bg-bright:      #ffffff;
+  --bg-light:       #fcfcfd;
+  --bg-semi-light:  #fafafc;
+  --bg-alter:       #f4f4f6;
+  --bg-hover:       #f2f2f4;
+  --bg-semi-dark:   #f2f2f4;
+  --bg-active:      #efeff1;
+  --bg-darker:      #ededef;
+  --bg-readonly:    #f0f0f3;
+  --bg-disabled:    #dadadc;
+
+  /* ---------- Text ---------- */
+  --text:             #202426;
+  --text-80:          rgba(32, 36, 38, 0.8);
+  --text-secondary:   #909293;
+  --text-disabled:    #a0a1a4;
+  --text-placeholder: #aeaeae;
+  --placeholder:      #aeaeae;
+  --text-btn:         #fdfdfe;
+  --text-white:       #fafbfd;
+  --icon-fill:        #a6a8a9;
+  --scrollbar:        #c0c2c3;
+
+  /* ---------- Semantic ---------- */
+  --success: rgb(96, 211, 50);
+  --warn:    rgb(243, 189, 41);
+  --danger:  rgb(231, 63, 51);
+  --info:    rgb(47, 124, 224);
+
+  --success-85: rgba(96, 211, 50, 0.85);
+  --success-75: rgba(96, 211, 50, 0.75);
+  --warn-85:    rgba(243, 189, 41, 0.85);
+  --warn-75:    rgba(243, 189, 41, 0.75);
+  --danger-85:  rgba(231, 63, 51, 0.85);
+  --danger-75:  rgba(231, 63, 51, 0.75);
+  --info-85:    rgba(47, 124, 224, 0.85);
+  --info-75:    rgba(47, 124, 224, 0.75);
+
+  /* ---------- Lines & borders ---------- */
+  --border:            #cecdd0;
+  --border-lighter:    #e4e3e6;
+  --border-light:      #dedde0;
+  --border-semi-light: #d6d5d8;
+  --border-semi-dark:  #c1c0c3;
+  --border-dark:       #b3b2b5;
+  --border-darker:     #adacaf;
+  --border-80:         rgba(206, 205, 208, 0.8);
+  --line:              #eff2f3;
+
+  /* ---------- Primary tints ---------- */
+  --primary-l-6:  rgb(38, 132, 255);
+  --primary-d-4:  rgb(11,  93, 209);
+  --primary-90:   rgba(15, 111, 239, 0.90);
+  --primary-85:   rgba(15, 111, 239, 0.85);
+  --primary-80:   rgba(15, 111, 239, 0.80);
+  --primary-75:   rgba(15, 111, 239, 0.75);
+  --primary-70:   rgba(15, 111, 239, 0.70);
+  --primary-60:   rgba(15, 111, 239, 0.60);
+  --primary-40:   rgba(15, 111, 239, 0.40);
+  --primary-30:   rgba(15, 111, 239, 0.30);
+  --primary-20:   rgba(15, 111, 239, 0.20);
+  --primary-18:   rgba(15, 111, 239, 0.18);
+  --primary-12:   rgba(15, 111, 239, 0.12);
+  --primary-10:   rgba(15, 111, 239, 0.10);
+  --primary-08:   rgba(15, 111, 239, 0.08);
+  --primary-06:   rgba(15, 111, 239, 0.06);
+  --primary-04:   rgba(15, 111, 239, 0.04);
+
+  /* secondary cyan tints */
+  --secondary-85: rgba(17, 205, 239, 0.85);
+  --secondary-75: rgba(17, 205, 239, 0.75);
+  --secondary-60: rgba(17, 205, 239, 0.60);
+  --secondary-40: rgba(17, 205, 239, 0.40);
+  --secondary-20: rgba(17, 205, 239, 0.20);
+
+  /* ---------- Shadows ---------- */
+  --shadow:     #001220;
+  --shadow-2:   rgba(0, 18, 32, 0.02);
+  --shadow-4:   rgba(0, 18, 32, 0.04);
+  --shadow-5:   rgba(0, 18, 32, 0.05);
+  --shadow-6:   rgba(0, 18, 32, 0.06);
+  --shadow-8:   rgba(0, 18, 32, 0.08);
+  --shadow-10:  rgba(0, 18, 32, 0.10);
+  --shadow-12:  rgba(0, 18, 32, 0.12);
+  --shadow-18:  rgba(0, 18, 32, 0.18);
+  --shadow-20:  rgba(0, 18, 32, 0.20);
+  --shadow-24:  rgba(0, 18, 32, 0.24);
+  --shadow-25:  rgba(0, 18, 32, 0.25);
+  --shadow-30:  rgba(0, 18, 32, 0.30);
+  --shadow-36:  rgba(0, 18, 32, 0.36);
+  --shadow-40:  rgba(0, 18, 32, 0.40);
+  --shadow-w:   #ffffff;
+  --shadow-w-4:  rgba(255, 255, 255, 0.04);
+  --shadow-w-10: rgba(255, 255, 255, 0.10);
+
+  --overlay:    rgba(0, 0, 0, 0.20);
+  --mask:       rgba(0, 0, 0, 0.60);
+
+  /* ---------- Elevation presets ---------- */
+  --elev-1: 0  2px  8px  var(--shadow-5);
+  --elev-2: 0  4px 10px  var(--shadow-6);
+  --elev-3: 1px 3px 10px var(--shadow-4);
+  --elev-4: 0  8px 12px  var(--shadow-5);
+  --elev-5: 2px 3px 14px var(--shadow-6);
+  --elev-6: 0  2px 12px  var(--shadow-12);
+  --elev-7: 0  4px 10px  var(--shadow-24);
+
+  --focus-ring: 1px 3px 10px var(--primary-12);
+
+  /* ---------- Typography ---------- */
+  --font-normal: 'Nunito', -apple-system, BlinkMacSystemFont, 'Microsoft Yahei UI',
+    'Microsoft Yahei', 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol';
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* type scale */
+  --fs-display: 40px;
+  --fs-h1:      28px;
+  --fs-h2:      22px;
+  --fs-h3:      18px;
+  --fs-body-l:  16px;
+  --fs-body:    14px;
+  --fs-body-s:  13px;
+  --fs-caption: 12px;
+  --fs-micro:   10px;
+
+  --lh-tight:   1.15;
+  --lh-snug:    1.35;
+  --lh-body:    1.55;
+  --lh-loose:   1.75;
+
+  --fw-light:   300;
+  --fw-regular: 400;
+  --fw-medium:  500;
+  --fw-semibold:600;
+  --fw-bold:    700;
+
+  --tracking-tight:  0;
+  --tracking-normal: 0.02rem;
+  --tracking-wide:   0.05rem;
+
+  /* ---------- Radii ---------- */
+  --radius-xs:   4px;
+  --radius-sm:   6px;
+  --radius-md:   8px;
+  --radius-lg:  10px;
+  --radius-xl:  14px;
+  --radius-2xl: 16px;
+  --radius-3xl: 20px;
+  --radius-pill: 9999px;
+
+  /* ---------- Spacing ---------- */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  --comp-h-sm:      32px;
+  --comp-h-default: 40px;
+  --comp-h-large:   48px;
+  --comp-h-button:  42px;
+
+  --header-height: 64px;
+  --footer-height: 64px;
+  --scroll-width:   8px;
+
+  --anim-duration:       200ms;
+  --anim-duration-quick: 100ms;
+  --easing-standard:     ease;
+  --easing-out:          ease-out;
+}
+
+/* ============================================================
+   SEMANTIC TEXT ELEMENTS
+   ============================================================ */
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  letter-spacing: var(--tracking-wide);
+  color: var(--text);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-tight);
+}
+
+h1 { font-size: var(--fs-h1); }
+h2 { font-size: var(--fs-h2); }
+h3 { font-size: var(--fs-h3); }
+h4 { font-size: var(--fs-body-l); }
+h5 { font-size: var(--fs-body); }
+h6 { font-size: var(--fs-body-s); }
+
+p {
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text);
+  letter-spacing: var(--tracking-normal);
+}
+
+small, .caption {
+  font-size: var(--fs-caption);
+  color: var(--text-secondary);
+}
+
+code, kbd, pre, samp {
+  font-family: var(--font-mono);
+}
+
+a {
+  color: var(--primary-solid);
+  text-decoration: none;
+  transition: color var(--anim-duration-quick) var(--easing-out);
+}
+a:hover { color: var(--primary-d-4); }
+
+::selection {
+  background: var(--primary-30);
+  color: var(--text);
+}
+
+/* gradient-text utility */
+.a-gradient-text,
+.gradient-text {
+  background: var(--gradient-brand);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: var(--fw-bold);
+}
+
+/* ============================================================
+   DARK THEME
+   ============================================================ */
+
+[data-theme="dark"] {
+  /* surfaces */
+  --bg:             #15171b;
+  --bg-bright:      #1f2228;
+  --bg-light:       #1c1f24;
+  --bg-semi-light:  #1a1d22;
+  --bg-alter:       #131418;
+  --bg-hover:       #22262d;
+  --bg-semi-dark:   #1a1c20;
+  --bg-active:      #2a2e35;
+  --bg-darker:      #0f1115;
+  --bg-readonly:    #1a1c20;
+  --bg-disabled:    #2a2c30;
+
+  /* text */
+  --text:             #e8e9ec;
+  --text-80:          rgba(232, 233, 236, 0.8);
+  --text-secondary:   #8e9197;
+  --text-disabled:    #595c61;
+  --text-placeholder: #6c6f74;
+  --placeholder:      #6c6f74;
+  --text-btn:         #fdfdfe;
+  --text-white:       #fafbfd;
+  --icon-fill:        #8e9197;
+  --scrollbar:        #2d3138;
+
+  /* lines & borders */
+  --border:            #2c2f36;
+  --border-lighter:    #3a3d44;
+  --border-light:      #353841;
+  --border-semi-light: #303339;
+  --border-semi-dark:  #25282e;
+  --border-dark:       #20232a;
+  --border-darker:     #1a1d22;
+  --border-80:         rgba(44, 47, 54, 0.8);
+  --line:              #1e2026;
+
+  /* brand */
+  --primary:        rgba(54, 138, 255, 0.95);
+  --primary-solid:  rgb(54, 138, 255);
+  --secondary:      rgba(50, 218, 247, 0.95);
+  --secondary-solid: rgb(50, 218, 247);
+
+  --primary-l-6:  rgb(78, 156, 255);
+  --primary-d-4:  rgb(33, 116, 235);
+
+  /* primary alpha ramp */
+  --primary-90: rgba(54, 138, 255, 0.90);
+  --primary-85: rgba(54, 138, 255, 0.85);
+  --primary-80: rgba(54, 138, 255, 0.80);
+  --primary-75: rgba(54, 138, 255, 0.75);
+  --primary-70: rgba(54, 138, 255, 0.70);
+  --primary-60: rgba(54, 138, 255, 0.60);
+  --primary-40: rgba(54, 138, 255, 0.40);
+  --primary-30: rgba(54, 138, 255, 0.30);
+  --primary-20: rgba(54, 138, 255, 0.20);
+  --primary-18: rgba(54, 138, 255, 0.18);
+  --primary-12: rgba(54, 138, 255, 0.18);
+  --primary-10: rgba(54, 138, 255, 0.16);
+  --primary-08: rgba(54, 138, 255, 0.14);
+  --primary-06: rgba(54, 138, 255, 0.12);
+  --primary-04: rgba(54, 138, 255, 0.10);
+
+  --secondary-85: rgba(50, 218, 247, 0.85);
+  --secondary-75: rgba(50, 218, 247, 0.75);
+  --secondary-60: rgba(50, 218, 247, 0.60);
+  --secondary-40: rgba(50, 218, 247, 0.40);
+  --secondary-20: rgba(50, 218, 247, 0.20);
+
+  --gradient-brand: linear-gradient(42deg, var(--primary), var(--secondary));
+  --gradient-brand-reverse: linear-gradient(42deg, var(--secondary), var(--primary));
+
+  /* semantic */
+  --success: rgb(118, 220, 78);
+  --warn:    rgb(247, 197, 70);
+  --danger:  rgb(240, 90, 80);
+  --info:    rgb(80, 148, 235);
+
+  --success-85: rgba(118, 220, 78, 0.85);
+  --success-75: rgba(118, 220, 78, 0.75);
+  --warn-85:    rgba(247, 197, 70, 0.85);
+  --warn-75:    rgba(247, 197, 70, 0.75);
+  --danger-85:  rgba(240, 90, 80, 0.85);
+  --danger-75:  rgba(240, 90, 80, 0.75);
+  --info-85:    rgba(80, 148, 235, 0.85);
+  --info-75:    rgba(80, 148, 235, 0.75);
+
+  /* shadows */
+  --shadow:     #000000;
+  --shadow-2:   rgba(0, 0, 0, 0.20);
+  --shadow-4:   rgba(0, 0, 0, 0.28);
+  --shadow-5:   rgba(0, 0, 0, 0.32);
+  --shadow-6:   rgba(0, 0, 0, 0.36);
+  --shadow-8:   rgba(0, 0, 0, 0.42);
+  --shadow-10:  rgba(0, 0, 0, 0.48);
+  --shadow-12:  rgba(0, 0, 0, 0.52);
+  --shadow-18:  rgba(0, 0, 0, 0.58);
+  --shadow-20:  rgba(0, 0, 0, 0.60);
+  --shadow-24:  rgba(0, 0, 0, 0.64);
+  --shadow-25:  rgba(0, 0, 0, 0.65);
+  --shadow-30:  rgba(0, 0, 0, 0.68);
+  --shadow-36:  rgba(0, 0, 0, 0.72);
+  --shadow-40:  rgba(0, 0, 0, 0.76);
+
+  /* overlays */
+  --overlay:    rgba(255, 255, 255, 0.04);
+  --mask:       rgba(0, 0, 0, 0.72);
+
+  /* elevation presets */
+  --elev-1: 0  2px  8px  var(--shadow-5);
+  --elev-2: 0  4px 10px  var(--shadow-6);
+  --elev-3: 1px 3px 10px var(--shadow-4);
+  --elev-4: 0  8px 12px  var(--shadow-5);
+  --elev-5: 2px 3px 14px var(--shadow-6);
+  --elev-6: 0  2px 12px  var(--shadow-12);
+  --elev-7: 0  4px 10px  var(--shadow-24);
+  --focus-ring: 1px 3px 10px var(--primary-30);
+}
+
+/* Auto-activate dark mode when the OS prefers it,
+   UNLESS the user has explicitly opted into light. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:             #15171b;
+    --bg-bright:      #1f2228;
+    --bg-light:       #1c1f24;
+    --bg-semi-light:  #1a1d22;
+    --bg-alter:       #131418;
+    --bg-hover:       #22262d;
+    --bg-semi-dark:   #1a1c20;
+    --bg-active:      #2a2e35;
+    --bg-darker:      #0f1115;
+    --bg-readonly:    #1a1c20;
+    --bg-disabled:    #2a2c30;
+
+    --text:             #e8e9ec;
+    --text-80:          rgba(232, 233, 236, 0.8);
+    --text-secondary:   #8e9197;
+    --text-disabled:    #595c61;
+    --text-placeholder: #6c6f74;
+    --placeholder:      #6c6f74;
+    --icon-fill:        #8e9197;
+    --scrollbar:        #2d3138;
+
+    --border:            #2c2f36;
+    --border-lighter:    #3a3d44;
+    --border-light:      #353841;
+    --border-semi-light: #303339;
+    --border-semi-dark:  #25282e;
+    --border-dark:       #20232a;
+    --border-darker:     #1a1d22;
+    --line:              #1e2026;
+
+    --primary:        rgba(54, 138, 255, 0.95);
+    --primary-solid:  rgb(54, 138, 255);
+    --secondary:      rgba(50, 218, 247, 0.95);
+    --secondary-solid: rgb(50, 218, 247);
+    --primary-l-6:    rgb(78, 156, 255);
+    --primary-d-4:    rgb(33, 116, 235);
+
+    --primary-85: rgba(54, 138, 255, 0.85);
+    --primary-75: rgba(54, 138, 255, 0.75);
+    --primary-70: rgba(54, 138, 255, 0.70);
+    --primary-30: rgba(54, 138, 255, 0.30);
+    --primary-20: rgba(54, 138, 255, 0.20);
+    --primary-12: rgba(54, 138, 255, 0.18);
+    --primary-08: rgba(54, 138, 255, 0.14);
+
+    --gradient-brand: linear-gradient(42deg, var(--primary), var(--secondary));
+    --gradient-brand-reverse: linear-gradient(42deg, var(--secondary), var(--primary));
+
+    --shadow:    #000000;
+    --shadow-4:  rgba(0, 0, 0, 0.28);
+    --shadow-5:  rgba(0, 0, 0, 0.32);
+    --shadow-6:  rgba(0, 0, 0, 0.36);
+    --shadow-8:  rgba(0, 0, 0, 0.42);
+    --shadow-10: rgba(0, 0, 0, 0.48);
+    --shadow-12: rgba(0, 0, 0, 0.52);
+    --shadow-24: rgba(0, 0, 0, 0.64);
+
+    --overlay:   rgba(255, 255, 255, 0.04);
+    --mask:      rgba(0, 0, 0, 0.72);
+    --focus-ring: 1px 3px 10px var(--primary-30);
+  }
+}

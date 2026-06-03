@@ -1,0 +1,14 @@
+/* ---------- ARCHITECTURE DIAGRAM ----------
+   Global (non-module) stylesheet ported verbatim from lab.html's <style> .arch block.
+   These classes are referenced by literal class strings on inline SVG nodes scoped under
+   `.arch`, so they must stay global to match. Imported once by ArchitectureDiagram. */
+.arch { width: 100%; height: auto; color: var(--text); overflow: visible; max-width: 820px; margin: 0 auto; display: block; }
+.arch .box { fill: none; stroke: var(--border-darker); stroke-width: 1.25; }
+.arch .box-accent { fill: none; stroke: var(--primary-solid); stroke-width: 1.5; }
+.arch .box-dash { fill: none; stroke: var(--border-dark); stroke-width: 1.1; stroke-dasharray: 4 4; }
+.arch .ln { stroke: var(--border-darker); stroke-width: 1.25; fill: none; }
+[data-theme="dark"] .arch .box, [data-theme="dark"] .arch .ln { stroke: var(--text); }
+.arch text { fill: var(--text); font-family: var(--font-normal); }
+.arch .t-title { font-weight: 600; font-size: 13px; }
+.arch .t-mono { fill: var(--text-secondary); font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase; }
+.arch .dot { fill: var(--primary-solid); }

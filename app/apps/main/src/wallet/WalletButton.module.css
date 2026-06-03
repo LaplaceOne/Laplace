@@ -1,0 +1,48 @@
+.walletBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--primary-solid);
+  background: transparent;
+  color: var(--primary-solid);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: var(--fw-semibold);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.walletBtn:hover {
+  background: var(--primary-solid);
+  color: #fff;
+}
+.walletBtn.connected {
+  border-color: var(--border);
+  color: var(--text);
+  background: transparent;
+  gap: 11px;
+  padding: 0 14px;
+}
+.walletBtn.connected:hover {
+  border-color: var(--border-darker);
+  background: var(--primary-04);
+  color: var(--text);
+}
+.wdot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+}
+.waddr {
+  font-family: var(--font-mono);
+}
+.wbal {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-weight: var(--fw-medium);
+  border-left: 1px solid var(--border);
+  padding-left: 11px;
+}

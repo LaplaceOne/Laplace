@@ -1,0 +1,277 @@
+/* Lab page styles — page-specific CSS ported verbatim from lab.html's <style> block
+   (.product-panel / .pp-* / .pbadge, .verticals / .vert) and shared section CSS from
+   laplace.css (section.block padding 84px, .steps/.step*). The .arch diagram styles live
+   in the global components/diagrams/arch.css so they match the inline SVG class strings.
+   Exact values preserved. Descendant element selectors stay unhashed (CSS Modules only
+   hashes class names). */
+
+/* ---------- SECTIONS ---------- */
+.block {
+  padding: 84px 0;
+}
+
+/* ---------- STEPS (shared, laplace.css 130–136) ---------- */
+.steps {
+  border-top: 1px solid var(--border-light);
+}
+.step {
+  display: grid;
+  grid-template-columns: 60px 1fr 2fr;
+  gap: 32px;
+  padding: 34px 0;
+  border-bottom: 1px solid var(--border-light);
+  align-items: center;
+  transition: background 0.2s;
+}
+.step:hover {
+  background: var(--primary-04);
+}
+.step .n {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--primary-solid);
+}
+.step h3 {
+  font-size: 21px;
+  margin: 0;
+  font-weight: var(--fw-semibold);
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.step h3 :global(iconify-icon),
+.step h3 svg {
+  font-size: 22px;
+  color: var(--text-secondary);
+}
+.step p {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.62;
+  margin: 0;
+}
+
+/* ---------- PRODUCT PANEL (lab.html 25–47) ---------- */
+.productPanel {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 44px;
+  padding: 40px 0;
+  border-top: 1px solid var(--border-light);
+  align-items: start;
+}
+.productPanel:last-child {
+  border-bottom: 1px solid var(--border-light);
+}
+.ppLeft .pnum {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+.ppLeft h3 {
+  font-size: 26px;
+  margin: 0 0 14px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: -0.02em;
+}
+.ppMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ppMeta .row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+}
+.ppMeta .row .lbl {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  width: 78px;
+  flex-shrink: 0;
+}
+.ppMeta .crit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-pill);
+  padding: 3px 10px;
+}
+.ppMeta .crit :global(iconify-icon),
+.ppMeta .crit svg {
+  font-size: 13px;
+  color: var(--primary-solid);
+}
+.pbadge {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-pill);
+  padding: 3px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.pbadge.live {
+  color: var(--success);
+  border-color: color-mix(in srgb, var(--success) 38%, transparent);
+}
+.pbadge.live .d {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+}
+.ppRight p {
+  font-size: 15.5px;
+  line-height: 1.62;
+  color: var(--text-secondary);
+  margin: 0 0 18px;
+  max-width: 60ch;
+}
+.ppRight p strong {
+  color: var(--text);
+  font-weight: var(--fw-semibold);
+}
+.ppAdds {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 24px;
+  margin: 0 0 18px;
+  padding: 0;
+  list-style: none;
+}
+.ppAdds li {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  padding-left: 22px;
+  position: relative;
+}
+.ppAdds li::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  border: 1px solid var(--primary-solid);
+  border-radius: 50%;
+}
+.ppFlow {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+}
+.ppFlow .ft {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+.ppSteps {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text);
+}
+.ppSteps .arr {
+  color: var(--primary-solid);
+}
+.ppTrust {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.ppTrust :global(iconify-icon),
+.ppTrust svg {
+  font-size: 16px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ---------- FUTURE VERTICALS (lab.html 50–57) ---------- */
+.verticals {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--border-light);
+  border-left: 1px solid var(--border-light);
+}
+.vert {
+  padding: 28px;
+  border-right: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+  transition: background 0.2s;
+}
+.vert:hover {
+  background: var(--primary-04);
+}
+.vert .vico {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+  color: var(--primary-solid);
+  margin-bottom: 16px;
+}
+.vert .vico :global(iconify-icon),
+.vert .vico svg {
+  font-size: 20px;
+}
+.vert h4 {
+  font-size: 16px;
+  margin: 0 0 7px;
+  font-weight: var(--fw-semibold);
+}
+.vert p {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin: 0 0 12px;
+}
+.vert .vtag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: 5px;
+  padding: 2px 7px;
+}
+
+@media (max-width: 900px) {
+  .productPanel {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .ppAdds {
+    grid-template-columns: 1fr;
+  }
+  .verticals {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,14 @@
+/* Ported from app.css .countdown* lines 90–92 */
+.countdown {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: var(--fw-semibold);
+}
+
+.countdown.urgent {
+  color: var(--warn);
+}
+
+.countdown.past {
+  color: var(--text-secondary);
+}

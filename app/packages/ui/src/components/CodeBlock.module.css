@@ -1,0 +1,67 @@
+/* Port of .code, [data-theme="dark"] .code, .code__bar, .code__bar .dotrow, .code__bar .dotrow i,
+   pre.code__body, and .c/.k/.s/.n syntax spans from laplace.css lines 150–161.
+   Local names: code, bar, dotrow, body. Syntax token classes exposed via :global. */
+
+.code {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--bg-bright);
+}
+
+:global([data-theme="dark"]) .code {
+  background: var(--bg-light);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.bar :global(.label) {
+  letter-spacing: .14em;
+}
+
+.dotrow {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.dotrow i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid var(--border-dark);
+}
+
+.body {
+  margin: 0;
+  padding: 22px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--text);
+  overflow-x: auto;
+}
+
+.body :global(.c) {
+  color: var(--text-secondary);
+}
+
+.body :global(.k) {
+  color: var(--primary-solid);
+}
+
+.body :global(.s) {
+  color: var(--text);
+  border-bottom: 1px solid var(--primary-30);
+}
+
+.body :global(.n) {
+  color: var(--text);
+  font-weight: 600;
+}

@@ -139,8 +139,9 @@ interface ValidityConfigEntry {
 
 ## 5. Program IDs (status)
 
-Declared in `Anchor.toml` (localnet). Devnet addresses are filled in after deploy
-and committed to the registry per cluster:
+Declared in `Anchor.toml` and live on **localnet + devnet** (deployed; same IDs reserved
+for mainnet-beta). The program keypair fixes the address across clusters, so the registry
+uses one ID set per program:
 
 ```
 laplace  = 5ozBamUtiAHCkiipAVL9E8v8r54HqZsHMDbkHdczpidu
@@ -148,8 +149,8 @@ hashlock = DNotXVWh1ifzp9MHSd5H4F78SRHptF9p8vGfMmjtuWX2
 validity = EQfH4VFdxcFYh8prdAsB4XwKCZiiR5uta594bfiwhLsB
 ```
 
-> Action item: deploy the three programs to devnet and record the resulting
-> addresses in `@laplace/registry` under `cluster: "devnet"`.
+> Status: deployed to devnet (upgrade authority `D32VrfY9JEbXKLcbGkuTeJEoWkV24AhbzbLP3Duo1Ek7`)
+> and recorded in `@laplace/registry` under every cluster.
 
 ## 6. On-chain registry program (future, not MVP)
 

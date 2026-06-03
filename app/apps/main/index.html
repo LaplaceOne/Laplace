@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Laplace — intent-based atomic settlement</title>
+    <script>
+      // Browser shim for Node's `process` — some deps (e.g. Codama-generated SDK code)
+      // reference `process.env.NODE_ENV`. Must run before the module graph loads.
+      window.process = window.process || { env: {} };
+      // Pre-paint theme bootstrap (no FOUC). Mirrors design-reference laplace.js.
+      try {
+        var t = localStorage.getItem('laplace-theme') || 'light';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Laplace · Lab</title>
+<script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('laplace-theme')||'light');}catch(e){}</script>
+<link rel="stylesheet" href="styles/anyui-tokens.css" />
+<link rel="stylesheet" href="styles/laplace.css" />
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+  /* architecture diagram */
+  .arch { width: 100%; height: auto; color: var(--text); overflow: visible; max-width: 820px; margin: 0 auto; display: block; }
+  .arch .box { fill: none; stroke: var(--border-darker); stroke-width: 1.25; }
+  .arch .box-accent { fill: none; stroke: var(--primary-solid); stroke-width: 1.5; }
+  .arch .box-dash { fill: none; stroke: var(--border-dark); stroke-width: 1.1; stroke-dasharray: 4 4; }
+  .arch .ln { stroke: var(--border-darker); stroke-width: 1.25; fill: none; }
+  [data-theme="dark"] .arch .box, [data-theme="dark"] .arch .ln { stroke: var(--text); }
+  .arch text { fill: var(--text); font-family: var(--font-normal); }
+  .arch .t-title { font-weight: 600; font-size: 13px; }
+  .arch .t-mono { fill: var(--text-secondary); font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase; }
+  .arch .dot { fill: var(--primary-solid); }
+
+  /* product panel */
+  .product-panel { display: grid; grid-template-columns: 300px 1fr; gap: 44px; padding: 40px 0; border-top: 1px solid var(--border-light); align-items: start; }
+  .product-panel:last-child { border-bottom: 1px solid var(--border-light); }
+  .pp-left .pnum { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); margin-bottom: 16px; }
+  .pp-left h3 { font-size: 26px; margin: 0 0 14px; font-weight: var(--fw-semibold); letter-spacing: -.02em; }
+  .pp-meta { display: flex; flex-direction: column; gap: 10px; }
+  .pp-meta .row { display: flex; align-items: center; gap: 9px; font-size: 13px; }
+  .pp-meta .row .lbl { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-secondary); width: 78px; flex-shrink: 0; }
+  .pp-meta .crit { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11.5px; color: var(--text); border: 1px solid var(--border-light); border-radius: var(--radius-pill); padding: 3px 10px; }
+  .pp-meta .crit iconify-icon { font-size: 13px; color: var(--primary-solid); }
+  .pbadge { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-secondary); border: 1px solid var(--border-light); border-radius: var(--radius-pill); padding: 3px 10px; display: inline-flex; align-items: center; gap: 6px; }
+  .pbadge.live { color: var(--success); border-color: color-mix(in srgb, var(--success) 38%, transparent); }
+  .pbadge.live .d { width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
+  .pp-right p { font-size: 15.5px; line-height: 1.62; color: var(--text-secondary); margin: 0 0 18px; max-width: 60ch; }
+  .pp-right p strong { color: var(--text); font-weight: var(--fw-semibold); }
+  .pp-adds { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; margin: 0 0 18px; padding: 0; list-style: none; }
+  .pp-adds li { font-size: 13.5px; color: var(--text-secondary); line-height: 1.5; padding-left: 22px; position: relative; }
+  .pp-adds li::before { content: ''; position: absolute; left: 4px; top: 8px; width: 6px; height: 6px; border: 1px solid var(--primary-solid); border-radius: 50%; }
+  .pp-flow { border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 18px 20px; }
+  .pp-flow .ft { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px; }
+  .pp-steps { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-family: var(--font-mono); font-size: 12px; color: var(--text); }
+  .pp-steps .arr { color: var(--primary-solid); }
+  .pp-trust { display: flex; gap: 10px; margin-top: 16px; font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; }
+  .pp-trust iconify-icon { font-size: 16px; color: var(--text-secondary); flex-shrink: 0; margin-top: 1px; }
+
+  /* future verticals */
+  .verticals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1px solid var(--border-light); border-left: 1px solid var(--border-light); }
+  .vert { padding: 28px; border-right: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light); transition: background .2s; }
+  .vert:hover { background: var(--primary-04); }
+  .vert .vico { width: 40px; height: 40px; border: 1px solid var(--border); border-radius: var(--radius-sm); display: grid; place-items: center; color: var(--primary-solid); margin-bottom: 16px; }
+  .vert .vico iconify-icon { font-size: 20px; }
+  .vert h4 { font-size: 16px; margin: 0 0 7px; font-weight: var(--fw-semibold); }
+  .vert p { font-size: 13.5px; color: var(--text-secondary); line-height: 1.55; margin: 0 0 12px; }
+  .vert .vtag { font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary); border: 1px solid var(--border-light); border-radius: 5px; padding: 2px 7px; }
+
+  @media (max-width: 900px) {
+    .product-panel { grid-template-columns: 1fr; gap: 24px; }
+    .pp-adds { grid-template-columns: 1fr; }
+    .verticals { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-inner">
+    <a class="brand" href="index.html" style="text-decoration:none;">
+      <svg class="mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="4" y="4" width="40" height="40" rx="13" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M31 14.5c-3.2 0-4.4 2-5 5.3l-2.4 8.4c-.6 3.3-1.8 5.3-5 5.3" stroke="var(--primary-solid)" stroke-width="1.9" stroke-linecap="round"/>
+        <circle cx="31" cy="14.5" r="2" fill="var(--primary-solid)"/>
+        <circle cx="18.6" cy="33.5" r="2" fill="var(--primary-solid)"/>
+      </svg>
+      Laplace
+    </a>
+    <div class="nav-links">
+      <a href="docs.html">Docs</a>
+      <a href="lab.html" aria-current="page">Lab</a>
+      <a href="registry.html">Registry</a>
+    </div>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme"><iconify-icon icon="eva:moon-outline"></iconify-icon></button>
+      <a class="btn btn--accent" href="app.html">Launch console <iconify-icon icon="eva:arrow-forward-outline"></iconify-icon></a>
+    </div>
+  </div>
+</nav>
+
+<header class="page-head">
+  <div class="wrap">
+    <span class="eyebrow label"><span class="tick"></span> Laplace Lab · the app family</span>
+    <h1>One protocol.<br>A family of <em>products.</em></h1>
+    <p>Laplace is not a single app. It's a small, auditable escrow core with a pluggable criterion interface — and a family of front-ends built on a shared SDK. The protocol stays general; each product stays narrow, hiding the protocol behind one polished use case.</p>
+  </div>
+</header>
+
+<section class="block" style="padding-bottom: 56px;">
+  <div class="wrap">
+    <div class="sec-head reveal" style="margin-bottom: 40px;">
+      <div><span class="label">Architecture</span><h2 class="sec-title">Built on shared layers.</h2></div>
+      <p class="sec-sub">New use cases become new criteria and new front-ends — never forks of the escrow core. The SDK, criterion registry, and design system are shared across every product.</p>
+    </div>
+    <svg class="arch reveal" viewBox="0 0 800 320" role="img" aria-label="Laplace product architecture">
+      <!-- protocol core -->
+      <rect class="box" x="250" y="14" width="300" height="50" rx="10"/>
+      <text class="t-title" x="400" y="36" text-anchor="middle">Laplace Protocol</text>
+      <text class="t-mono" x="400" y="52" text-anchor="middle">escrow core · criterion programs</text>
+      <path class="ln" d="M400 64 V104"/>
+      <!-- shared layer -->
+      <rect class="box-accent" x="190" y="104" width="420" height="50" rx="10"/>
+      <text class="t-title" x="400" y="126" text-anchor="middle" style="fill:var(--primary-solid)">Shared SDK · criterion registry · design system</text>
+      <text class="t-mono" x="400" y="142" text-anchor="middle">one typed interface to the chain</text>
+      <!-- fan -->
+      <path class="ln" d="M400 154 V184 M100 184 H700 M100 184 V214 M300 184 V214 M500 184 V214 M700 184 V214"/>
+      <circle class="dot" cx="400" cy="184" r="3.5"/>
+      <!-- products -->
+      <rect class="box" x="18" y="214" width="164" height="88" rx="10"/>
+      <text class="t-title" x="100" y="248" text-anchor="middle">Main site</text>
+      <text class="t-title" x="100" y="265" text-anchor="middle">&amp; Console</text>
+      <text class="t-mono" x="100" y="285" text-anchor="middle" style="fill:var(--success)">live · devnet</text>
+
+      <rect class="box" x="218" y="214" width="164" height="88" rx="10"/>
+      <text class="t-title" x="300" y="256" text-anchor="middle">Laplace Bridge</text>
+      <text class="t-mono" x="300" y="285" text-anchor="middle">hashlock</text>
+
+      <rect class="box" x="418" y="214" width="164" height="88" rx="10"/>
+      <text class="t-title" x="500" y="248" text-anchor="middle">Laplace</text>
+      <text class="t-title" x="500" y="265" text-anchor="middle">Disclosure</text>
+      <text class="t-mono" x="500" y="285" text-anchor="middle">validity · sp1</text>
+
+      <rect class="box-dash" x="618" y="214" width="164" height="88" rx="10"/>
+      <text class="t-title" x="700" y="256" text-anchor="middle" style="fill:var(--text-secondary)">Future verticals</text>
+      <text class="t-mono" x="700" y="285" text-anchor="middle">defi · investor</text>
+    </svg>
+  </div>
+</section>
+
+<section class="block" id="products" style="padding-top: 0;">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div><span class="label">Products</span><h2 class="sec-title">Three faces, shipping<br>in sequence.</h2></div>
+      <p class="sec-sub">The main site exposes every criterion for developers and power users. Each spin-off hides the protocol behind one focused product for end users.</p>
+    </div>
+
+    <!-- Main site & Console -->
+    <div class="product-panel reveal">
+      <div class="pp-left">
+        <div class="pnum">01</div>
+        <h3>Main site &amp; Console</h3>
+        <div class="pp-meta">
+          <div class="row"><span class="lbl">Status</span><span class="pbadge live"><span class="d"></span>Live · devnet</span></div>
+          <div class="row"><span class="lbl">Criteria</span><span class="crit"><iconify-icon icon="eva:hash-outline"></iconify-icon>Hashlock</span><span class="crit"><iconify-icon icon="eva:shield-outline"></iconify-icon>Validity</span></div>
+          <div class="row"><span class="lbl">For</span><span style="color:var(--text-secondary);">Developers · power users</span></div>
+        </div>
+      </div>
+      <div class="pp-right">
+        <p>The protocol's home: marketing landing, developer documentation, the criterion catalog, and a <strong>general protocol console</strong>. It supports SOL and SPL escrow, both official criteria, and the full intent lifecycle — create, track, fulfill, refund, close — plus manual per-instruction operations and criterion configuration.</p>
+        <ul class="pp-adds">
+          <li>Role-aware dashboard of every intent</li>
+          <li>Recipe-driven intent creation</li>
+          <li>Manual per-instruction console</li>
+          <li>ValidityConfig registration</li>
+        </ul>
+        <div class="pp-flow">
+          <div class="ft">Lifecycle</div>
+          <div class="pp-steps"><span>create_intent</span><span class="arr">→</span><span>fulfill | refund</span><span class="arr">→</span><span>close_intent</span></div>
+        </div>
+        <div style="margin-top:18px;"><a class="btn btn--accent" href="app.html">Launch console <iconify-icon icon="eva:arrow-forward-outline"></iconify-icon></a></div>
+      </div>
+    </div>
+
+    <!-- Bridge -->
+    <div class="product-panel reveal">
+      <div class="pp-left">
+        <div class="pnum">02</div>
+        <h3>Laplace Bridge</h3>
+        <div class="pp-meta">
+          <div class="row"><span class="lbl">Status</span><span class="pbadge">Roadmap</span></div>
+          <div class="row"><span class="lbl">Criterion</span><span class="crit"><iconify-icon icon="eva:hash-outline"></iconify-icon>Hashlock</span></div>
+          <div class="row"><span class="lbl">For</span><span style="color:var(--text-secondary);">Cross-chain traders</span></div>
+        </div>
+      </div>
+      <div class="pp-right">
+        <p>A cross-chain atomic swap product. Two chains that both run Laplace swap tokens using a <strong>shared hashlock and asymmetric timeouts</strong>: Alice locks on chain A with hashlock <span class="mono" style="color:var(--text)">h</span>, Bob mirrors on chain B, Alice reveals the secret to claim, and Bob uses the revealed secret to claim back.</p>
+        <ul class="pp-adds">
+          <li>Counterparty &amp; offer discovery</li>
+          <li>Relayer nodes propagate the reveal</li>
+          <li>Timeout / finality safety rails</li>
+          <li>Guided two-leg swap UI</li>
+        </ul>
+        <div class="pp-flow">
+          <div class="ft">Atomic swap</div>
+          <div class="pp-steps"><span>lock A (h)</span><span class="arr">→</span><span>mirror B (h)</span><span class="arr">→</span><span>reveal s</span><span class="arr">→</span><span>both claim</span></div>
+        </div>
+        <div class="pp-trust"><iconify-icon icon="eva:info-outline"></iconify-icon><span>Relayers are liveness helpers, not custodians — safety rests on the hashlock and the rule <span class="mono">T_A &gt; T_B + margins</span>. Revealing the secret is public by design.</span></div>
+      </div>
+    </div>
+
+    <!-- Disclosure -->
+    <div class="product-panel reveal">
+      <div class="pp-left">
+        <div class="pnum">03</div>
+        <h3>Laplace Disclosure</h3>
+        <div class="pp-meta">
+          <div class="row"><span class="lbl">Status</span><span class="pbadge">Roadmap</span></div>
+          <div class="row"><span class="lbl">Criterion</span><span class="crit"><iconify-icon icon="eva:shield-outline"></iconify-icon>Validity · SP1</span></div>
+          <div class="row"><span class="lbl">For</span><span style="color:var(--text-secondary);">Data &amp; secret sellers</span></div>
+        </div>
+      </div>
+      <div class="pp-right">
+        <p>Buy a verifiable secret. A seller is paid <strong>only after publishing an encrypted secret and an SP1 proof</strong> that the plaintext satisfies the buyer's criteria and is bound to that exact ciphertext. The buyer decrypts locally after settlement. Targets data sales, key escrow, and bounty-style disclosures.</p>
+        <ul class="pp-adds">
+          <li>Proof binds plaintext ↔ ciphertext</li>
+          <li>Encryption keys separate from wallet</li>
+          <li>Large files off-chain, hash-committed</li>
+          <li>Refund if the proof never lands</li>
+        </ul>
+        <div class="pp-flow">
+          <div class="ft">Disclosure</div>
+          <div class="pp-steps"><span>escrow payment</span><span class="arr">→</span><span>publish ciphertext + proof</span><span class="arr">→</span><span>release</span><span class="arr">→</span><span>decrypt</span></div>
+        </div>
+        <div class="pp-trust"><iconify-icon icon="eva:info-outline"></iconify-icon><span>The SP1 guest proves <span class="mono">criteria(secret) ∧ ciphertext_hash == hash(encrypt(secret, …))</span> with intent fields in the public inputs, so the seller can't prove one plaintext and publish another.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="future" style="padding-top: 0;">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div><span class="label">Future verticals</span><h2 class="sec-title">Where the model goes.</h2></div>
+      <p class="sec-sub">Directional, dependent on future criteria (signature, multi-criterion, cross-chain proof). Each is a criterion plus a front-end — never a fork of settlement.</p>
+    </div>
+    <div class="verticals reveal">
+      <div class="vert"><div class="vico"><iconify-icon icon="eva:swap-outline"></iconify-icon></div><h4>Conditional OTC settlement</h4><p>Large trades that settle only when an agreed, verifiable condition holds — with refund fallback. Removes counterparty custody risk.</p><span class="vtag">signature · proof</span></div>
+      <div class="vert"><div class="vico"><iconify-icon icon="eva:pie-chart-outline"></iconify-icon></div><h4>Escrowed options</h4><p>Payout gated by a proof of a reference value or event; expiry as option expiry; refund when unexercised.</p><span class="vtag">validity</span></div>
+      <div class="vert"><div class="vico"><iconify-icon icon="eva:award-outline"></iconify-icon></div><h4>Proof-gated grants</h4><p>Funds released when a claimant proves they met objective criteria — reducing manual adjudication for bounties and grants.</p><span class="vtag">validity</span></div>
+      <div class="vert"><div class="vico"><iconify-icon icon="eva:globe-outline"></iconify-icon></div><h4>Cross-chain liquidity routing</h4><p>Bridge generalized to multi-hop atomic swaps with asymmetric timeouts and ZK attestations for trust-minimized relaying.</p><span class="vtag">cross-chain proof</span></div>
+      <div class="vert"><div class="vico"><iconify-icon icon="eva:checkmark-circle-2-outline"></iconify-icon></div><h4>Compliance-gated disbursement</h4><p>Release only on a proof of an off-chain attestation (KYC/AML, audit) — without revealing the underlying data on-chain.</p><span class="vtag">validity</span></div>
+      <div class="vert"><div class="vico"><iconify-icon icon="eva:cube-outline"></iconify-icon></div><h4>Public unlock / puzzle</h4><p>Pay a fixed receiver when any party reveals a committed secret — built directly on the console, no spin-off needed.</p><span class="vtag">hashlock</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="born" style="padding-top: 0;">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div><span class="label">How a product is born</span><h2 class="sec-title">Add a criterion,<br>add a face.</h2></div>
+      <p class="sec-sub">Every product above reuses the identical lifecycle and the identical <span class="mono" style="color:var(--text)">verify_criterion</span> CPI boundary. The differences live entirely in the criterion, the commitment, and the fulfillment payload.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><span class="n">01</span><h3>Author the criterion</h3><p>Deploy a program implementing <span class="mono" style="color:var(--text)">verify_criterion</span> (out-of-band, via CLI/SDK). For stateful criteria, define the config account and commitment hashing.</p></div>
+      <div class="step reveal"><span class="n">02</span><h3>Register it</h3><p>Add a descriptor to <span class="mono" style="color:var(--text)">@laplace/registry</span> — per-cluster program IDs, flags, warnings, docs. The core never whitelists; the UI labels anything unofficial.</p></div>
+      <div class="step reveal"><span class="n">03</span><h3>Give it a face</h3><p>Add a recipe to the console, or spin off a dedicated product. Either way it rides the same SDK, lifecycle, and design system — settlement is never rebuilt.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="cta-line"></div>
+      <h2>Build on the <em>protocol</em>.</h2>
+      <p>Start in the console with hashlock and validity today, or read how to author a criterion and ship a new face of Laplace.</p>
+      <div class="cta-btns">
+        <a class="btn btn--accent btn--lg" href="app.html">Launch console <iconify-icon icon="eva:arrow-forward-outline"></iconify-icon></a>
+        <a class="btn btn--lg" href="docs.html">Read the docs</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="index.html" style="text-decoration:none; margin-bottom:16px;">
+          <svg class="mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="width:28px;height:28px;">
+            <rect x="4" y="4" width="40" height="40" rx="13" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M31 14.5c-3.2 0-4.4 2-5 5.3l-2.4 8.4c-.6 3.3-1.8 5.3-5 5.3" stroke="var(--primary-solid)" stroke-width="1.9" stroke-linecap="round"/>
+            <circle cx="31" cy="14.5" r="2" fill="var(--primary-solid)"/><circle cx="18.6" cy="33.5" r="2" fill="var(--primary-solid)"/>
+          </svg> Laplace
+        </a>
+        <p style="font-size:13.5px; color:var(--text-secondary); max-width:25em; line-height:1.6;">Intent-based atomic settlement on Solana. Devnet · SOL + SPL · hashlock &amp; validity criteria.</p>
+      </div>
+      <div><h4>Docs</h4><a href="docs.html#lifecycle">Lifecycle</a><a href="docs.html#interface">Criterion interface</a><a href="docs.html#hashlock">Hashlock</a><a href="docs.html#validity">Validity</a></div>
+      <div><h4>Build</h4><a href="docs.html#quickstart">SDK quickstart</a><a href="docs.html#programs">Program IDs</a><a href="app.html">Console</a><a href="https://github.com/LaplaceOne/Laplace" target="_blank" rel="noopener">GitHub</a></div>
+      <div><h4>Lab</h4><a href="lab.html#products">Console</a><a href="lab.html#products">Laplace Bridge</a><a href="lab.html#products">Laplace Disclosure</a><a href="lab.html#future">Future verticals</a></div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 laplace protocol</span>
+      <span>devnet · SOL + SPL</span>
+    </div>
+  </div>
+</footer>
+
+<script src="styles/bg.js"></script>
+<script src="styles/laplace.js"></script>
+</body>
+</html>

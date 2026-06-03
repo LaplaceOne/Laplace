@@ -1,0 +1,325 @@
+/* Landing page styles — ported from laplace.css (hero/principles/steps/build/code)
+   and index.html's landing-only <style> block (crit2/products/statline).
+   Exact values preserved. */
+
+/* ---------- HERO ---------- */
+.hero {
+  padding: 90px 0 78px;
+}
+.heroGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+.heroTitle {
+  font-size: clamp(40px, 5vw, 58px);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  margin: 0 0 26px;
+  font-weight: var(--fw-semibold);
+}
+.heroTitle em {
+  font-style: normal;
+  color: var(--primary-solid);
+}
+.heroSub {
+  font-size: 18px;
+  line-height: 1.62;
+  color: var(--text-secondary);
+  max-width: 32em;
+  margin: 0 0 34px;
+  font-weight: var(--fw-regular);
+}
+.heroCta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ---------- SECTIONS ---------- */
+.block {
+  padding: 84px 0;
+}
+
+/* ---------- GUARANTEES strip ---------- */
+.principles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--border-light);
+}
+.principle {
+  padding: 38px 34px 38px 0;
+}
+.principle + .principle {
+  border-left: 1px solid var(--border-light);
+  padding-left: 34px;
+}
+.pico {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+  color: var(--primary-solid);
+  margin-bottom: 22px;
+  transition: border-color 0.2s;
+}
+.principle:hover .pico {
+  border-color: var(--primary-40);
+}
+.pico :global(iconify-icon),
+.pico svg {
+  font-size: 22px;
+}
+.principle h3 {
+  font-size: 19px;
+  margin: 0 0 9px;
+  font-weight: var(--fw-semibold);
+}
+.principle p {
+  font-size: 14.5px;
+  color: var(--text-secondary);
+  line-height: 1.62;
+  margin: 0;
+}
+
+/* ---------- STEPS ---------- */
+.steps {
+  border-top: 1px solid var(--border-light);
+}
+.step {
+  display: grid;
+  grid-template-columns: 60px 1fr 2fr;
+  gap: 32px;
+  padding: 34px 0;
+  border-bottom: 1px solid var(--border-light);
+  align-items: center;
+  transition: background 0.2s;
+}
+.step:hover {
+  background: var(--primary-04);
+}
+.step .n {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--primary-solid);
+}
+.step h3 {
+  font-size: 21px;
+  margin: 0;
+  font-weight: var(--fw-semibold);
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.step h3 :global(iconify-icon),
+.step h3 svg {
+  font-size: 22px;
+  color: var(--text-secondary);
+}
+.step p {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.62;
+  margin: 0;
+}
+
+/* ---------- CRITERIA grid (2 cells) ---------- */
+.crit2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-top: 1px solid var(--border-light);
+  border-left: 1px solid var(--border-light);
+}
+.crit2 .cell {
+  padding: 34px;
+  border-right: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+  transition: background 0.2s;
+}
+.crit2 .cell:hover {
+  background: var(--primary-04);
+}
+.crit2 .cell .top {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 14px;
+}
+.crit2 .cell .ico {
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+  color: var(--primary-solid);
+}
+.crit2 .cell .ico :global(iconify-icon),
+.crit2 .cell .ico svg {
+  font-size: 23px;
+}
+.crit2 .cell h3 {
+  font-size: 20px;
+  margin: 0;
+  font-weight: var(--fw-semibold);
+}
+.crit2 .cell .tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-pill);
+  padding: 3px 9px;
+  margin-left: auto;
+}
+.crit2 .cell p {
+  font-size: 14.5px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0 0 14px;
+}
+.crit2 .cell code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text);
+  border: 1px solid var(--border-light);
+  padding: 4px 9px;
+  border-radius: 5px;
+}
+.futureNote {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-top: 22px;
+}
+.futureNote strong {
+  color: var(--text);
+  font-weight: var(--fw-semibold);
+}
+
+/* ---------- PRODUCTS ---------- */
+.products {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+.product {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  transition: border-color 0.2s, transform 0.2s;
+  text-decoration: none;
+  display: block;
+  color: inherit;
+}
+.product:hover {
+  border-color: var(--primary-40);
+  transform: translateY(-3px);
+}
+.product .pbadge {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-pill);
+  padding: 3px 9px;
+  display: inline-block;
+  margin-bottom: 16px;
+}
+.product .pbadge.live {
+  color: var(--success);
+  border-color: color-mix(in srgb, var(--success) 38%, transparent);
+}
+.product h3 {
+  font-size: 19px;
+  margin: 0 0 8px;
+  font-weight: var(--fw-semibold);
+}
+.product p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ---------- BUILD / DEVELOPERS ---------- */
+.buildGrid {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 56px;
+  align-items: center;
+}
+.buildTitle {
+  margin: 16px 0 18px;
+}
+.buildSub {
+  margin-bottom: 28px;
+}
+.buildBtns {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ---------- STAT STRIP ---------- */
+.statline {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.statline .s {
+  padding: 24px 26px;
+  border-right: 1px solid var(--border-light);
+}
+.statline .s:last-child {
+  border-right: 0;
+}
+.statline .s .k {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+.statline .s .v {
+  font-size: 30px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: -0.02em;
+}
+.statline .s .v small {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: var(--fw-medium);
+  margin-left: 4px;
+}
+
+@media (max-width: 900px) {
+  .heroGrid {
+    grid-template-columns: 1fr;
+  }
+  .principles {
+    grid-template-columns: 1fr;
+  }
+  .crit2,
+  .products {
+    grid-template-columns: 1fr;
+  }
+  .buildGrid {
+    grid-template-columns: 1fr;
+  }
+  .statline {
+    grid-template-columns: 1fr 1fr;
+  }
+}

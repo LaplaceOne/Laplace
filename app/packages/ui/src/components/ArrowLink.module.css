@@ -1,0 +1,22 @@
+/* Port of .arrow-link, .arrow-link iconify-icon (→ svg), .arrow-link:hover iconify-icon
+   from laplace.css lines 63–65. */
+
+.arrowLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  font-weight: var(--fw-semibold);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.arrowLink svg {
+  font-size: 16px;
+  transition: transform .2s;
+  color: var(--primary-solid);
+}
+
+.arrowLink:hover svg {
+  transform: translateX(4px);
+}

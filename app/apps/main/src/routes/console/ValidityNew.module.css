@@ -1,0 +1,132 @@
+/* ValidityNew — ports .panel and .field* from prototype app.css */
+
+.panel {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 26px;
+}
+
+.panel + .panel {
+  margin-top: 18px;
+}
+
+.panel h2 {
+  font-size: 13px;
+  font-family: var(--font-mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 0 0 18px;
+  font-weight: var(--fw-medium);
+}
+
+/* field */
+.field {
+  margin-bottom: 16px;
+}
+
+.field label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  height: 42px;
+  padding: 0 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-bright);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+[data-theme="dark"] .field input,
+[data-theme="dark"] .field select,
+[data-theme="dark"] .field textarea {
+  background: var(--bg-light);
+}
+
+.field textarea {
+  height: auto;
+  padding: 12px 13px;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 78px;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--primary-80);
+  box-shadow: 0 0 0 3px var(--primary-12);
+}
+
+.hint {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  margin-top: 7px;
+  line-height: 1.45;
+}
+
+/* result section */
+.resultPanel {
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid var(--border-light);
+}
+
+.resultPanel h2 {
+  font-size: 13px;
+  font-family: var(--font-mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 0 0 18px;
+  font-weight: var(--fw-medium);
+}
+
+/* share row — ports .share-row from app.css */
+.shareRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.shareRow input {
+  flex: 1;
+  height: 42px;
+  padding: 0 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-bright);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+[data-theme="dark"] .shareRow input {
+  background: var(--bg-light);
+}
+
+.shareRow input:focus {
+  outline: none;
+  border-color: var(--primary-80);
+  box-shadow: 0 0 0 3px var(--primary-12);
+}
+
+.actBtn {
+  flex-shrink: 0;
+  height: 42px;
+}

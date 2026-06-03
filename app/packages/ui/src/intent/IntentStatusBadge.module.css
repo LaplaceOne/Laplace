@@ -1,0 +1,47 @@
+/* Ported from app.css .sbadge* lines 81–87 */
+.sbadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: var(--fw-semibold);
+  padding: 5px 11px;
+  border-radius: var(--radius-pill);
+  border: 1px solid;
+  letter-spacing: .01em;
+}
+
+.sd {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.active {
+  color: var(--info);
+  border-color: color-mix(in srgb, var(--info) 35%, transparent);
+  background: color-mix(in srgb, var(--info) 9%, transparent);
+}
+
+.expiring {
+  color: var(--warn);
+  border-color: color-mix(in srgb, var(--warn) 38%, transparent);
+  background: color-mix(in srgb, var(--warn) 11%, transparent);
+}
+
+.fulfilled {
+  color: var(--success);
+  border-color: color-mix(in srgb, var(--success) 38%, transparent);
+  background: color-mix(in srgb, var(--success) 10%, transparent);
+}
+
+.refunded {
+  color: var(--text-secondary);
+  border-color: var(--border);
+}
+
+.closed {
+  color: var(--text-disabled);
+  border-color: var(--border-light);
+}

@@ -1,0 +1,121 @@
+/* Nav — ported from laplace.css lines 34–49 */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--bg-bright) 86%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border-light);
+}
+
+:global([data-theme="dark"]) .nav {
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  height: 72px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-weight: var(--fw-semibold);
+  font-size: 18px;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  color: inherit;
+}
+
+.mark {
+  width: 30px;
+  height: 30px;
+  color: var(--text);
+}
+
+.links {
+  display: flex;
+  gap: 26px;
+  margin-left: 14px;
+}
+
+.links a {
+  font-size: 14px;
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 4px 0;
+  position: relative;
+  transition: color 0.15s;
+}
+
+.links a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 100%;
+  bottom: -2px;
+  height: 1px;
+  background: var(--primary-solid);
+  transition: right 0.25s ease;
+}
+
+.links a:hover {
+  color: var(--text);
+}
+
+.links a:hover::after {
+  right: 0;
+}
+
+.links a[aria-current="page"] {
+  color: var(--text);
+}
+
+.links a[aria-current="page"]::after {
+  right: 0;
+}
+
+/* active NavLink maps to aria-current underline */
+.links a.active {
+  color: var(--text);
+}
+
+.links a.active::after {
+  right: 0;
+}
+
+.right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+:global(.theme-toggle) {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+:global(.theme-toggle):hover {
+  color: var(--text);
+  border-color: var(--border-darker);
+}
+
+:global(.theme-toggle) svg {
+  font-size: 19px;
+  width: 19px;
+  height: 19px;
+}
