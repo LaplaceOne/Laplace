@@ -1,7 +1,18 @@
 import { render, screen } from '@testing-library/react';
-import { App } from './App';
+import { createMemoryRouter, RouterProvider } from 'react-router-dom';
+import { ThemeProvider } from '@laplace/ui';
+import { SiteLayout } from './layouts/SiteLayout';
+import Landing from './routes/Landing';
+import Docs from './routes/Docs';
 
-test('App renders the root', () => {
-  render(<App />);
-  expect(screen.getByTestId('app-root')).toBeInTheDocument();
+test('renders the docs route under the site layout', () => {
+  const router = createMemoryRouter(
+    [{ element: <SiteLayout />, children: [
+      { path: '/', element: <Landing /> },
+      { path: '/docs', element: <Docs /> },
+    ] }],
+    { initialEntries: ['/docs'] },
+  );
+  render(<ThemeProvider><RouterProvider router={router} /></ThemeProvider>);
+  expect(screen.getByRole('heading', { name: /docs/i, level: 1 })).toBeInTheDocument();
 });
