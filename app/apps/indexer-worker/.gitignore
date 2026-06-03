@@ -1,0 +1,11 @@
+# Local secrets (RPC keys, etc.) — NEVER commit. Use `wrangler secret put` for deployed secrets.
+.dev.vars
+.dev.vars.*
+
+# Wrangler local state (D1 cache, build cache).
+.wrangler/
+
+# Per-environment config holding real resource ids (database_id, account_id). Public repo →
+# keep ids out of git; copy wrangler.toml → wrangler.prod.toml, fill ids, deploy with `-c`.
+wrangler.prod.toml
+wrangler.*.local.toml

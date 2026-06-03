@@ -1,8 +1,14 @@
 # Cloudflare Worker: Laplace indexer (D1 + cron ingest + read API).
-#   1. wrangler d1 create laplace-indexer        → paste database_id below
-#   2. wrangler d1 migrations apply laplace-indexer --remote
-#   3. (optional) wrangler secret put LAPLACE_RPC_URL   → a dedicated devnet RPC
-#   4. wrangler deploy
+#
+# COMMITTED TEMPLATE — config only, no secrets, database_id is a placeholder. For a public repo,
+# keep real resource ids out of git: copy this to wrangler.prod.toml (gitignored), fill the id,
+# and pass `-c wrangler.prod.toml` to wrangler. Secrets (e.g. an RPC URL with an API key) go via
+# `wrangler secret put` — NEVER in this file.
+#
+#   1. wrangler d1 create laplace-indexer                 # → copy database_id into wrangler.prod.toml
+#   2. wrangler d1 migrations apply laplace-indexer --remote -c wrangler.prod.toml
+#   3. wrangler secret put LAPLACE_RPC_URL -c wrangler.prod.toml      # optional, dedicated RPC
+#   4. wrangler deploy -c wrangler.prod.toml
 # Then set the frontend's VITE_INDEXER_URL to the deployed worker URL.
 name = "laplace-indexer"
 main = "src/index.ts"
