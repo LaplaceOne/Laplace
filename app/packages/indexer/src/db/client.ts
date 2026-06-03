@@ -6,11 +6,18 @@ import { migrate as migratePglite } from 'drizzle-orm/pglite/migrator';
 import postgres from 'postgres';
 import { PGlite } from '@electric-sql/pglite';
 import { fileURLToPath } from 'node:url';
+import { existsSync } from 'node:fs';
 import * as schema from './schema.js';
 
 export type Db = PgDatabase<PgQueryResultHKT, typeof schema>;
 
-const MIGRATIONS = fileURLToPath(new URL('../../drizzle', import.meta.url));
+// `drizzle/` lives at the package root. From source this file is src/db/client.ts (../../drizzle);
+// the tsup-bundled chunk sits in dist/ (../drizzle). Pick whichever exists so the test runner
+// (source) and the published bins (dist) both resolve migrations.
+const MIGRATIONS =
+  [new URL('../../drizzle', import.meta.url), new URL('../drizzle', import.meta.url)]
+    .map((u) => fileURLToPath(u))
+    .find(existsSync) ?? fileURLToPath(new URL('../../drizzle', import.meta.url));
 
 function isPostgres(url: string): boolean {
   return url.startsWith('postgres://') || url.startsWith('postgresql://');

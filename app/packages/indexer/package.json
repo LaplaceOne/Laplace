@@ -10,6 +10,7 @@
   "bin": {
     "laplace-indexer": "./dist/bin/indexer.js",
     "laplace-indexer-api": "./dist/bin/api.js",
+    "laplace-indexer-dev": "./dist/bin/dev.js",
     "laplace-reproject": "./dist/bin/reproject.js"
   },
   "scripts": {
