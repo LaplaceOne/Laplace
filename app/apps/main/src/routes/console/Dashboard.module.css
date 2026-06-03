@@ -1,0 +1,44 @@
+/* ============================================================
+   Console Dashboard — ported from app.css
+   .app-head / .statstrip / .stat / .toolbar / .segmented /
+   .chips / .chip / .intent-grid / .empty
+   ============================================================ */
+
+/* ---------- HEAD ---------- */
+.head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 26px; flex-wrap: wrap; }
+.head h1 { font-size: 30px; margin: 0 0 6px; font-weight: var(--fw-semibold); letter-spacing: -.02em; }
+.head p { margin: 0; font-size: 14.5px; color: var(--text-secondary); }
+
+/* ---------- STAT STRIP ---------- */
+.statstrip { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--border-light); border-radius: var(--radius-md); overflow: hidden; margin-bottom: 28px; }
+.stat { padding: 18px 22px; border-right: 1px solid var(--border-light); }
+.stat:last-child { border-right: 0; }
+.k { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 8px; }
+.v { font-size: 24px; font-weight: var(--fw-semibold); letter-spacing: -.01em; }
+.v small { font-size: 13px; color: var(--text-secondary); font-weight: var(--fw-medium); margin-left: 4px; }
+
+/* ---------- TOOLBAR ---------- */
+.toolbar { display: flex; align-items: center; gap: 16px; margin-bottom: 22px; flex-wrap: wrap; }
+.segmented { display: inline-flex; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+.segmented button { font-family: inherit; font-size: 13px; font-weight: var(--fw-medium); color: var(--text-secondary); background: transparent; border: 0; border-right: 1px solid var(--border); padding: 8px 14px; cursor: pointer; transition: background .15s, color .15s; }
+.segmented button:last-child { border-right: 0; }
+.segmented button:hover { color: var(--text); background: var(--primary-04); }
+.segmented button.active { background: var(--primary-solid); color: #fff; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
+.chip { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); border: 1px solid var(--border); background: transparent; border-radius: var(--radius-pill); padding: 6px 13px; cursor: pointer; transition: all .15s; display: inline-flex; align-items: center; gap: 7px; }
+.chip:hover { color: var(--text); border-color: var(--border-darker); }
+.chip.chipActive { color: var(--text); border-color: var(--text); }
+
+/* ---------- INTENT GRID ---------- */
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+/* ---------- EMPTY STATE ---------- */
+.empty { border: 1px dashed var(--border); border-radius: var(--radius-lg); padding: 64px 24px; text-align: center; }
+.empty svg { font-size: 40px; color: var(--text-secondary); }
+.empty h3 { font-size: 18px; margin: 16px 0 6px; font-weight: var(--fw-semibold); }
+.empty p { font-size: 14px; color: var(--text-secondary); margin: 0 0 20px; }
+
+@media (max-width: 900px) {
+  .grid { grid-template-columns: 1fr; }
+  .statstrip { grid-template-columns: 1fr 1fr; }
+}
