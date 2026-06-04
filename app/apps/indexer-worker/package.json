@@ -1,5 +1,5 @@
 {
-  "name": "@laplace/indexer-worker",
+  "name": "@laplace-one/indexer-worker",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -11,14 +11,14 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
-    "@laplace/registry": "*",
-    "@laplace/sdk": "*",
+    "@laplace-one/registry": "*",
+    "@laplace-one/sdk": "*",
     "@solana/kit": "^6.0.0",
     "drizzle-orm": "^0.36.0",
     "hono": "^4.6.0"
   },
   "devDependencies": {
-    "@laplace/config": "*",
+    "@laplace-one/config": "*",
     "@cloudflare/workers-types": "^4.20260603.0",
     "typescript": "^5.7.3",
     "wrangler": "^4.0.0"

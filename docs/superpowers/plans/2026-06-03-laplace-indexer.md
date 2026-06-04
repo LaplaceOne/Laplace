@@ -2,23 +2,23 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build `@laplace/indexer` — a TypeScript service that ingests Laplace lifecycle events from the chain (cursor-based RPC polling), stores them event-sourced in Postgres, and serves typed reads via a query module + thin HTTP API.
+**Goal:** Build `@laplace-one/indexer` — a TypeScript service that ingests Laplace lifecycle events from the chain (cursor-based RPC polling), stores them event-sourced in Postgres, and serves typed reads via a query module + thin HTTP API.
 
 **Architecture:** Poll `getSignaturesForAddress` for the laplace + validity program IDs → `getTransaction` logs → decode with the SDK's `parseLaplaceEvents` → append to an idempotent `events` table → fold into `intents`/`validity_configs` projections → expose via a typed query module and a Hono read API.
 
-**Tech Stack:** TypeScript (ESM), `@laplace/sdk` + `@laplace/registry`, `@solana/kit`, Drizzle ORM (`pg-core`), Postgres (`postgres.js`) for prod and **pglite** (`@electric-sql/pglite`, in-process Postgres) for dev/test, Hono for the read API, vitest.
+**Tech Stack:** TypeScript (ESM), `@laplace-one/sdk` + `@laplace-one/registry`, `@solana/kit`, Drizzle ORM (`pg-core`), Postgres (`postgres.js`) for prod and **pglite** (`@electric-sql/pglite`, in-process Postgres) for dev/test, Hono for the read API, vitest.
 
 **Spec:** `docs/superpowers/specs/2026-06-03-laplace-indexer-design.md`
 
 **Design note (deviation from spec §2.3):** the spec said "same Drizzle schema on Postgres and SQLite," but Drizzle's `pg-core` and `sqlite-core` are distinct builders — one schema can't target both. We use a single `pg-core` schema with **pglite** (real Postgres in WASM) for dev/test and `postgres.js` for prod. Strictly better than SQLite (identical SQL semantics in tests), still zero-ops locally.
 
-**Conventions (match existing packages):** ESM, `type: module`; tsconfig extends `@laplace/config/tsconfig.lib.json`; tsup via `@laplace/config/tsup`; vitest `include: ['test/**/*.test.ts']`; `tsconfig.base.json` has `strict` + `noUncheckedIndexedAccess` + `verbatimModuleSyntax` (so use `import type` for types). Run npm from `app/`: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app ...`. If an installed package's export name differs from this plan, read `node_modules/<pkg>` and adjust the import (do not invent).
+**Conventions (match existing packages):** ESM, `type: module`; tsconfig extends `@laplace-one/config/tsconfig.lib.json`; tsup via `@laplace-one/config/tsup`; vitest `include: ['test/**/*.test.ts']`; `tsconfig.base.json` has `strict` + `noUncheckedIndexedAccess` + `verbatimModuleSyntax` (so use `import type` for types). Run npm from `app/`: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app ...`. If an installed package's export name differs from this plan, read `node_modules/<pkg>` and adjust the import (do not invent).
 
 **Branch:** `feat/indexer` (already created off `feat/lifecycle-events`, which carries the SDK `parseLaplaceEvents` this depends on).
 
 ---
 
-### Task 1: Scaffold the `@laplace/indexer` package
+### Task 1: Scaffold the `@laplace-one/indexer` package
 
 **Files:**
 - Create: `app/packages/indexer/package.json`, `tsconfig.json`, `tsup.config.ts`, `vitest.config.ts`
@@ -28,7 +28,7 @@
 - [ ] **Step 1: Create `package.json`**
 ```json
 {
-  "name": "@laplace/indexer",
+  "name": "@laplace-one/indexer",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -49,8 +49,8 @@
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
-    "@laplace/registry": "*",
-    "@laplace/sdk": "*",
+    "@laplace-one/registry": "*",
+    "@laplace-one/sdk": "*",
     "@solana/kit": "^6.0.0",
     "drizzle-orm": "^0.36.0",
     "postgres": "^3.4.0",
@@ -58,7 +58,7 @@
     "hono": "^4.6.0"
   },
   "devDependencies": {
-    "@laplace/config": "*",
+    "@laplace-one/config": "*",
     "drizzle-kit": "^0.28.0",
     "tsup": "^8.0.0",
     "typescript": "^5.7.3",
@@ -70,13 +70,13 @@
 
 - [ ] **Step 2: Create `tsconfig.json`**
 ```json
-{ "extends": "@laplace/config/tsconfig.lib.json", "compilerOptions": { "rootDir": "src", "outDir": "dist", "types": ["node"] }, "include": ["src"] }
+{ "extends": "@laplace-one/config/tsconfig.lib.json", "compilerOptions": { "rootDir": "src", "outDir": "dist", "types": ["node"] }, "include": ["src"] }
 ```
 
 - [ ] **Step 3: Create `tsup.config.ts`**
 ```ts
 import { defineConfig } from 'tsup';
-import { baseConfig } from '@laplace/config/tsup';
+import { baseConfig } from '@laplace-one/config/tsup';
 export default defineConfig({
   ...baseConfig,
   entry: ['src/index.ts', 'src/bin/indexer.ts', 'src/bin/api.ts', 'src/bin/reproject.ts'],
@@ -118,12 +118,12 @@ describe('loadConfig', () => {
 - [ ] **Step 6: Run it — expect RED**
 
 Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app install` then
-`npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace/indexer -- config`
+`npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace-one/indexer -- config`
 Expected: FAIL — cannot resolve `../src/config.js`.
 
 - [ ] **Step 7: Implement `src/config.ts`**
 ```ts
-import { getCluster, type Cluster } from '@laplace/registry';
+import { getCluster, type Cluster } from '@laplace-one/registry';
 
 export interface IndexerConfig {
   cluster: Cluster;
@@ -151,13 +151,13 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
 
 - [ ] **Step 8: Run it — expect GREEN**
 
-Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace/indexer -- config`
+Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace-one/indexer -- config`
 Expected: PASS (2 tests).
 
 - [ ] **Step 9: Commit**
 ```bash
 git add app/packages/indexer/package.json app/packages/indexer/tsconfig.json app/packages/indexer/tsup.config.ts app/packages/indexer/vitest.config.ts app/packages/indexer/src/config.ts app/packages/indexer/test/config.test.ts app/package-lock.json
-git commit -m "feat(indexer): scaffold @laplace/indexer package + config"
+git commit -m "feat(indexer): scaffold @laplace-one/indexer package + config"
 ```
 
 ---
@@ -282,7 +282,7 @@ export default defineConfig({
 
 - [ ] **Step 4: Generate the SQL migrations**
 
-Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s db:generate -w @laplace/indexer`
+Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s db:generate -w @laplace-one/indexer`
 Expected: creates `app/packages/indexer/drizzle/0000_*.sql` + `drizzle/meta/**`.
 
 - [ ] **Step 5: Write the failing db round-trip test**
@@ -312,7 +312,7 @@ describe('makeDb (pglite)', () => {
 
 - [ ] **Step 6: Run it — expect GREEN** (schema+client+migrations all exercised)
 
-Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace/indexer -- db`
+Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace-one/indexer -- db`
 Expected: PASS. (If it fails on a drizzle/pglite import path, read `node_modules/drizzle-orm/pglite` and `node_modules/@electric-sql/pglite` to correct the import, then re-run.)
 
 - [ ] **Step 7: Commit**
@@ -338,8 +338,8 @@ import {
   getAddressEncoder, getStructEncoder, getBytesEncoder, fixEncoderSize,
   getU16Encoder, getU64Encoder,
 } from '@solana/kit';
-import { getEscrowAssetEncoder } from '@laplace/sdk/raw'; // if not re-exported, import from '@laplace/sdk'
-import { EVENT_DISCRIMINATORS } from '@laplace/sdk';
+import { getEscrowAssetEncoder } from '@laplace-one/sdk/raw'; // if not re-exported, import from '@laplace-one/sdk'
+import { EVENT_DISCRIMINATORS } from '@laplace-one/sdk';
 import { decodeTxEvents, type RawTx } from '../src/ingest/decode.js';
 
 const PDA = '11111111111111111111111111111111';
@@ -382,16 +382,16 @@ describe('decodeTxEvents', () => {
   });
 });
 ```
-> If `getEscrowAssetEncoder` is not exported from `@laplace/sdk`/`@laplace/sdk/raw`, import it from the generated path the SDK already exposes, or skip the asset round-trip and assert only the scalar fields. Read the SDK's `src/index.ts`/`raw.ts` exports to confirm.
+> If `getEscrowAssetEncoder` is not exported from `@laplace-one/sdk`/`@laplace-one/sdk/raw`, import it from the generated path the SDK already exposes, or skip the asset round-trip and assert only the scalar fields. Read the SDK's `src/index.ts`/`raw.ts` exports to confirm.
 
 - [ ] **Step 2: Run it — expect RED**
 
-Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace/indexer -- decode`
+Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace-one/indexer -- decode`
 Expected: FAIL — cannot resolve `../src/ingest/decode.js`.
 
 - [ ] **Step 3: Implement `src/ingest/decode.ts`**
 ```ts
-import { parseLaplaceEvents, type LaplaceEvent } from '@laplace/sdk';
+import { parseLaplaceEvents, type LaplaceEvent } from '@laplace-one/sdk';
 import type { EventRow } from '../db/schema.js';
 
 export interface RawTx {
@@ -434,7 +434,7 @@ export function decodeTxEvents(tx: RawTx, program: 'laplace' | 'validity'): Even
 
 - [ ] **Step 4: Run it — expect GREEN**
 
-Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace/indexer -- decode`
+Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace-one/indexer -- decode`
 Expected: PASS (2 tests).
 
 - [ ] **Step 5: Commit**
@@ -503,7 +503,7 @@ describe('applyEvents', () => {
 
 - [ ] **Step 2: Run it — expect RED**
 
-Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace/indexer -- fold`
+Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace-one/indexer -- fold`
 Expected: FAIL — cannot resolve `../src/project/fold.js`.
 
 - [ ] **Step 3: Implement `src/project/fold.ts`**
@@ -565,7 +565,7 @@ export async function reproject(db: Db): Promise<void> {
 
 - [ ] **Step 4: Run it — expect GREEN**
 
-Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace/indexer -- fold`
+Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace-one/indexer -- fold`
 Expected: PASS (2 tests).
 
 - [ ] **Step 5: Commit**
@@ -623,8 +623,8 @@ import { describe, it, expect } from 'vitest';
 import {
   getAddressEncoder, getStructEncoder, getBytesEncoder, fixEncoderSize, getU16Encoder, getU64Encoder,
 } from '@solana/kit';
-import { getEscrowAssetEncoder } from '@laplace/sdk/raw';
-import { EVENT_DISCRIMINATORS } from '@laplace/sdk';
+import { getEscrowAssetEncoder } from '@laplace-one/sdk/raw';
+import { EVENT_DISCRIMINATORS } from '@laplace-one/sdk';
 import { makeDb } from '../src/db/client.js';
 import { runOnce } from '../src/ingest/poller.js';
 import type { ChainSource, SigInfo } from '../src/ingest/rpc.js';
@@ -678,7 +678,7 @@ describe('runOnce', () => {
 
 - [ ] **Step 3: Run it — expect RED**
 
-Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace/indexer -- poller`
+Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace-one/indexer -- poller`
 Expected: FAIL — cannot resolve `../src/ingest/poller.js`.
 
 - [ ] **Step 4: Implement `src/ingest/poller.ts`**
@@ -747,7 +747,7 @@ export async function runOnce(db: Db, src: ChainSource, ids: ProgramIds, limit: 
 
 - [ ] **Step 5: Run it — expect GREEN**
 
-Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace/indexer -- poller`
+Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace-one/indexer -- poller`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
@@ -815,7 +815,7 @@ describe('queries', () => {
 
 - [ ] **Step 2: Run it — expect RED**
 
-Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace/indexer -- queries`
+Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace-one/indexer -- queries`
 Expected: FAIL — cannot resolve query modules.
 
 - [ ] **Step 3: Implement `src/queries/intents.ts`**
@@ -889,7 +889,7 @@ export async function listValidityConfigs(db: Db, limit = 50) {
 
 - [ ] **Step 6: Run it — expect GREEN**
 
-Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace/indexer -- queries`
+Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace-one/indexer -- queries`
 Expected: PASS.
 
 - [ ] **Step 7: Commit**
@@ -948,7 +948,7 @@ describe('read API', () => {
 
 - [ ] **Step 2: Run it — expect RED**
 
-Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace/indexer -- api`
+Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace-one/indexer -- api`
 Expected: FAIL — cannot resolve `../src/api/server.js`.
 
 - [ ] **Step 3: Implement `src/api/server.ts`**
@@ -989,7 +989,7 @@ export function createApi(db: Db): Hono {
 
 - [ ] **Step 4: Run it — expect GREEN**
 
-Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace/indexer -- api`
+Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace-one/indexer -- api`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -1023,7 +1023,7 @@ export { createApi } from './api/server.js';
 - [ ] **Step 2: Create `src/bin/indexer.ts` (backfill + tail loop)**
 ```ts
 import { createSolanaRpc } from '@solana/kit';
-import { getCluster } from '@laplace/registry';
+import { getCluster } from '@laplace-one/registry';
 import { loadConfig } from '../config.js';
 import { makeDb } from '../db/client.js';
 import { rpcSource } from '../ingest/rpc.js';
@@ -1096,7 +1096,7 @@ In `app/packages/indexer/package.json` `dependencies`, add `"@hono/node-server":
 
 - [ ] **Step 6: Create `README.md`**
 ```markdown
-# @laplace/indexer
+# @laplace-one/indexer
 
 Ingests Laplace lifecycle events into Postgres and serves typed reads.
 
@@ -1115,7 +1115,7 @@ Generate migrations after a schema change: `npm run db:generate`.
 
 - [ ] **Step 7: Typecheck the whole package**
 
-Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s typecheck -w @laplace/indexer`
+Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s typecheck -w @laplace-one/indexer`
 Expected: exit 0.
 
 - [ ] **Step 8: Commit**
@@ -1137,8 +1137,8 @@ Create `app/packages/indexer/test/integration/devnet.test.ts`:
 ```ts
 import { describe, it, expect } from 'vitest';
 import { createSolanaRpc, createSolanaRpcSubscriptions, generateKeyPairSigner, airdropFactory, lamports } from '@solana/kit';
-import { getCluster } from '@laplace/registry';
-import { Laplace, Condition } from '@laplace/sdk';
+import { getCluster } from '@laplace-one/registry';
+import { Laplace, Condition } from '@laplace-one/sdk';
 import { makeDb } from '../../src/db/client.js';
 import { rpcSource } from '../../src/ingest/rpc.js';
 import { runOnce } from '../../src/ingest/poller.js';
@@ -1179,21 +1179,21 @@ describe.runIf(RUN)('indexer (devnet, live)', () => {
   }, 120_000);
 });
 ```
-> Uses `'confirmed'` here (not `finalized`) so the test sees the tx without waiting for full finalization. Reads `createIntent`'s return shape from `@laplace/sdk` (`{ signature, intentPda, id, secret }`, see `app/packages/sdk/src/client.ts`).
+> Uses `'confirmed'` here (not `finalized`) so the test sees the tx without waiting for full finalization. Reads `createIntent`'s return shape from `@laplace-one/sdk` (`{ signature, intentPda, id, secret }`, see `app/packages/sdk/src/client.ts`).
 
 - [ ] **Step 2: Verify it compiles + skips without the env**
 
-Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace/indexer -- integration/devnet`
+Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace-one/indexer -- integration/devnet`
 Expected: exit 0, 1 skipped.
 
 - [ ] **Step 3 (optional, live): run against devnet**
 
-Run: `LAPLACE_DEVNET=1 npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace/indexer -- integration/devnet`
+Run: `LAPLACE_DEVNET=1 npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace-one/indexer -- integration/devnet`
 Expected: PASS — the real `createIntent` is indexed; requires a fundable devnet (airdrop may be rate-limited).
 
 - [ ] **Step 4: Full suite + typecheck**
 
-Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace/indexer && npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s typecheck -w @laplace/indexer`
+Run: `npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s test -w @laplace-one/indexer && npm --prefix /Users/hash_548/Documents/GitHub/Laplace/app run -s typecheck -w @laplace-one/indexer`
 Expected: all pass; typecheck exit 0.
 
 - [ ] **Step 5: Commit**

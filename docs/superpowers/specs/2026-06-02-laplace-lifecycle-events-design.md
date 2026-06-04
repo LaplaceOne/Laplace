@@ -169,9 +169,9 @@ Emit at `create_validity.rs:46` (after `config.bump = ctx.bumps.config;`, before
 1. `export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"`
 2. `anchor build --ignore-keys` — rebuilds `.so` and regenerates `target/idl/*.json` (now with
    `events[]`). (Plain `anchor build` fails with a program-ID mismatch.)
-3. `npm run codegen -w @laplace/sdk` — produces nothing for events (expected); keeps the rest of the
+3. `npm run codegen -w @laplace-one/sdk` — produces nothing for events (expected); keeps the rest of the
    generated client in sync.
-4. `cargo test` (after the rebuild) + `npm run test -w @laplace/sdk`.
+4. `cargo test` (after the rebuild) + `npm run test -w @laplace-one/sdk`.
 5. `scripts/deploy.sh devnet ~/.config/solana/devnet-deployer.json` — upgrades in place (same program
    IDs; devnet empty, nothing to migrate). `scripts/verify-deploy.sh devnet` to confirm.
 6. Commit regenerated `target/idl/*.json` alongside the source.

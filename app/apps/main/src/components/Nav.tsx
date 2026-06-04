@@ -1,5 +1,5 @@
 import { Link, NavLink } from 'react-router-dom';
-import { ThemeToggle, Button } from '@laplace/ui';
+import { ThemeToggle, Button } from '@laplace-one/ui';
 import { BrandMark } from './BrandMark';
 import styles from './Nav.module.css';
 

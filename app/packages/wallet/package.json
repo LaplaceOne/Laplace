@@ -1,17 +1,17 @@
 {
-  "name": "@laplace/wallet",
+  "name": "@laplace-one/wallet",
   "version": "0.1.0",
   "type": "module",
   "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js", "require": "./dist/index.cjs" } },
   "files": ["dist"],
   "scripts": { "build": "tsup", "typecheck": "tsc --noEmit", "test": "vitest run", "lint": "tsc --noEmit" },
   "dependencies": {
-    "@laplace/registry": "*", "@laplace/sdk": "*", "@solana/kit": "^6.0.0",
+    "@laplace-one/registry": "*", "@laplace-one/sdk": "*", "@solana/kit": "^6.0.0",
     "@solana/react": "^6.0.0", "@wallet-standard/react": "^1.0.0", "@solana-program/token": "^0.13.0"
   },
   "peerDependencies": { "react": ">=18" },
   "devDependencies": {
-    "@laplace/config": "*", "@testing-library/react": "^16.0.0", "jsdom": "^25.0.0",
+    "@laplace-one/config": "*", "@testing-library/react": "^16.0.0", "jsdom": "^25.0.0",
     "@types/react": "^19.0.0", "@types/node": "^22.0.0", "react": "^19.0.0", "tsup": "^8.0.0", "typescript": "^5.7.3", "vitest": "^3.0.0"
   }
 }

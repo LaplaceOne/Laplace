@@ -18,10 +18,10 @@
 
 **Real data wiring (replace prototype mock data):**
 - Live stats (Landing §Live stats): `useStats()` from `apps/main/src/indexer/hooks` (null when no indexer → show `—` or fallback copy).
-- Program IDs (Docs §Program IDs; Landing dev table): `getCluster(env.cluster).programs` from `@laplace/registry`.
-- Criterion catalog (Registry; Docs criteria sections; Landing criteria): `criteria`, `getCriterion`, `tierOf`, `guests` from `@laplace/registry` (today: hashlock + validity, both `official`; `guests` empty). Prototype's extra illustrative entries (TWAP Oracle, etc.) are **omitted**; the catalog reflects real registry contents, with the tier legend + trust model + submission pipeline as static educational content.
+- Program IDs (Docs §Program IDs; Landing dev table): `getCluster(env.cluster).programs` from `@laplace-one/registry`.
+- Criterion catalog (Registry; Docs criteria sections; Landing criteria): `criteria`, `getCriterion`, `tierOf`, `guests` from `@laplace-one/registry` (today: hashlock + validity, both `official`; `guests` empty). Prototype's extra illustrative entries (TWAP Oracle, etc.) are **omitted**; the catalog reflects real registry contents, with the tier legend + trust model + submission pipeline as static educational content.
 
-**Conventions:** `apps/main` imports extensionless; CSS Modules co-located; wrap reveal-on-scroll blocks in `<Reveal>` from `@laplace/ui`; in-page/section links use react-router `<Link>`; hash anchors use `<a href="#id">` with `scroll-margin-top` on section targets; external links `target="_blank" rel="noopener"`.
+**Conventions:** `apps/main` imports extensionless; CSS Modules co-located; wrap reveal-on-scroll blocks in `<Reveal>` from `@laplace-one/ui`; in-page/section links use react-router `<Link>`; hash anchors use `<a href="#id">` with `scroll-margin-top` on section targets; external links `target="_blank" rel="noopener"`.
 
 ---
 
@@ -72,7 +72,7 @@ export function Eyebrow({ children }: { children: React.ReactNode }) {
 
 `Eyebrow.module.css`: port `.eyebrow` (inline-flex, gap, margin-bottom) + `.eyebrow .tick`
 (22×1px primary bar) from `laplace.css` lines 70–71. Use a `.label`-styled inner span
-(mono, uppercase, tracking) — reuse the global `.label` class from `@laplace/ui` base.
+(mono, uppercase, tracking) — reuse the global `.label` class from `@laplace-one/ui` base.
 
 - [ ] **Step 2: PageHead, SecHead, Cta**
 
@@ -98,14 +98,14 @@ the app-family entries (Console live · Bridge roadmap · Disclosure roadmap), a
 exact "Solana" copy strings (hero sub + closing CTA) from `chat1.md`'s final decisions.
 
 `app/apps/main/src/content/snippets.ts` — export the `create-intent.ts` sample and the
-`npm i @laplace/sdk` string used by Landing §developers and Docs §quickstart, as arrays of
+`npm i @laplace-one/sdk` string used by Landing §developers and Docs §quickstart, as arrays of
 `{ text, cls }` tokens (cls ∈ `c|k|s|n`) matching the `CodeBlock` syntax spans, ported from
 the reference `index.html`/`docs.html` `<pre class="code__body">` content.
 
 - [ ] **Step 4: Typecheck + commit (no behavior tests for pure atoms)**
 
 ```bash
-cd app && npm run typecheck -- --filter=@laplace/main
+cd app && npm run typecheck -- --filter=@laplace-one/main
 git add app/apps/main/src/marketing app/apps/main/src/content
 git commit -m "feat(main): shared marketing atoms (Eyebrow/PageHead/SecHead/Cta) + site content"
 ```
@@ -179,7 +179,7 @@ test('Landing renders hero and key section headings', () => {
 - [ ] **Step 4: Run, commit**
 
 ```bash
-cd app && npm run test -- --filter=@laplace/main && (cd apps/main && npx vite build)
+cd app && npm run test -- --filter=@laplace-one/main && (cd apps/main && npx vite build)
 git add app/apps/main/src/routes/Landing.tsx app/apps/main/src/routes/Landing.module.css app/apps/main/src/routes/Landing.test.tsx app/apps/main/src/components/diagrams
 git commit -m "feat(main): Landing page (hero + lifecycle diagram, guarantees, criteria, app family, SDK, live stats, CTA)"
 ```
@@ -249,7 +249,7 @@ Program IDs) with the active link driven by `useScrollSpy([...sectionIds])`; and
 `#overview`, `#lifecycle` (`<StateMachineDiagram/>` + `.deftable` of the 4 instructions),
 `#interface` (constants + request struct `<CodeBlock>`s), `#hashlock` (`.deftable` +
 `.warn-box`), `#validity` (`.deftable`), `#future` (`.conds` 2×2 from `content/site.ts`),
-`#quickstart` (`.install` strip with `<CopyButton value="npm i @laplace/sdk" />` + `<CodeBlock>`),
+`#quickstart` (`.install` strip with `<CopyButton value="npm i @laplace-one/sdk" />` + `<CodeBlock>`),
 `#programs` (`.deftable` built from `getCluster(env.cluster).programs` → laplace/hashlock/
 validity rows + Launch console / GitHub buttons). Rail hidden < 900px.
 
@@ -260,7 +260,7 @@ rail link `.active`, `.docs-content`, section `scroll-margin-top: 90px`, `.defta
 - [ ] **Step 4: Run, commit**
 
 ```bash
-cd app && npm run test -- --filter=@laplace/main && (cd apps/main && npx vite build)
+cd app && npm run test -- --filter=@laplace-one/main && (cd apps/main && npx vite build)
 git add app/apps/main/src/routes/Docs.tsx app/apps/main/src/routes/Docs.module.css app/apps/main/src/routes/useScrollSpy.ts app/apps/main/src/routes/Docs.test.tsx app/apps/main/src/components/diagrams/StateMachineDiagram.tsx
 git commit -m "feat(main): Docs page with sticky scroll-spy rail + program IDs from registry"
 ```
@@ -311,7 +311,7 @@ test('Lab renders the product family and verticals', () => {
 ```
 
 ```bash
-cd app && npm run test -- --filter=@laplace/main && (cd apps/main && npx vite build)
+cd app && npm run test -- --filter=@laplace-one/main && (cd apps/main && npx vite build)
 git add app/apps/main/src/routes/Lab.tsx app/apps/main/src/routes/Lab.module.css app/apps/main/src/routes/Lab.test.tsx app/apps/main/src/components/diagrams/ArchitectureDiagram.tsx
 git commit -m "feat(main): Lab page (architecture, products, future verticals, how a product is born)"
 ```
@@ -351,8 +351,8 @@ test('shows criteria cards and filters by tier', () => {
 
 ```tsx
 import * as React from 'react';
-import { criteria, guests, type TrustTier } from '@laplace/registry';
-import { Icon } from '@laplace/ui';
+import { criteria, guests, type TrustTier } from '@laplace-one/registry';
+import { Icon } from '@laplace-one/ui';
 import { env } from '../../env';
 import styles from './RegistryCatalog.module.css';
 
@@ -451,8 +451,8 @@ test('Registry renders trust model, tiers, and catalog', () => {
 - [ ] **Step 4: Run, full gate, commit**
 
 ```bash
-cd app && npm run typecheck -- --filter=@laplace/ui --filter=@laplace/main \
-  && npm run test -- --filter=@laplace/ui --filter=@laplace/main \
+cd app && npm run typecheck -- --filter=@laplace-one/ui --filter=@laplace-one/main \
+  && npm run test -- --filter=@laplace-one/ui --filter=@laplace-one/main \
   && (cd apps/main && npx vite build)
 git add app/apps/main/src/routes/Registry.tsx app/apps/main/src/routes/Registry.module.css app/apps/main/src/routes/Registry.test.tsx app/apps/main/src/routes/registry
 git commit -m "feat(main): Registry page (trust model, tiers, real-data catalog, submission pipeline)"
@@ -474,7 +474,7 @@ Expected: typecheck + all tests green; SPA builds.
   styling" steps.
 - **Type consistency:** `Eyebrow`/`PageHead`/`SecHead`/`Cta` props; `useScrollSpy(ids)→string`;
   `RegistryCatalog` tab/tier state; `getCluster(env.cluster).programs`; `criteria`/`guests`/
-  `TrustTier` from `@laplace/registry`; `useStats()` from the Phase-2 hooks. The shared
+  `TrustTier` from `@laplace-one/registry`; `useStats()` from the Phase-2 hooks. The shared
   `diagram.css` class names match the SVG class strings across all three diagram components.
 
 ## Notes / risks

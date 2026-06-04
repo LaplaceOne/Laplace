@@ -1,7 +1,7 @@
-# @laplace/main
+# @laplace-one/main
 
 The Laplace main site + protocol console — a Vite + React 19 SPA on the AnyUI design system,
-wired to `@laplace/sdk`, `@laplace/wallet`, `@laplace/registry`, and the indexer. Targets
+wired to `@laplace-one/sdk`, `@laplace-one/wallet`, `@laplace-one/registry`, and the indexer. Targets
 **devnet** (programs are live there).
 
 ## Run locally
@@ -11,11 +11,11 @@ From `app/`:
 ```bash
 npm install                 # first time
 npm run build               # build workspace deps (sdk/wallet/registry/indexer dist)
-npm run dev -w @laplace/main # Vite on http://localhost:5173
+npm run dev -w @laplace-one/main # Vite on http://localhost:5173
 ```
 
-`@laplace/ui` is consumed from source (hot-reloads). Editing `@laplace/sdk`/`wallet`/`registry`/
-`indexer` requires rebuilding that package (`npm run build -w @laplace/sdk`) since the app reads
+`@laplace-one/ui` is consumed from source (hot-reloads). Editing `@laplace-one/sdk`/`wallet`/`registry`/
+`indexer` requires rebuilding that package (`npm run build -w @laplace-one/sdk`) since the app reads
 their `dist`, then restart `vite` (it pre-bundles workspace deps).
 
 ## Environment (`apps/main/.env`, all optional)
@@ -34,7 +34,7 @@ Without an indexer the console falls back to client-side `getProgramAccounts` on
 (throttled). To run one locally against devnet (single process, embedded pglite — no Postgres):
 
 ```bash
-npm run build -w @laplace/indexer
+npm run build -w @laplace-one/indexer
 cd packages/indexer
 LAPLACE_CLUSTER=devnet DATABASE_URL=file:./devnet-index.db API_PORT=8787 \
   node dist/bin/laplace-indexer-dev   # or: node dist/bin/dev.js
@@ -54,7 +54,7 @@ split `laplace-indexer` (ingest) + `laplace-indexer-api` (serve) bins against a 
 
 ## Deploy (static SPA)
 
-`npm run build -w @laplace/main` emits `apps/main/dist`. Client-side routing needs an SPA fallback
+`npm run build -w @laplace-one/main` emits `apps/main/dist`. Client-side routing needs an SPA fallback
 (all paths → `index.html`):
 
 - **Netlify / Cloudflare Pages:** `public/_redirects` (already included) handles it.

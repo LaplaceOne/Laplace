@@ -1,4 +1,4 @@
-import { toDisplay } from '@laplace/sdk';
+import { toDisplay } from '@laplace-one/sdk';
 import type { IntentAssetView } from './IntentView.js';
 
 export function AssetAmount({ amount, asset, className }: { amount: bigint; asset: IntentAssetView; className?: string }) {

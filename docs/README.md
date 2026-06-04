@@ -54,7 +54,7 @@ Laplace app family (main site + derived products).
 ## Open action items
 
 - ✅ **Done.** `laplace`, `hashlock`, `validity` are deployed to **devnet** at the
-  addresses already in `@laplace/registry` (`cluster: "devnet"`). The program keypair
+  addresses already in `@laplace-one/registry` (`cluster: "devnet"`). The program keypair
   fixes the address, so localnet / devnet / mainnet-beta share the same IDs — no
   per-cluster placeholder swap was needed.
 - Decide validity proof generation strategy (hosted prover vs client WASM) —

@@ -11,4 +11,4 @@ export * from './errors.js';
 export * from './links.js';
 export * from './events.js';
 export { intentBindingHash, assertBoundPublicInputs } from './binding.js';
-export type { Cluster, TrustTier } from '@laplace/registry';
+export type { Cluster, TrustTier } from '@laplace-one/registry';

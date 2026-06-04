@@ -1,4 +1,4 @@
-import { ThemeProvider, ToastProvider } from '@laplace/ui';
+import { ThemeProvider, ToastProvider } from '@laplace-one/ui';
 import { WalletProvider, useWallet } from '../wallet/WalletProvider';
 import { SignerGate } from '../wallet/ConnectedSigner';
 import { IndexerProvider } from '../indexer/IndexerProvider';

@@ -1,5 +1,5 @@
 import { initialCreate, validateStep1, buildCriterion, computeExpirySlot, toBytes32Hex } from './createState';
-import { toBaseUnits } from '@laplace/sdk';
+import { toBaseUnits } from '@laplace-one/sdk';
 
 test('computeExpirySlot adds minutesToSlots to current slot', () => {
   expect(computeExpirySlot(1000n, 10)).toBe(1000n + 1500n); // 10 min * 150 slots/min

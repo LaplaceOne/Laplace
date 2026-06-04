@@ -1,4 +1,4 @@
-import { Condition, minutesToSlots, nativeSol, splToken, type CriterionSpec } from '@laplace/sdk';
+import { Condition, minutesToSlots, nativeSol, splToken, type CriterionSpec } from '@laplace-one/sdk';
 import { address } from '@solana/kit';
 
 export type Recipe = 'hashlock' | 'validity' | 'custom';

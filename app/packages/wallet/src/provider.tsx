@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { createSolanaRpc, createSolanaRpcSubscriptions, type TransactionSigner } from '@solana/kit';
-import { LaplaceSdkProvider } from '@laplace/sdk/react';
-import type { Cluster } from '@laplace/registry';
+import { LaplaceSdkProvider } from '@laplace-one/sdk/react';
+import type { Cluster } from '@laplace-one/registry';
 import { resolveRpcUrl } from './cluster.js';
 import { createSlotClock } from './slot-clock.js';
 

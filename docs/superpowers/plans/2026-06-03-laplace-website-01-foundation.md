@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Stand up the `@laplace/ui` design-system package and the `apps/main` Vite SPA shell — tokens, theming (no-FOUC), shared atoms, ambient background, cursor ring, site/console layouts, and a router with placeholder routes — so every later page composes from a faithful, tested foundation.
+**Goal:** Stand up the `@laplace-one/ui` design-system package and the `apps/main` Vite SPA shell — tokens, theming (no-FOUC), shared atoms, ambient background, cursor ring, site/console layouts, and a router with placeholder routes — so every later page composes from a faithful, tested foundation.
 
-**Architecture:** A new source-consumed `@laplace/ui` package (Vite/Vitest resolve its `.tsx`/`.module.css` directly — no tsup build) holds the re-authored AnyUI tokens and all shared primitives. `apps/main` is a Vite + React 19 + React Router SPA that imports `@laplace/ui` and the existing built packages (`@laplace/sdk`, `@laplace/wallet`, `@laplace/registry`). This phase ships a runnable, themed shell with marketing + console layouts and placeholder pages.
+**Architecture:** A new source-consumed `@laplace-one/ui` package (Vite/Vitest resolve its `.tsx`/`.module.css` directly — no tsup build) holds the re-authored AnyUI tokens and all shared primitives. `apps/main` is a Vite + React 19 + React Router SPA that imports `@laplace-one/ui` and the existing built packages (`@laplace-one/sdk`, `@laplace-one/wallet`, `@laplace-one/registry`). This phase ships a runnable, themed shell with marketing + console layouts and placeholder pages.
 
 **Tech Stack:** Vite 7, React 19, React Router 7, TypeScript 5.7 (`moduleResolution: bundler`, `strict`, `verbatimModuleSyntax`), Vitest 3 + jsdom + @testing-library/react, CSS Modules, `@iconify/react`.
 
@@ -19,12 +19,12 @@ exactly for pixel fidelity.
 
 **Conventions to match (from existing packages):**
 - Package: `"type": "module"`, scripts `build`/`typecheck`/`test`/`lint`, tsconfig
-  `extends "@laplace/config/tsconfig.lib.json"`.
+  `extends "@laplace-one/config/tsconfig.lib.json"`.
 - React test packages depend on `@testing-library/react`, `jsdom`, `vitest`, `react`.
-- Intra-package imports in `@laplace/ui` source use explicit `.js` extensions (matches
-  `@laplace/wallet`). `apps/main` imports are extensionless (Vite resolves).
-- `@laplace/sdk` entrypoints: `@laplace/sdk`, `@laplace/sdk/react`, `@laplace/sdk/raw`.
-- `LaplaceProvider` (`@laplace/wallet`) signature: `{ cluster, rpcUrl?, signer?, children }`.
+- Intra-package imports in `@laplace-one/ui` source use explicit `.js` extensions (matches
+  `@laplace-one/wallet`). `apps/main` imports are extensionless (Vite resolves).
+- `@laplace-one/sdk` entrypoints: `@laplace-one/sdk`, `@laplace-one/sdk/react`, `@laplace-one/sdk/raw`.
+- `LaplaceProvider` (`@laplace-one/wallet`) signature: `{ cluster, rpcUrl?, signer?, children }`.
 
 ---
 
@@ -33,7 +33,7 @@ exactly for pixel fidelity.
 ```
 app/
   package.json                         MODIFY: workspaces add "apps/*"
-  packages/ui/                         NEW @laplace/ui (source-consumed)
+  packages/ui/                         NEW @laplace-one/ui (source-consumed)
     package.json                       exports map → src (no dist build)
     tsconfig.json
     vitest.config.ts                   react plugin + jsdom + setup
@@ -82,7 +82,7 @@ docs/design-reference/laplace-prototype/   (already vendored)
 
 ---
 
-## Task 1: Scaffold workspace, `@laplace/ui`, and `apps/main`
+## Task 1: Scaffold workspace, `@laplace-one/ui`, and `apps/main`
 
 **Files:**
 - Modify: `app/package.json`
@@ -97,13 +97,13 @@ Edit `app/package.json` — change the `workspaces` line to:
   "workspaces": ["packages/*", "apps/*"],
 ```
 
-- [ ] **Step 2: Create `@laplace/ui` package.json (source-consumed, no build)**
+- [ ] **Step 2: Create `@laplace-one/ui` package.json (source-consumed, no build)**
 
 `app/packages/ui/package.json`:
 
 ```json
 {
-  "name": "@laplace/ui",
+  "name": "@laplace-one/ui",
   "version": "0.1.0",
   "type": "module",
   "exports": {
@@ -119,12 +119,12 @@ Edit `app/package.json` — change the `workspaces` line to:
   },
   "dependencies": {
     "@iconify/react": "^6.0.0",
-    "@laplace/sdk": "*",
-    "@laplace/registry": "*"
+    "@laplace-one/sdk": "*",
+    "@laplace-one/registry": "*"
   },
   "peerDependencies": { "react": ">=18", "react-dom": ">=18" },
   "devDependencies": {
-    "@laplace/config": "*",
+    "@laplace-one/config": "*",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@types/react": "^19.0.0",
@@ -140,17 +140,17 @@ Edit `app/package.json` — change the `workspaces` line to:
 }
 ```
 
-> Note: `build` is `tsc --noEmit` because `@laplace/ui` is consumed from source by
+> Note: `build` is `tsc --noEmit` because `@laplace-one/ui` is consumed from source by
 > Vite/Vitest; it does not emit a `dist`. This keeps CSS Modules working without a
 > bundler step and satisfies turbo's `build`/`^build` graph.
 
-- [ ] **Step 3: Create `@laplace/ui` tsconfig.json**
+- [ ] **Step 3: Create `@laplace-one/ui` tsconfig.json**
 
 `app/packages/ui/tsconfig.json`:
 
 ```json
 {
-  "extends": "@laplace/config/tsconfig.lib.json",
+  "extends": "@laplace-one/config/tsconfig.lib.json",
   "compilerOptions": {
     "rootDir": "src",
     "jsx": "react-jsx",
@@ -162,7 +162,7 @@ Edit `app/package.json` — change the `workspaces` line to:
 }
 ```
 
-- [ ] **Step 4: Create `@laplace/ui` vitest config + test setup + cn helper**
+- [ ] **Step 4: Create `@laplace-one/ui` vitest config + test setup + cn helper**
 
 `app/packages/ui/vitest.config.ts`:
 
@@ -202,7 +202,7 @@ export { cn } from './lib/cn.js';
 
 ```json
 {
-  "name": "@laplace/main",
+  "name": "@laplace-one/main",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -215,10 +215,10 @@ export { cn } from './lib/cn.js';
     "lint": "tsc --noEmit"
   },
   "dependencies": {
-    "@laplace/sdk": "*",
-    "@laplace/wallet": "*",
-    "@laplace/registry": "*",
-    "@laplace/ui": "*",
+    "@laplace-one/sdk": "*",
+    "@laplace-one/wallet": "*",
+    "@laplace-one/registry": "*",
+    "@laplace-one/ui": "*",
     "@iconify/react": "^6.0.0",
     "@solana/kit": "^6.0.0",
     "@solana/react": "^6.0.0",
@@ -228,7 +228,7 @@ export { cn } from './lib/cn.js';
     "react-router-dom": "^7.0.0"
   },
   "devDependencies": {
-    "@laplace/config": "*",
+    "@laplace-one/config": "*",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@types/react": "^19.0.0",
@@ -388,7 +388,7 @@ across the new workspaces; exits 0.
 Run from `app/`:
 
 ```bash
-npm run build -- --filter=@laplace/registry --filter=@laplace/sdk --filter=@laplace/wallet
+npm run build -- --filter=@laplace-one/registry --filter=@laplace-one/sdk --filter=@laplace-one/wallet
 ```
 
 Expected: turbo builds the three packages to `dist/`; exits 0. (If a package is already
@@ -399,7 +399,7 @@ built and cached, turbo reports it cached — still exit 0.)
 Run from `app/`:
 
 ```bash
-npm run test -- --filter=@laplace/main
+npm run test -- --filter=@laplace-one/main
 ```
 
 Expected: `App renders the root` PASSES.
@@ -419,12 +419,12 @@ http://localhost:5173 to see "Laplace".)
 
 ```bash
 git add app/package.json app/packages/ui app/apps/main
-git commit -m "feat(website): scaffold @laplace/ui package and apps/main Vite SPA"
+git commit -m "feat(website): scaffold @laplace-one/ui package and apps/main Vite SPA"
 ```
 
 ---
 
-## Task 2: Re-author design tokens and base globals into `@laplace/ui`
+## Task 2: Re-author design tokens and base globals into `@laplace-one/ui`
 
 **Files:**
 - Create: `app/packages/ui/src/styles/tokens.css`
@@ -472,8 +472,8 @@ Port the globals from `laplace.css` lines 1–31 into
 Add the imports to `apps/main/src/main.tsx` (top, before App import):
 
 ```tsx
-import '@laplace/ui/styles/tokens.css';
-import '@laplace/ui/styles/base.css';
+import '@laplace-one/ui/styles/tokens.css';
+import '@laplace-one/ui/styles/base.css';
 ```
 
 Run from `app/apps/main`:
@@ -541,7 +541,7 @@ test('reads persisted theme on mount', () => {
 - [ ] **Step 2: Run it — expect FAIL**
 
 ```bash
-cd app && npm run test -- --filter=@laplace/ui
+cd app && npm run test -- --filter=@laplace-one/ui
 ```
 
 Expected: FAIL ("Cannot find module './ThemeProvider.js'").
@@ -648,7 +648,7 @@ export { ThemeToggle } from './components/ThemeToggle.js';
 - [ ] **Step 7: Run tests — expect PASS** (after Task 4's `Icon` exists; if executing in order, defer barrel `ThemeToggle` export until Task 4, or stub `Icon` first)
 
 ```bash
-cd app && npm run test -- --filter=@laplace/ui
+cd app && npm run test -- --filter=@laplace-one/ui
 ```
 
 Expected: the three ThemeProvider tests PASS.
@@ -751,10 +751,10 @@ test('copies value to clipboard and shows confirmation', async () => {
   const writeText = vi.fn().mockResolvedValue(undefined);
   Object.assign(navigator, { clipboard: { writeText } });
 
-  render(<CopyButton value="npm i @laplace/sdk" label="copy" />);
+  render(<CopyButton value="npm i @laplace-one/sdk" label="copy" />);
   fireEvent.click(screen.getByRole('button'));
 
-  expect(writeText).toHaveBeenCalledWith('npm i @laplace/sdk');
+  expect(writeText).toHaveBeenCalledWith('npm i @laplace-one/sdk');
   await waitFor(() => expect(screen.getByRole('button')).toHaveTextContent(/copied/i));
 });
 ```
@@ -762,7 +762,7 @@ test('copies value to clipboard and shows confirmation', async () => {
 - [ ] **Step 5: Run it — expect FAIL**
 
 ```bash
-cd app && npm run test -- --filter=@laplace/ui
+cd app && npm run test -- --filter=@laplace-one/ui
 ```
 
 Expected: FAIL ("Cannot find module './CopyButton.js'").
@@ -846,7 +846,7 @@ export { CodeBlock } from './components/CodeBlock.js';
 - [ ] **Step 9: Run tests — expect PASS**
 
 ```bash
-cd app && npm run test -- --filter=@laplace/ui
+cd app && npm run test -- --filter=@laplace-one/ui
 ```
 
 Expected: CopyButton + ThemeProvider tests PASS.
@@ -899,7 +899,7 @@ test('reveals content when it intersects', () => {
 - [ ] **Step 2: Run it — expect FAIL**
 
 ```bash
-cd app && npm run test -- --filter=@laplace/ui
+cd app && npm run test -- --filter=@laplace-one/ui
 ```
 
 Expected: FAIL ("Cannot find module './Reveal.js'").
@@ -960,7 +960,7 @@ export function Reveal({ children, as: As = 'div', className }: {
 - [ ] **Step 4: Run tests — expect PASS**
 
 ```bash
-cd app && npm run test -- --filter=@laplace/ui
+cd app && npm run test -- --filter=@laplace-one/ui
 ```
 
 Expected: Reveal test PASSES.
@@ -1019,7 +1019,7 @@ test('mounts a canvas and unmounts cleanly', () => {
 - [ ] **Step 2: Run it — expect FAIL**
 
 ```bash
-cd app && npm run test -- --filter=@laplace/ui
+cd app && npm run test -- --filter=@laplace-one/ui
 ```
 
 Expected: FAIL ("Cannot find module './AmbientBackground.js'").
@@ -1052,7 +1052,7 @@ with `lpDrift1`/`lpDrift2` keyframes (port from the reference's glow CSS).
 - [ ] **Step 4: Run tests — expect PASS**
 
 ```bash
-cd app && npm run test -- --filter=@laplace/ui
+cd app && npm run test -- --filter=@laplace-one/ui
 ```
 
 Expected: AmbientBackground smoke test PASSES.
@@ -1098,7 +1098,7 @@ test('renders nothing on coarse pointers', () => {
 - [ ] **Step 2: Run it — expect FAIL**, then implement.
 
 ```bash
-cd app && npm run test -- --filter=@laplace/ui
+cd app && npm run test -- --filter=@laplace-one/ui
 ```
 
 Expected: FAIL ("Cannot find module './CursorRing.js'").
@@ -1118,7 +1118,7 @@ rAF lerp (0.18). Add `.hot` when hovering interactive selectors
 - [ ] **Step 4: Run tests — expect PASS; export + commit**
 
 ```bash
-cd app && npm run test -- --filter=@laplace/ui
+cd app && npm run test -- --filter=@laplace-one/ui
 ```
 
 ```ts
@@ -1154,7 +1154,7 @@ from `index.html` (the integral-S glyph with two accent dots, `class="mark"`,
 
 ```tsx
 import { Link, NavLink } from 'react-router-dom';
-import { ThemeToggle, Button } from '@laplace/ui';
+import { ThemeToggle, Button } from '@laplace-one/ui';
 import { BrandMark } from './BrandMark';
 import styles from './Nav.module.css';
 
@@ -1207,7 +1207,7 @@ column; Docs / Build / Products link columns) + `foot-bottom`
 
 ```tsx
 import { Outlet } from 'react-router-dom';
-import { AmbientBackground, CursorRing } from '@laplace/ui';
+import { AmbientBackground, CursorRing } from '@laplace-one/ui';
 import { Nav } from '../components/Nav';
 import { Footer } from '../components/Footer';
 
@@ -1240,7 +1240,7 @@ to be wired in Phase 2) + `CursorRing` (NO `AmbientBackground`) + `<Outlet/>`.
 import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { SiteLayout } from './SiteLayout';
-import { ThemeProvider } from '@laplace/ui';
+import { ThemeProvider } from '@laplace-one/ui';
 
 test('SiteLayout renders nav links and footer', () => {
   const router = createMemoryRouter(
@@ -1256,7 +1256,7 @@ test('SiteLayout renders nav links and footer', () => {
 - [ ] **Step 6: Run test — expect PASS**
 
 ```bash
-cd app && npm run test -- --filter=@laplace/main
+cd app && npm run test -- --filter=@laplace-one/main
 ```
 
 Expected: layout test PASSES (canvas + cursor degrade gracefully under jsdom; if
@@ -1284,7 +1284,7 @@ git commit -m "feat(main): BrandMark, Nav, Footer, SiteLayout, ConsoleLayout"
 `app/apps/main/src/env.ts`:
 
 ```ts
-import type { Cluster } from '@laplace/registry';
+import type { Cluster } from '@laplace-one/registry';
 
 export const env = {
   cluster: (import.meta.env.VITE_CLUSTER ?? 'devnet') as Cluster,
@@ -1361,7 +1361,7 @@ export const router = createBrowserRouter([
 
 ```tsx
 import { RouterProvider } from 'react-router-dom';
-import { ThemeProvider } from '@laplace/ui';
+import { ThemeProvider } from '@laplace-one/ui';
 import { router } from './router';
 
 export function App() {
@@ -1381,8 +1381,8 @@ export function App() {
 ```tsx
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import '@laplace/ui/styles/tokens.css';
-import '@laplace/ui/styles/base.css';
+import '@laplace-one/ui/styles/tokens.css';
+import '@laplace-one/ui/styles/base.css';
 import { App } from './App';
 
 createRoot(document.getElementById('root')!).render(
@@ -1397,7 +1397,7 @@ createRoot(document.getElementById('root')!).render(
 ```tsx
 import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
-import { ThemeProvider } from '@laplace/ui';
+import { ThemeProvider } from '@laplace-one/ui';
 import { SiteLayout } from './layouts/SiteLayout';
 import Landing from './routes/Landing';
 import Docs from './routes/Docs';
@@ -1418,7 +1418,7 @@ test('renders the docs route under the site layout', () => {
 - [ ] **Step 6: Run tests — expect PASS**
 
 ```bash
-cd app && npm run test -- --filter=@laplace/main
+cd app && npm run test -- --filter=@laplace-one/main
 ```
 
 Expected: routing test PASSES.
@@ -1429,7 +1429,7 @@ Expected: routing test PASSES.
 cd app && npm run typecheck && npm run test && (cd apps/main && npx vite build)
 ```
 
-Expected: all green — `@laplace/ui` + `@laplace/main` typecheck, all tests pass, the
+Expected: all green — `@laplace-one/ui` + `@laplace-one/main` typecheck, all tests pass, the
 SPA builds.
 
 - [ ] **Step 8: Commit**
@@ -1443,7 +1443,7 @@ git commit -m "feat(main): router, placeholder routes, provider wiring"
 
 ## Phase 1 self-review
 
-- **Spec coverage (Phase 1 portion):** monorepo placement (§3) ✓ Task 1; `@laplace/ui`
+- **Spec coverage (Phase 1 portion):** monorepo placement (§3) ✓ Task 1; `@laplace-one/ui`
   foundation + atoms + primitives + ambient bg + cursor (§4) ✓ Tasks 2–7; ThemeProvider
   no-FOUC (§4) ✓ Task 3; SiteLayout/ConsoleLayout + Nav/Footer (§7 chrome) ✓ Task 8;
   routing for all five surfaces + share route (§4 routing) ✓ Task 9. Deferred to later
@@ -1454,7 +1454,7 @@ git commit -m "feat(main): router, placeholder routes, provider wiring"
   steps cite the exact reference file + lines + token values. No "TBD"/"add error
   handling"/"similar to" steps.
 - **Type consistency:** `Theme`, `useTheme().toggle`, `ButtonProps.variant/size/as`,
-  `Reveal as`, `env.cluster/rpcUrl/indexerUrl`, and the `@laplace/ui` barrel exports are
+  `Reveal as`, `env.cluster/rpcUrl/indexerUrl`, and the `@laplace-one/ui` barrel exports are
   used consistently across tasks. The lifecycle primitives (`IntentCard`,
   `IntentStatusBadge`, `ExpiryCountdown`, `RoleActionButton`, `AssetAmount`, `Toast`) are
   **deferred to Phase 2** (they need SDK types `effectiveStatus`/`actionFor` + the slot
@@ -1472,12 +1472,12 @@ Phase-1 foundation.
   → `TransactionSigner`); wire `LaplaceProvider`; `indexerClient` + `useIntentList`/
   `useIntentDetail`/`useStats`/`useValidityConfigs` with SDK `getProgramAccounts`
   fallback; `ToastProvider`/`TxToast` + `mapLaplaceError`; the shared lifecycle
-  primitives in `@laplace/ui` (`IntentStatusBadge`, `ExpiryCountdown`, `AssetAmount`,
+  primitives in `@laplace-one/ui` (`IntentStatusBadge`, `ExpiryCountdown`, `AssetAmount`,
   `RoleActionButton`, `IntentCard`) driven by `effectiveStatus`/`actionFor`/`useSlot`.
 - **Phase 3 — Marketing surfaces** (`…-03-marketing.md`): Landing, Docs (scroll-spy
-  rail), Lab, Registry (interactive catalog from `@laplace/registry`) — full section
+  rail), Lab, Registry (interactive catalog from `@laplace-one/registry`) — full section
   ports with `Reveal`, live stats from `/stats`, program IDs from `PROGRAM_IDS`.
 - **Phase 4 — Console** (`…-04-console.md`): Dashboard (filters + grid + stats),
   Detail + public share, Create wizard (SOL/SPL, hashlock/validity/custom recipes,
   secret + ack gates) via `createIntent`, fulfill/refund/close, Manual ops via
-  `@laplace/sdk/raw`, Validity config creation.
+  `@laplace-one/sdk/raw`, Validity config creation.

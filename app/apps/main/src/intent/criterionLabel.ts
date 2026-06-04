@@ -1,4 +1,4 @@
-import { criteria, type Cluster, type TrustTier } from '@laplace/registry';
+import { criteria, type Cluster, type TrustTier } from '@laplace-one/registry';
 
 export function criterionLabel(programId: string, cluster: Cluster): { name: string; tier: TrustTier | 'unknown' } {
   const entry = criteria.find((c) => c.programId?.[cluster] === programId);

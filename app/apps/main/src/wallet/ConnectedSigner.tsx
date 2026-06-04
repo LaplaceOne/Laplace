@@ -1,6 +1,6 @@
 import { useWalletAccountTransactionSendingSigner } from '@solana/react';
 import type { UiWalletAccount } from '@wallet-standard/react';
-import { LaplaceProvider } from '@laplace/wallet';
+import { LaplaceProvider } from '@laplace-one/wallet';
 import type { TransactionSigner } from '@solana/kit';
 import { env } from '../env';
 import { CHAIN } from './cluster';

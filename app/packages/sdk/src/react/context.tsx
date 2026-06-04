@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { TransactionSigner } from '@solana/kit';
-import type { Cluster } from '@laplace/registry';
+import type { Cluster } from '@laplace-one/registry';
 
 export interface LaplaceContextValue {
   rpc: any; rpcSubscriptions: any; cluster: Cluster; currentSlot: bigint; signer?: TransactionSigner;
@@ -11,6 +11,6 @@ export function LaplaceSdkProvider({ value, children }: { value: LaplaceContextV
 }
 export function useLaplaceContext(): LaplaceContextValue {
   const v = React.useContext(Ctx);
-  if (!v) throw new Error('useLaplaceContext must be used within a LaplaceSdkProvider (or @laplace/wallet LaplaceProvider)');
+  if (!v) throw new Error('useLaplaceContext must be used within a LaplaceSdkProvider (or @laplace-one/wallet LaplaceProvider)');
   return v;
 }

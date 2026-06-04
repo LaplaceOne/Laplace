@@ -100,7 +100,7 @@ fn hashlock_request_rejects_wrong_preimage() {
 
 /// Cross-language vector locking `hash_hashlock_commitment = SHA256(intent_binding_hash(req) ‖
 /// hash_fn_id(0) ‖ SHA256(secret))`. The SAME inputs + expected bytes are asserted by
-/// `@laplace/sdk` `test/binding.test.ts` (`hashHashlockCommitment` / `Condition.hashlock`), so the
+/// `@laplace-one/sdk` `test/binding.test.ts` (`hashHashlockCommitment` / `Condition.hashlock`), so the
 /// Rust adapter and the TS SDK can never silently diverge. Fields mirror the SDK `solCtx()` fixture;
 /// the expected bytes were independently recomputed with a standalone SHA256 (not this code path).
 #[test]

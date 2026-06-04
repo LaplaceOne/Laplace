@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { useLaplaceContext } from '@laplace/sdk/react';
-import { fetchIntents, fetchIntent, fetchIntentsByAddresses } from '@laplace/sdk';
+import { useLaplaceContext } from '@laplace-one/sdk/react';
+import { fetchIntents, fetchIntent, fetchIntentsByAddresses } from '@laplace-one/sdk';
 import type { Address } from '@solana/kit';
-import type { IntentView, IntentStatusKind } from '@laplace/ui';
+import type { IntentView, IntentStatusKind } from '@laplace-one/ui';
 import { useIndexer } from './IndexerProvider';
 import { fromIndexerRow, fromResolved } from '../intent/adapters';
 import { resolveMintInfo } from '../intent/mintInfo';

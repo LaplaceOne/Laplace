@@ -1,4 +1,4 @@
-import { Button, ArrowLink, Icon, Reveal } from '@laplace/ui';
+import { Button, ArrowLink, Icon, Reveal } from '@laplace-one/ui';
 import { PageHead } from '../marketing/PageHead';
 import { SecHead } from '../marketing/SecHead';
 import { Cta } from '../marketing/Cta';
@@ -358,7 +358,7 @@ export default function Lab() {
               <p>
                 Add a descriptor to{' '}
                 <span className="mono" style={{ color: 'var(--text)' }}>
-                  @laplace/registry
+                  @laplace-one/registry
                 </span>{' '}
                 — per-cluster program IDs, flags, warnings, docs. The core never whitelists; the UI
                 labels anything unofficial.

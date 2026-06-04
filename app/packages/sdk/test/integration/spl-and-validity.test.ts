@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { Laplace, Condition, fetchIntent, splToken, validityConfigPda } from '../../src/index.js';
 import { RUN, localnet, fundedSigner } from './localnet.js';
 // These require runtime fixtures (a minted SPL token; a real SP1 Groth16 proof). They are
-// scaffolded with guided TODOs to be filled in at execution time using @laplace/wallet's
+// scaffolded with guided TODOs to be filled in at execution time using @laplace-one/wallet's
 // createAtaIx + a mint helper, and the proof vectors from programs/validity/tests.
 
 describe.runIf(RUN)('SPL + validity lifecycles (localnet)', () => {

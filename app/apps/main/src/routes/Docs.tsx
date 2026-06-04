@@ -1,12 +1,12 @@
-import { Button, CodeBlock, CopyButton, Icon, Reveal } from '@laplace/ui';
-import { getCluster } from '@laplace/registry';
+import { Button, CodeBlock, CopyButton, Icon, Reveal } from '@laplace-one/ui';
+import { getCluster } from '@laplace-one/registry';
 import { StateMachineDiagram } from '../components/diagrams/StateMachineDiagram';
 import { useScrollSpy } from './useScrollSpy';
 import { env } from '../env';
 import { interfaceConstants, requestStruct, createIntentFull } from '../content/snippets';
 import styles from './Docs.module.css';
 
-const NPM_INSTALL = 'npm i @laplace/sdk';
+const NPM_INSTALL = 'npm i @laplace-one/sdk';
 
 const SECTION_IDS = [
   'overview',

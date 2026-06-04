@@ -2,7 +2,7 @@
 
 Date: 2026-06-03
 Status: Approved (design); pending spec review → implementation plan
-Scope: new `app/packages/indexer` (`@laplace/indexer`), depends on `@laplace/sdk` + `@laplace/registry`
+Scope: new `app/packages/indexer` (`@laplace-one/indexer`), depends on `@laplace-one/sdk` + `@laplace-one/registry`
 Depends on: lifecycle events (Design B, branch `feat/lifecycle-events`) — the SDK `parseLaplaceEvents` decoder
 
 ## 1. Problem & goal
@@ -17,15 +17,15 @@ an event-sourced store, and serves typed reads — so a future dashboard can sho
 without polling the chain or racing account deletion.
 
 **Non-goals.**
-- The dashboard UI and the management actions (create/fulfill/refund/close already live in `@laplace/sdk`)
+- The dashboard UI and the management actions (create/fulfill/refund/close already live in `@laplace-one/sdk`)
   — a separate later spec (Design C) that consumes this indexer.
 - A live WebSocket/Geyser firehose — v1 is poll-only (cursor-based RPC). Realtime is a later add.
 - Multi-protocol / generic indexing — scoped to the three Laplace program IDs.
 
 ## 2. Decisions (resolved with the user)
 
-1. **Language: TypeScript, reusing `@laplace/sdk`.** Zero duplication of the wire format — `parseLaplaceEvents`,
-   the generated account decoders, PDA helpers, and `@laplace/registry` cluster config are already written
+1. **Language: TypeScript, reusing `@laplace-one/sdk`.** Zero duplication of the wire format — `parseLaplaceEvents`,
+   the generated account decoders, PDA helpers, and `@laplace-one/registry` cluster config are already written
    and tested. One language across indexer + SDK + future dashboard. (Rust/Go would re-implement or copy
    the event/account layouts; rejected — throughput isn't the constraint for a settlement protocol.)
 2. **Ingestion: cursor-based RPC polling** (`getSignaturesForAddress` + `getTransaction`). Vendor-neutral,
@@ -45,7 +45,7 @@ without polling the chain or racing account deletion.
 Solana RPC ── poll getSignaturesForAddress(laplace, validity) ──▶ ingest loop
    │  getTransaction(sig).meta.logMessages   (skip meta.err != null)
    ▼
-@laplace/sdk parseLaplaceEvents(logs) ──▶ append to `events` (idempotent on signature+index)
+@laplace-one/sdk parseLaplaceEvents(logs) ──▶ append to `events` (idempotent on signature+index)
    │
    ▼ fold (ordered by slot, signature, event_index)
 materialized `intents` + `validity_configs` projections
@@ -146,12 +146,12 @@ safe as a `number`). The API surfaces `amount` as a string; the query module par
 - **Unit — `decode`:** fixture transaction logs → expected `events` rows (reuses SDK `parseLaplaceEvents`).
 - **Integration — SQLite in-memory:** a mock RPC returns canned `getSignaturesForAddress`/`getTransaction`;
   run a poll tick; assert `events` + `intents` + `sync_state` rows and cursor advance.
-- **Live — gated `LAPLACE_DEVNET=1`:** drive `createIntent`/fulfill/refund/close via `@laplace/sdk` against the
+- **Live — gated `LAPLACE_DEVNET=1`:** drive `createIntent`/fulfill/refund/close via `@laplace-one/sdk` against the
   live devnet programs, run a real poll tick, assert the DB reflects the lifecycle end-to-end.
 
 ## 10. Dependencies
 
-`@laplace/sdk`, `@laplace/registry`, `@solana/kit` (already in the monorepo); `drizzle-orm` + `drizzle-kit`;
+`@laplace-one/sdk`, `@laplace-one/registry`, `@solana/kit` (already in the monorepo); `drizzle-orm` + `drizzle-kit`;
 `postgres` (Postgres driver); `better-sqlite3` (SQLite dev/test); `hono` (read API). Dev: `vitest`, `tsup`,
 `typescript`, `@types/node` — matching the existing SDK package conventions.
 

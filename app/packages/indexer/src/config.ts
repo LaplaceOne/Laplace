@@ -1,4 +1,4 @@
-import { getCluster, type Cluster } from '@laplace/registry';
+import { getCluster, type Cluster } from '@laplace-one/registry';
 
 export interface IndexerConfig {
   cluster: Cluster;

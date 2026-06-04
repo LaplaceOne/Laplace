@@ -4,7 +4,7 @@ import { events, intents, validityConfigs, syncState } from './schema.js';
  * The set of drizzle tables the indexer logic touches. Typed loosely so BOTH the Postgres tables
  * (Node) and the SQLite/D1 tables (the CF Worker) fit — the query-builder calls are identical
  * across dialects, only the table/db TYPES differ. This lets one set of projection/query functions
- * serve both backends (see `@laplace/indexer/core`).
+ * serve both backends (see `@laplace-one/indexer/core`).
  */
 export interface SchemaTables {
   events: any;

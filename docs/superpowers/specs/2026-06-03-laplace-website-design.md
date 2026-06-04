@@ -8,7 +8,7 @@ Build the Laplace website as a real React application that faithfully reproduces
 the approved HTML/CSS/JS design prototype (line-art aesthetic on the AnyUI token
 system) across **all five surfaces** — Landing, Docs, Lab, Registry, and the
 interactive **Console** — and wires the Console to the real protocol via
-`@laplace/sdk`, `@laplace/indexer`, and Solana wallets.
+`@laplace-one/sdk`, `@laplace-one/indexer`, and Solana wallets.
 
 The design prototype is a "pure HTML/CSS/JS showcase." We **re-implement it as our
 own React program** — we do not lift the prototype's vanilla-JS/HTML wholesale.
@@ -29,7 +29,7 @@ exported, but its styling and logic fully specify the Console), plus
 | Framework | **Vite + React 19 + React Router (SPA)** | Matches the "react.js / our own react program" brief; leanest for a wallet-gated, client-side dApp; static-deployable. Consciously diverges from `frontend-architecture.md` §0 (Next.js) — that doc's stack pin is superseded for this app. |
 | Scope (this build) | **All five surfaces** | Full site; Console is the interactive heart. |
 | Chain wiring | **Full read + write** | Real wallet connect, indexer-backed discovery (SDK `getProgramAccounts` fallback), live `create/fulfill/refund/close`. SP1 validity proof generation stays caller-supplied/off-app. |
-| Component decoupling (A) | **Create `@laplace/ui`** | User emphasized decoupling; architecture doc + "one protocol, many faces" thesis want a shared design system for future Bridge/Disclosure apps. |
+| Component decoupling (A) | **Create `@laplace-one/ui`** | User emphasized decoupling; architecture doc + "one protocol, many faces" thesis want a shared design system for future Bridge/Disclosure apps. |
 | Styling strategy (B) | **Re-author AnyUI CSS as our own, organized + component-scoped (CSS Modules)** | Preserves exact tokens/measurements for fidelity while being our own structured code; avoids Tailwind rewrite drift and avoids verbatim copy. |
 
 ## 3. Monorepo placement
@@ -40,7 +40,7 @@ app/
     main/                          ← NEW: Vite SPA (this build)
       index.html                   inline pre-paint theme script (no FOUC)
       vite.config.ts
-      package.json                 name: @laplace/main (private)
+      package.json                 name: @laplace-one/main (private)
       src/
         main.tsx                   root: providers + RouterProvider
         router.tsx                 route table
@@ -52,8 +52,8 @@ app/
         lib/                       indexerClient, query hooks, formatting glue
         content/                   page copy + registry-derived data
   packages/
-    ui/                            ← NEW: @laplace/ui (design system + shared primitives)
-      package.json                 name: @laplace/ui
+    ui/                            ← NEW: @laplace-one/ui (design system + shared primitives)
+      package.json                 name: @laplace-one/ui
       src/
         styles/tokens.css          re-authored anyui-tokens.css (exact values)
         styles/base.css            globals: scrollbar, typography, gradient-text, selection
@@ -63,14 +63,14 @@ app/
     sdk/ wallet/ registry/ indexer/ config/   (existing, UNCHANGED)
 ```
 
-Dependency direction: `apps/main → @laplace/ui → @laplace/sdk → @laplace/registry`;
-`apps/main → @laplace/wallet`. Apps never import `@solana/kit` directly.
+Dependency direction: `apps/main → @laplace-one/ui → @laplace-one/sdk → @laplace-one/registry`;
+`apps/main → @laplace-one/wallet`. Apps never import `@solana/kit` directly.
 
-Build: turbo-orchestrated (`build`/`dev`/`lint`/`typecheck`/`test`). `@laplace/ui`
-builds via the shared `@laplace/config` tsup preset (ESM/CJS/types) and ships its
+Build: turbo-orchestrated (`build`/`dev`/`lint`/`typecheck`/`test`). `@laplace-one/ui`
+builds via the shared `@laplace-one/config` tsup preset (ESM/CJS/types) and ships its
 CSS as importable assets.
 
-## 4. `@laplace/ui` — shared design system
+## 4. `@laplace-one/ui` — shared design system
 
 **Foundation**
 - `styles/tokens.css` — re-authored AnyUI tokens (brand `--primary` light
@@ -126,7 +126,7 @@ CSS as importable assets.
           <RouterProvider router={router} />
 ```
 
-**Wallet connect (the gap `@laplace/wallet` leaves to the app):**
+**Wallet connect (the gap `@laplace-one/wallet` leaves to the app):**
 - Built on `@solana/react` + `@wallet-standard/react` — auto-discovers
   Phantom/Solflare/Backpack via `useWallets`.
 - A connect modal (wallet list) + the design's `.wallet-btn`
@@ -141,7 +141,7 @@ CSS as importable assets.
   `IntentDetail` / `Stats` / `ValidityConfigRow`.
 - Hooks (`lib/hooks.ts`): `useIntentList({ role, status })`, `useIntentDetail(pda)`,
   `useStats()`, `useValidityConfigs()`. When `VITE_INDEXER_URL` is unset or
-  `/health` fails, hooks **fall back to `@laplace/sdk`** `useIntents({role})` /
+  `/health` fails, hooks **fall back to `@laplace-one/sdk`** `useIntents({role})` /
   `fetchIntent` / `fetchIntents` (getProgramAccounts + memcmp) so the Console works
   without a running indexer. Role→owner mapping uses the connected signer.
 - Polling/refetch on an interval keyed to the slot clock; manual invalidate after
@@ -197,7 +197,7 @@ background** (cursor ring still applies). View transitions reuse the `.view`/
   3. Review & sign — full summary (derived intent PDA via `intentPda`), one
      `createIntent` tx, `TxToast`, redirect to detail.
 - **Manual ops `/app/manual`** — per-instruction console mapping 1:1 to the
-  programs, using **`@laplace/sdk/raw`** (Codama instruction builders): editable
+  programs, using **`@laplace-one/sdk/raw`** (Codama instruction builders): editable
   accounts/args/remaining-accounts with explicit `criterion_account_count`;
   serialized instruction + simulation result before send. Escape hatch for
   `initialize`, `create_intent`, `fulfill_with_criterion`, `refund_expired_intent`,
@@ -224,7 +224,7 @@ SOL + SPL"). All sections wrapped in `Reveal`. `scroll-behavior: smooth` +
 - **Docs `/docs`** — sticky left rail + IntersectionObserver scroll-spy; sections
   Overview / Intent lifecycle (state-machine SVG + deftable) / Criterion interface
   (constants + request struct) / Hashlock / Validity·SP1 / Future criteria / SDK
-  quickstart (`npm i` install strip + code) / Program IDs (from `@laplace/registry`
+  quickstart (`npm i` install strip + code) / Program IDs (from `@laplace-one/registry`
   `PROGRAM_IDS`). Rail hidden < 900px.
 - **Lab `/lab`** — page-head + architecture SVG (Protocol → shared SDK/registry/
   design-system → Console/Bridge/Disclosure/Future) → Products (3 panels) → Future
@@ -232,7 +232,7 @@ SOL + SPL"). All sections wrapped in `Reveal`. `scroll-behavior: smooth` +
 - **Registry `/registry`** — page-head ("Permissionless protocol. Legible trust.")
   → Trust model split (Automatic·cryptographic vs Human·judgment) → Five trust
   tiers legend → **interactive catalog** (Criteria / Validity-guests tabs + tier
-  filter pills + accordion cards) sourced from `@laplace/registry`
+  filter pills + accordion cards) sourced from `@laplace-one/registry`
   (`getCriteria`, `guests`, `tierOf`) → submission pipeline → CTA. Catalog is a
   React component with `tab` + `tierFilter` state (replaces `registry.js`).
 
@@ -248,7 +248,7 @@ responsive breakpoints (900px) matching the prototype's media queries.
 Faithful-but-fresh. Keep the design's docs-grounded technical copy and the two
 deliberate "Solana" mentions. Replace prototype **mock data** with real data where
 it exists: program IDs, criteria catalog, trust tiers, validity configs (from
-`@laplace/registry`/indexer); live stats (from `/stats`). Illustrative registry
+`@laplace-one/registry`/indexer); live stats (from `/stats`). Illustrative registry
 entries beyond the two official criteria remain clearly labeled until real data
 lands. No `window.__lpbg` / `window.__registryReady` debug hooks in production.
 
@@ -262,7 +262,7 @@ a wrong-cluster guard on the connected wallet.
 ## 11. Build / dev / testing
 
 - `vite` dev + build; turbo wires `dev`/`build`/`lint`/`typecheck`/`test`.
-- Vitest + Testing Library: `@laplace/ui` primitives (badge/countdown/action
+- Vitest + Testing Library: `@laplace-one/ui` primitives (badge/countdown/action
   button/theme), the indexer client + fallback hooks, and the create-wizard state
   machine (asset → base units, expiry → slot, hashlock secret gate, custom-ack
   gate). Slot/clock and RPC mocked.
@@ -305,5 +305,5 @@ itself.
 5. Detail view supports fulfill/refund/close per role+slot, shows the event
    timeline, and shares a secret-free link.
 6. Manual ops can build, simulate, and send each program instruction via
-   `@laplace/sdk/raw`.
-7. `turbo run typecheck && turbo run test` pass for `@laplace/ui` and `apps/main`.
+   `@laplace-one/sdk/raw`.
+7. `turbo run typecheck && turbo run test` pass for `@laplace-one/ui` and `apps/main`.

@@ -26,7 +26,7 @@ pub const INTENT_BINDING_DOMAIN: &[u8] = b"laplace-intent-bind-v1";
 /// )
 /// ```
 ///
-/// Mirrored byte-for-byte by `@laplace/sdk` `intentBindingHash`.
+/// Mirrored byte-for-byte by `@laplace-one/sdk` `intentBindingHash`.
 pub fn intent_binding_hash(req: &CriterionVerificationRequest) -> [u8; 32] {
     intent_binding_hash_from_parts(
         req.interface_version,

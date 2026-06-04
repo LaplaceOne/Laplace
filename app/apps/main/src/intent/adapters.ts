@@ -1,5 +1,5 @@
-import type { IntentView, IntentStatusKind, IntentAssetView } from '@laplace/ui';
-import type { ResolvedIntent } from '@laplace/sdk';
+import type { IntentView, IntentStatusKind, IntentAssetView } from '@laplace-one/ui';
+import type { ResolvedIntent } from '@laplace-one/sdk';
 import type { IntentRow } from '../indexer/indexerClient';
 
 const STATUS: Record<IntentRow['status'], IntentStatusKind> = {

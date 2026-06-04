@@ -1,5 +1,5 @@
 {
-  "extends": "@laplace/config/tsconfig.lib.json",
+  "extends": "@laplace-one/config/tsconfig.lib.json",
   "compilerOptions": { "rootDir": "src", "outDir": "dist", "jsx": "react-jsx", "jsxImportSource": "react", "types": ["node"] },
   "include": ["src"]
 }

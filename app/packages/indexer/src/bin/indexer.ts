@@ -1,5 +1,5 @@
 import { createSolanaRpc } from '@solana/kit';
-import { getCluster } from '@laplace/registry';
+import { getCluster } from '@laplace-one/registry';
 import { loadConfig } from '../config.js';
 import { makeDb } from '../db/client.js';
 import { rpcSource } from '../ingest/rpc.js';

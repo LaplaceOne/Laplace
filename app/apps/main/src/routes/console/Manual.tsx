@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { useToast } from '@laplace/ui';
-import { useLaplaceContext } from '@laplace/sdk/react';
-import { mapLaplaceError } from '@laplace/sdk';
+import { useToast } from '@laplace-one/ui';
+import { useLaplaceContext } from '@laplace-one/sdk/react';
+import { mapLaplaceError } from '@laplace-one/sdk';
 import {
   type Instruction,
   pipe,

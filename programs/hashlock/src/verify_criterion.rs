@@ -59,7 +59,7 @@ pub fn preimage_matches(hashlock: &[u8; 32], preimage: &[u8]) -> bool {
 ///
 /// `intent_binding_hash` is the shared, domain-separated canonical binding defined in the `laplace`
 /// crate (see `programs/laplace/src/binding.rs`). Using it here means the domain and field
-/// serialization live in exactly one place. Mirrored byte-for-byte by `@laplace/sdk`
+/// serialization live in exactly one place. Mirrored byte-for-byte by `@laplace-one/sdk`
 /// `hashHashlockCommitment`.
 pub fn hash_hashlock_commitment(
     request: &laplace::CriterionVerificationRequest,

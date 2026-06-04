@@ -8,7 +8,7 @@ const indexerMock = { baseUrl: 'x', listIntents, health: async () => true, getIn
 const sdkCtx = { rpc: {}, cluster: 'devnet', signer: { address: 'ME' } };
 
 vi.mock('./IndexerProvider', () => ({ useIndexer: () => indexerMock }));
-vi.mock('@laplace/sdk/react', () => ({ useLaplaceContext: () => sdkCtx }));
+vi.mock('@laplace-one/sdk/react', () => ({ useLaplaceContext: () => sdkCtx }));
 
 import { useIntentList } from './hooks';
 

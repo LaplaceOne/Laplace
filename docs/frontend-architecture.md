@@ -55,10 +55,10 @@ Laplace/                         # existing Anchor workspace (unchanged)
       bridge/                    # Next.js — Laplace Bridge
       disclosure/                # Next.js — Laplace Disclosure
     packages/
-      sdk/                       # @laplace/sdk   — Anchor v1 + kit clients, PDA derivation, flows
-      registry/                  # @laplace/registry — criterion + per-cluster program metadata
-      ui/                        # @laplace/ui    — design system, shared React components
-      wallet/                    # @laplace/wallet — Wallet Standard provider + cluster context
+      sdk/                       # @laplace-one/sdk   — Anchor v1 + kit clients, PDA derivation, flows
+      registry/                  # @laplace-one/registry — criterion + per-cluster program metadata
+      ui/                        # @laplace-one/ui    — design system, shared React components
+      wallet/                    # @laplace-one/wallet — Wallet Standard provider + cluster context
       config/                    # shared tsconfig / eslint / tailwind presets
 ```
 
@@ -67,14 +67,14 @@ Turborepo orchestrates `build` / `lint` / `typecheck` / `dev` across packages.
 
 ### Dependency direction
 ```
-apps/*  ─▶  @laplace/ui ─▶ @laplace/sdk ─▶ @laplace/registry
-         └▶ @laplace/wallet ─┘                 ▲
+apps/*  ─▶  @laplace-one/ui ─▶ @laplace-one/sdk ─▶ @laplace-one/registry
+         └▶ @laplace-one/wallet ─┘                 ▲
 target/idl/*.json ───────────────────────────┘ (codegen input to sdk)
 ```
 Apps never import `@solana/kit` or build instructions directly; they import
-hooks/functions from `@laplace/sdk`.
+hooks/functions from `@laplace-one/sdk`.
 
-## 3. `@laplace/sdk` — the only chain interface
+## 3. `@laplace-one/sdk` — the only chain interface
 
 Generated from the Anchor IDLs (`target/idl/laplace.json`, `hashlock.json`,
 `validity.json`) via the **Anchor v1 (`@anchor-lang/core`) TS client over
@@ -110,7 +110,7 @@ MAX_FULFILLMENT_DATA_LEN     = 1024
 VERIFY_CRITERION_DISCRIMINATOR = 8c7b8b8567d572ab
 ```
 
-## 4. `@laplace/registry` — criterion & cluster metadata
+## 4. `@laplace-one/registry` — criterion & cluster metadata
 
 A curated, typed dataset (no on-chain registry program exists yet). It maps each
 criterion to its per-cluster program IDs plus display/UX metadata, and carries
@@ -130,7 +130,7 @@ program-ID table are defined in **criteria-registry.md (§4–§5)** — that do
 single source of truth for registry shape and addresses. Switching clusters or
 adding mainnet is a registry edit, not an app change.
 
-## 5. Wallet & cluster (`@laplace/wallet`)
+## 5. Wallet & cluster (`@laplace-one/wallet`)
 
 - **Wallet Standard** via `@solana/react` + `@wallet-standard/react` (Phantom,
   Solflare, Backpack auto-discovered), with a kit RPC connection keyed off the
@@ -178,7 +178,7 @@ delivery to a counterparty is explicitly off-band (out of scope for the URL).
 | **bridge** | counterparty setup, dual-chain HTLC with asymmetric timeouts, reveal/claim, refund | hashlock |
 | **disclosure** | list a secret, buy, publish ciphertext + proof, decrypt locally, refund | validity / encrypted-disclosure |
 
-## 9. Shared lifecycle UI model (`@laplace/ui`)
+## 9. Shared lifecycle UI model (`@laplace-one/ui`)
 
 One canonical state machine drives every status surface:
 

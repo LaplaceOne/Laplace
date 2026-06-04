@@ -6,7 +6,7 @@
 //
 import { serve } from '@hono/node-server';
 import { createSolanaRpc } from '@solana/kit';
-import { getCluster } from '@laplace/registry';
+import { getCluster } from '@laplace-one/registry';
 import { loadConfig } from '../config.js';
 import { makeDb } from '../db/client.js';
 import { createApi } from '../api/server.js';

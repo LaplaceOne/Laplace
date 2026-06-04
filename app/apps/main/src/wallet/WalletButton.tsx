@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cn } from '@laplace/ui';
+import { cn } from '@laplace-one/ui';
 import { useWallet } from './WalletProvider';
 import { useWalletBalance } from './useWalletBalance';
 import { ConnectModal } from './ConnectModal';

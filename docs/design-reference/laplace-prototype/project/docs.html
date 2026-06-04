@@ -191,12 +191,12 @@
       <h2>SDK quickstart.</h2>
       <p>A single typed SDK is the only thing that talks to the chain — UIs never hand-build instructions. Generated from the Anchor IDLs over <span class="mono" style="color:var(--text)">@solana/kit</span>.</p>
       <div class="install reveal" style="margin:20px 0;">
-        <code><span class="pr">$</span> npm i @laplace/sdk @laplace/registry</code>
-        <button class="copy-btn" data-copy="npm i @laplace/sdk @laplace/registry"><iconify-icon icon="eva:copy-outline"></iconify-icon> copy</button>
+        <code><span class="pr">$</span> npm i @laplace-one/sdk @laplace-one/registry</code>
+        <button class="copy-btn" data-copy="npm i @laplace-one/sdk @laplace-one/registry"><iconify-icon icon="eva:copy-outline"></iconify-icon> copy</button>
       </div>
       <div class="code reveal">
         <div class="code__bar"><span class="label">create-intent.ts</span><span class="dotrow"><i></i><i></i><i></i></span></div>
-<pre class="code__body"><span class="k">import</span> { Laplace, Condition } <span class="k">from</span> <span class="s">"@laplace/sdk"</span>;
+<pre class="code__body"><span class="k">import</span> { Laplace, Condition } <span class="k">from</span> <span class="s">"@laplace-one/sdk"</span>;
 
 <span class="c">// lock 1,200 USDC, release on a revealed secret</span>
 <span class="k">const</span> intent = <span class="k">await</span> laplace.<span class="n">createIntent</span>({

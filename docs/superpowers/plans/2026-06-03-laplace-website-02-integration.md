@@ -4,17 +4,17 @@
 
 **Goal:** Wire the app to the chain: a wallet-standard connect layer that yields a `TransactionSigner`, the `LaplaceProvider`/indexer/toast provider stack, a typed indexer client with SDK fallback, discovery hooks, and the shared lifecycle primitives — proven by a minimal live console dashboard.
 
-**Architecture:** `WalletProvider` (built on `@wallet-standard/react` + `@solana/react`) tracks the selected account and exposes connect/disconnect; a `ConnectedSigner` bridge turns the selected account into a kit `TransactionSendingSigner` and feeds it to `@laplace/wallet`'s `LaplaceProvider`, which supplies RPC + slot clock + SDK context. An `IndexerProvider` exposes a typed HTTP client; discovery hooks prefer the indexer and fall back to the SDK's `getProgramAccounts`. A normalized `IntentView` decouples the UI from the two on-the-wire shapes (indexer `IntentRow` vs SDK `ResolvedIntent`); the `@laplace/ui` lifecycle primitives consume `IntentView` + the SDK's `effectiveStatus`/`actionFor`/`useSlot`.
+**Architecture:** `WalletProvider` (built on `@wallet-standard/react` + `@solana/react`) tracks the selected account and exposes connect/disconnect; a `ConnectedSigner` bridge turns the selected account into a kit `TransactionSendingSigner` and feeds it to `@laplace-one/wallet`'s `LaplaceProvider`, which supplies RPC + slot clock + SDK context. An `IndexerProvider` exposes a typed HTTP client; discovery hooks prefer the indexer and fall back to the SDK's `getProgramAccounts`. A normalized `IntentView` decouples the UI from the two on-the-wire shapes (indexer `IntentRow` vs SDK `ResolvedIntent`); the `@laplace-one/ui` lifecycle primitives consume `IntentView` + the SDK's `effectiveStatus`/`actionFor`/`useSlot`.
 
 **Tech Stack:** Builds on Phase 1. Adds `@solana/react@6`, `@wallet-standard/react@1`, `@solana/kit@6`, the indexer HTTP API.
 
-**Prereq:** Phase 1 is complete and green (`@laplace/ui` foundation + `apps/main` shell + router). `registry`/`sdk`/`wallet` are built to `dist`.
+**Prereq:** Phase 1 is complete and green (`@laplace-one/ui` foundation + `apps/main` shell + router). `registry`/`sdk`/`wallet` are built to `dist`.
 
 **Confirmed APIs (do not re-derive):**
-- `@laplace/wallet`: `LaplaceProvider({ cluster, rpcUrl?, signer?, children })`, `resolveRpcUrl(cluster, override?)`, `makeAirdrop(rpc, rpcSubscriptions)`, `createSlotClock`, `ataFor`, `createAtaIx`.
-- `@laplace/sdk` (`.`): `Laplace`, `Condition`, `nativeSol`, `splToken`, `toBaseUnits`, `toDisplay`, `effectiveStatus(intent, currentSlot, opts?)`, `actionFor(intent, { wallet, currentSlot })`, `intentShareLink(pda, cluster)`, `mapLaplaceError(err, { program? })`, `fetchIntents(rpc, { role, owner, cluster })`, `fetchIntent(rpc, pda)`, `intentPda`, types `ResolvedIntent`/`Intent`/`EscrowAsset`/`IntentStatus`/`EffectiveStatus`/`IntentAction`.
-- `@laplace/sdk/react`: `useLaplaceContext()`, `useSlot()`, `useClient()`, `useIntents({ role })`, `useIntent(pda)`.
-- `@laplace/registry`: `getCluster(cluster).programs`, `criteria`, `getCriteria`, `getCriterion`, `tierOf`, `isOfficial`, types `Cluster`/`CriterionEntry`/`TrustTier`.
+- `@laplace-one/wallet`: `LaplaceProvider({ cluster, rpcUrl?, signer?, children })`, `resolveRpcUrl(cluster, override?)`, `makeAirdrop(rpc, rpcSubscriptions)`, `createSlotClock`, `ataFor`, `createAtaIx`.
+- `@laplace-one/sdk` (`.`): `Laplace`, `Condition`, `nativeSol`, `splToken`, `toBaseUnits`, `toDisplay`, `effectiveStatus(intent, currentSlot, opts?)`, `actionFor(intent, { wallet, currentSlot })`, `intentShareLink(pda, cluster)`, `mapLaplaceError(err, { program? })`, `fetchIntents(rpc, { role, owner, cluster })`, `fetchIntent(rpc, pda)`, `intentPda`, types `ResolvedIntent`/`Intent`/`EscrowAsset`/`IntentStatus`/`EffectiveStatus`/`IntentAction`.
+- `@laplace-one/sdk/react`: `useLaplaceContext()`, `useSlot()`, `useClient()`, `useIntents({ role })`, `useIntent(pda)`.
+- `@laplace-one/registry`: `getCluster(cluster).programs`, `criteria`, `getCriteria`, `getCriterion`, `tierOf`, `isOfficial`, types `Cluster`/`CriterionEntry`/`TrustTier`.
 - `@wallet-standard/react`: `useWallets(): readonly UiWallet[]`, `useConnect(wallet): [isConnecting, connect()→readonly UiWalletAccount[]]`, `useDisconnect(wallet): [isDisconnecting, disconnect()]`; types `UiWallet`/`UiWalletAccount` from `@wallet-standard/ui`.
 - `@solana/react`: `useWalletAccountTransactionSendingSigner(account: UiWalletAccount, chain: 'solana:devnet'|…): TransactionSendingSigner`.
 - Indexer HTTP: `GET /health→{ok}`, `/intents?status&maker&receiver&criterion&limit&cursorSlot→{intents: IntentRow[]}`, `/intents/:pda→{intent,timeline}` (404 `{error}`), `/stats→{byStatus:{active,fulfilled,refunded},closed,total}`, `/validity-configs→{configs}`. `IntentRow`: `{ pda, id, maker, receiver, refundRecipient, criterionProgram, asset: {kind:'NativeSol'}|{kind:'SplToken',mint,tokenProgram,vault}, amount: string, expirySlot: number, createdSlot: number, status: 'active'|'fulfilled'|'refunded', closed: boolean, createdSig, settledSig?, settledSlot?, closedSig?, closedSlot?, updatedSlot }`.
@@ -22,7 +22,7 @@
 **Key design notes:**
 - The signer hook needs a *defined* account, so connection state switches a component subtree: no account → `LaplaceProvider signer={undefined}`; account selected → `<ConnectedSigner>` calls the hook and renders `LaplaceProvider signer={signer}`.
 - Chain id = `` `solana:${cluster}` `` (devnet → `solana:devnet`).
-- `@laplace/ui` may depend on `@laplace/sdk` (already a dep) but **not** on `@laplace/indexer`. The `IntentView` type lives in `@laplace/ui`; indexer→view and resolved→view adapters live in `apps/main`.
+- `@laplace-one/ui` may depend on `@laplace-one/sdk` (already a dep) but **not** on `@laplace-one/indexer`. The `IntentView` type lives in `@laplace-one/ui`; indexer→view and resolved→view adapters live in `apps/main`.
 
 ---
 
@@ -58,7 +58,7 @@ app/apps/main/src/
 
 ---
 
-## Task 1: `IntentView` + lifecycle primitives in `@laplace/ui`
+## Task 1: `IntentView` + lifecycle primitives in `@laplace-one/ui`
 
 **Files:**
 - Create: `app/packages/ui/src/intent/IntentView.ts`, `IntentStatusBadge.tsx` + `.module.css` + `.test.tsx`, `ExpiryCountdown.tsx` + `.module.css` + `.test.tsx`, `AssetAmount.tsx` + `.test.tsx`, `RoleActionButton.tsx` + `.module.css` + `.test.tsx`, `IntentCard.tsx` + `.module.css`
@@ -148,7 +148,7 @@ test('renders the effective status label and class', () => {
 - [ ] **Step 3: Run — expect FAIL, then implement**
 
 ```bash
-cd app && npm run test -- --filter=@laplace/ui
+cd app && npm run test -- --filter=@laplace-one/ui
 ```
 
 `app/packages/ui/src/intent/IntentStatusBadge.tsx`:
@@ -239,7 +239,7 @@ test('formats base units with the asset symbol', () => {
 `app/packages/ui/src/intent/AssetAmount.tsx`:
 
 ```tsx
-import { toDisplay } from '@laplace/sdk';
+import { toDisplay } from '@laplace-one/sdk';
 import type { IntentAssetView } from './IntentView.js';
 
 export function AssetAmount({ amount, asset, className }: { amount: bigint; asset: IntentAssetView; className?: string }) {
@@ -361,7 +361,7 @@ export { IntentCard } from './intent/IntentCard.js';
 ```
 
 ```bash
-cd app && npm run test -- --filter=@laplace/ui
+cd app && npm run test -- --filter=@laplace-one/ui
 git add app/packages/ui/src && git commit -m "feat(ui): IntentView + lifecycle primitives (badge, countdown, amount, action, card)"
 ```
 
@@ -369,7 +369,7 @@ Expected: badge/countdown/amount/action tests PASS.
 
 ---
 
-## Task 2: ToastProvider + TxToast in `@laplace/ui`
+## Task 2: ToastProvider + TxToast in `@laplace-one/ui`
 
 **Files:**
 - Create: `app/packages/ui/src/feedback/ToastProvider.tsx`, `Toast.module.css`, `ToastProvider.test.tsx`
@@ -447,7 +447,7 @@ export { ToastProvider, useToast } from './feedback/ToastProvider.js';
 ```
 
 ```bash
-cd app && npm run test -- --filter=@laplace/ui
+cd app && npm run test -- --filter=@laplace-one/ui
 git add app/packages/ui/src && git commit -m "feat(ui): ToastProvider + useToast"
 ```
 
@@ -566,7 +566,7 @@ export function useIndexer(): IndexerClient | null { return React.useContext(Ctx
 - [ ] **Step 3: Run, commit**
 
 ```bash
-cd app && npm run test -- --filter=@laplace/main
+cd app && npm run test -- --filter=@laplace-one/main
 git add app/apps/main/src/indexer && git commit -m "feat(main): typed indexer HTTP client + provider"
 ```
 
@@ -605,8 +605,8 @@ test('fromIndexerRow normalizes amounts/slots/status and SOL asset', () => {
 `app/apps/main/src/intent/adapters.ts`:
 
 ```ts
-import type { IntentView, IntentStatusKind, IntentAssetView } from '@laplace/ui';
-import type { ResolvedIntent } from '@laplace/sdk';
+import type { IntentView, IntentStatusKind, IntentAssetView } from '@laplace-one/ui';
+import type { ResolvedIntent } from '@laplace-one/sdk';
 import type { IntentRow } from '../indexer/indexerClient';
 
 const STATUS: Record<IntentRow['status'], IntentStatusKind> = {
@@ -650,7 +650,7 @@ export function fromResolved(ri: ResolvedIntent): IntentView {
 - [ ] **Step 3: Run, commit**
 
 ```bash
-cd app && npm run test -- --filter=@laplace/main
+cd app && npm run test -- --filter=@laplace-one/main
 git add app/apps/main/src/intent && git commit -m "feat(main): IntentView adapters (indexer row + SDK resolved)"
 ```
 
@@ -673,7 +673,7 @@ const listIntents = vi.fn();
 vi.mock('./IndexerProvider', () => ({
   useIndexer: () => ({ baseUrl: 'x', listIntents, health: async () => true, getIntent: vi.fn(), stats: vi.fn(), validityConfigs: vi.fn() }),
 }));
-vi.mock('@laplace/sdk/react', () => ({ useLaplaceContext: () => ({ rpc: {}, cluster: 'devnet', signer: { address: 'ME' } }) }));
+vi.mock('@laplace-one/sdk/react', () => ({ useLaplaceContext: () => ({ rpc: {}, cluster: 'devnet', signer: { address: 'ME' } }) }));
 
 import { useIntentList } from './hooks';
 
@@ -692,9 +692,9 @@ test('useIntentList queries the indexer by role→owner and returns views', asyn
 
 ```ts
 import * as React from 'react';
-import { useLaplaceContext } from '@laplace/sdk/react';
-import { fetchIntents, fetchIntent } from '@laplace/sdk';
-import type { IntentView } from '@laplace/ui';
+import { useLaplaceContext } from '@laplace-one/sdk/react';
+import { fetchIntents, fetchIntent } from '@laplace-one/sdk';
+import type { IntentView } from '@laplace-one/ui';
 import { useIndexer } from './IndexerProvider';
 import { fromIndexerRow, fromResolved } from '../intent/adapters';
 import type { IntentDetail, Stats, ValidityConfigRow } from './indexerClient';
@@ -785,7 +785,7 @@ export function useValidityConfigs(): ValidityConfigRow[] {
 - [ ] **Step 3: Run, commit**
 
 ```bash
-cd app && npm run test -- --filter=@laplace/main
+cd app && npm run test -- --filter=@laplace-one/main
 git add app/apps/main/src/indexer && git commit -m "feat(main): discovery hooks (indexer-first, SDK fallback)"
 ```
 
@@ -911,7 +911,7 @@ export function useWallet(): WalletCtx {
 import * as React from 'react';
 import { useWalletAccountTransactionSendingSigner } from '@solana/react';
 import type { UiWalletAccount } from '@wallet-standard/react';
-import { LaplaceProvider } from '@laplace/wallet';
+import { LaplaceProvider } from '@laplace-one/wallet';
 import type { TransactionSigner } from '@solana/kit';
 import { env } from '../env';
 
@@ -939,7 +939,7 @@ function Connected({ account, children }: { account: UiWalletAccount; children: 
 
 ```ts
 import * as React from 'react';
-import { useLaplaceContext } from '@laplace/sdk/react';
+import { useLaplaceContext } from '@laplace-one/sdk/react';
 
 export function useWalletBalance(): number | null {
   const { rpc, signer, currentSlot } = useLaplaceContext() as any;
@@ -972,7 +972,7 @@ bg-bright, shadow `--elev-6`).
 - [ ] **Step 5: Run tests, commit**
 
 ```bash
-cd app && npm run test -- --filter=@laplace/main
+cd app && npm run test -- --filter=@laplace-one/main
 git add app/apps/main/src/wallet && git commit -m "feat(main): wallet-standard connect layer + signer bridge + wallet button"
 ```
 
@@ -989,7 +989,7 @@ git add app/apps/main/src/wallet && git commit -m "feat(main): wallet-standard c
 `app/apps/main/src/providers/AppProviders.tsx`:
 
 ```tsx
-import { ThemeProvider, ToastProvider } from '@laplace/ui';
+import { ThemeProvider, ToastProvider } from '@laplace-one/ui';
 import { WalletProvider, useWallet } from '../wallet/WalletProvider';
 import { SignerGate } from '../wallet/ConnectedSigner';
 import { IndexerProvider } from '../indexer/IndexerProvider';
@@ -1040,8 +1040,8 @@ Keep `ThemeToggle` and the `NavLink` tabs.
 
 ```tsx
 import { useNavigate } from 'react-router-dom';
-import { IntentCard } from '@laplace/ui';
-import { useSlot } from '@laplace/sdk/react';
+import { IntentCard } from '@laplace-one/ui';
+import { useSlot } from '@laplace-one/sdk/react';
 import { useWallet } from '../../wallet/WalletProvider';
 import { useIntentList, useStats } from '../../indexer/hooks';
 
@@ -1078,13 +1078,13 @@ export default function Dashboard() {
 
 `app/apps/main/src/App.test.tsx` — wrap the routing assertion render in `<AppProviders>`
 instead of bare `<ThemeProvider>`, mocking `@wallet-standard/react` (empty `useWallets`)
-and `@laplace/sdk/react`/`@laplace/wallet` so the provider tree mounts under jsdom without
+and `@laplace-one/sdk/react`/`@laplace-one/wallet` so the provider tree mounts under jsdom without
 real RPC. Assert the `/docs` route heading still renders.
 
 ```tsx
 import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
-import { ThemeProvider } from '@laplace/ui';
+import { ThemeProvider } from '@laplace-one/ui';
 import { SiteLayout } from './layouts/SiteLayout';
 import Landing from './routes/Landing';
 import Docs from './routes/Docs';
@@ -1105,8 +1105,8 @@ test('renders the docs route under the site layout', () => {
 - [ ] **Step 6: Full gate**
 
 ```bash
-cd app && npm run typecheck -- --filter=@laplace/ui --filter=@laplace/main \
-  && npm run test -- --filter=@laplace/ui --filter=@laplace/main \
+cd app && npm run typecheck -- --filter=@laplace-one/ui --filter=@laplace-one/main \
+  && npm run test -- --filter=@laplace-one/ui --filter=@laplace-one/main \
   && (cd apps/main && npx vite build)
 ```
 
@@ -1132,7 +1132,7 @@ git add app/apps/main/src && git commit -m "feat(main): wire provider stack, con
   error handling" steps. The WalletProvider `connect` note flags a hook-shape subtlety with a
   concrete resolution for the implementer.
 - **Type consistency:** `IntentView`/`IntentAssetView`/`EffectiveStatus`/`RoleAction` from
-  `@laplace/ui`; `IntentRow`/`Stats`/`IntentDetail` from the indexer client; adapters bridge
+  `@laplace-one/ui`; `IntentRow`/`Stats`/`IntentDetail` from the indexer client; adapters bridge
   them; `useIntentList` returns `IntentView[]`; `IntentCard` consumes `IntentView` + currentSlot
   + wallet. `env.cluster/rpcUrl/indexerUrl` reused. `solana:${cluster}` chain id consistent.
 

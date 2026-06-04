@@ -1,4 +1,4 @@
-import { parseLaplaceEvents, type LaplaceEvent } from '@laplace/sdk';
+import { parseLaplaceEvents, type LaplaceEvent } from '@laplace-one/sdk';
 import type { EventRow } from '../db/schema.js';
 
 export interface RawTx {

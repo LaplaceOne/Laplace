@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { IntentCard, viewEffectiveStatus, type EffectiveStatus } from '@laplace/ui';
-import { useSlot } from '@laplace/sdk/react';
+import { IntentCard, viewEffectiveStatus, type EffectiveStatus } from '@laplace-one/ui';
+import { useSlot } from '@laplace-one/sdk/react';
 import { useWallet } from '../../wallet/WalletProvider';
 import { useIntentList, useStats } from '../../indexer/hooks';
 import { criterionLabel } from '../../intent/criterionLabel';

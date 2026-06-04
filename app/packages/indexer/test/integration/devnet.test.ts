@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createSolanaRpc, createSolanaRpcSubscriptions, generateKeyPairSigner, airdropFactory, lamports } from '@solana/kit';
-import { getCluster } from '@laplace/registry';
-import { Laplace, Condition } from '@laplace/sdk';
+import { getCluster } from '@laplace-one/registry';
+import { Laplace, Condition } from '@laplace-one/sdk';
 import { makeDb } from '../../src/db/client.js';
 import { rpcSource } from '../../src/ingest/rpc.js';
 import { runOnce } from '../../src/ingest/poller.js';

@@ -1,4 +1,4 @@
-# @laplace/indexer
+# @laplace-one/indexer
 
 Ingests Laplace lifecycle events into Postgres and serves typed reads.
 

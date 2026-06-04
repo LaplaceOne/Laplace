@@ -1,7 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
-import { Icon } from '@laplace/ui';
-import { useSlot, useLaplaceContext } from '@laplace/sdk/react';
-import type { Cluster } from '@laplace/registry';
+import { Icon } from '@laplace-one/ui';
+import { useSlot, useLaplaceContext } from '@laplace-one/sdk/react';
+import type { Cluster } from '@laplace-one/registry';
 import { useIntentDetail } from '../../indexer/hooks';
 import { useIntentActions } from './useIntentActions';
 import { IntentDetailView } from './IntentDetailView';

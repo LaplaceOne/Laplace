@@ -1,6 +1,6 @@
 import { createSolanaRpc } from '@solana/kit';
-import { getCluster, type Cluster } from '@laplace/registry';
-import { createApi, runOnce, rpcSource, type ProgramIds, type SchemaTables } from '@laplace/indexer/core';
+import { getCluster, type Cluster } from '@laplace-one/registry';
+import { createApi, runOnce, rpcSource, type ProgramIds, type SchemaTables } from '@laplace-one/indexer/core';
 import { makeDb } from './db.js';
 import { events, intents, validityConfigs, syncState } from './schema.js';
 
@@ -10,7 +10,7 @@ export interface Env {
   LAPLACE_RPC_URL?: string;
 }
 
-// The D1 (SQLite) tables, handed to the SHARED indexer logic in @laplace/indexer/core — the same
+// The D1 (SQLite) tables, handed to the SHARED indexer logic in @laplace-one/indexer/core — the same
 // projection/poller/query/API code that the Node (Postgres) path uses, just bound to D1's tables.
 const TABLES: SchemaTables = { events, intents, validityConfigs, syncState };
 

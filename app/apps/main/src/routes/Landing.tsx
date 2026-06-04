@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Button, ArrowLink, CodeBlock, Icon, Reveal } from '@laplace/ui';
+import { Button, ArrowLink, CodeBlock, Icon, Reveal } from '@laplace-one/ui';
 import { Eyebrow } from '../marketing/Eyebrow';
 import { SecHead } from '../marketing/SecHead';
 import { Cta } from '../marketing/Cta';

@@ -43,7 +43,7 @@ export const createIntentFull: Token[] = [
   { text: ' { Laplace, Condition } ' },
   { text: 'from', cls: 'k' },
   { text: ' ' },
-  { text: '"@laplace/sdk"', cls: 's' },
+  { text: '"@laplace-one/sdk"', cls: 's' },
   { text: ';\n\n' },
   { text: '// lock 1,200 USDC, release on a revealed secret\n', cls: 'c' },
   { text: 'const', cls: 'k' },
@@ -115,4 +115,4 @@ export const requestStruct: Token[] = [
 ];
 
 /** npm install command */
-export const installCmd = 'npm i @laplace/sdk';
+export const installCmd = 'npm i @laplace-one/sdk';

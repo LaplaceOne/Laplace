@@ -1,4 +1,4 @@
-import { Icon } from '@laplace/ui';
+import { Icon } from '@laplace-one/ui';
 import { useWallet } from './WalletProvider';
 import { accountSupportsCluster } from './cluster';
 import { env } from '../env';

@@ -1,8 +1,8 @@
 import { type Address, address, getAddressEncoder, getProgramDerivedAddress } from '@solana/kit';
-import { getCluster } from '@laplace/registry';
+import { getCluster } from '@laplace-one/registry';
 import { INTENT_SEED, VALIDITY_SEED } from './constants.js';
 
-// NOTE: every cluster currently shares the same placeholder program IDs (see @laplace/registry),
+// NOTE: every cluster currently shares the same placeholder program IDs (see @laplace-one/registry),
 // so deriving against 'localnet' is correct for all clusters today. TODO: when devnet/mainnet
 // program IDs diverge, thread the active cluster through these helpers from the Laplace client.
 const laplaceProgram = (): Address => address(getCluster('localnet').programs.laplace);

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { SiteLayout } from './SiteLayout';
-import { ThemeProvider } from '@laplace/ui';
+import { ThemeProvider } from '@laplace-one/ui';
 
 test('SiteLayout renders nav links and footer', () => {
   const router = createMemoryRouter(

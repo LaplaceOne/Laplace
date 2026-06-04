@@ -1,5 +1,5 @@
 import { type Address, address, getBase64Encoder } from '@solana/kit';
-import { getCluster, type Cluster } from '@laplace/registry';
+import { getCluster, type Cluster } from '@laplace-one/registry';
 import { getIntentDecoder, type Intent } from './generated/laplace/index.js';
 import type { ResolvedIntent } from './intent.js';
 export type { ResolvedIntent };

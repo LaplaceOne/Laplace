@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build the full protocol console — corrected wallet signer, full filtered Dashboard, Intent Detail + public share with live fulfill/refund/close, the 3-step Create wizard, Manual per-instruction ops, and Validity config creation — wired to `@laplace/sdk` + wallet + indexer.
+**Goal:** Build the full protocol console — corrected wallet signer, full filtered Dashboard, Intent Detail + public share with live fulfill/refund/close, the 3-step Create wizard, Manual per-instruction ops, and Validity config creation — wired to `@laplace-one/sdk` + wallet + indexer.
 
 **Architecture:** Console views live under `routes/console/`, rendered in the existing `ConsoleLayout`. Reads come from the Phase-2 discovery hooks (`IntentView`); writes go through `useClient()` (the `Laplace` SDK client) using the connected `TransactionSigner` and a `ResolvedIntent` fetched via the SDK's `useIntent`. Errors map through `mapLaplaceError` into a `TxToast`. Slots drive all deadlines via `useSlot()`.
 
@@ -11,14 +11,14 @@
 **Prereq:** Phases 1–3 complete and green.
 
 **Confirmed SDK surface (do not re-derive):**
-- `useClient(): Laplace`, `useSlot(): bigint`, `useLaplaceContext(): { rpc, cluster, currentSlot, signer? }`, `useIntent(pda): ResolvedIntent | null` (from `@laplace/sdk/react`).
+- `useClient(): Laplace`, `useSlot(): bigint`, `useLaplaceContext(): { rpc, cluster, currentSlot, signer? }`, `useIntent(pda): ResolvedIntent | null` (from `@laplace-one/sdk/react`).
 - `client.createIntent({ maker: TransactionSigner, receiver: Address, refundRecipient?: Address, asset: EscrowAssetInput, amount: bigint, expirySlot: bigint, criterion: CriterionSpec, id? }) → { signature, intentPda, id, secret }`.
 - `client.fulfillIntent(ri: ResolvedIntent, { secret } | { proof, publicInputsSuffix } | FulfillmentParts, { fulfiller }) → { signature }`.
 - `client.refundExpiredIntent(ri, { cranker }) → { signature }`; `client.closeIntent(ri, { maker }) → { signature }`.
 - `client.createValidityConfig({ guestElfHash, sp1VkeyHash, fixedPublicInputs }, { payer }) → { signature, configPda, configHash }`.
 - `Condition.hashlock({ secret? } | { hash })`, `Condition.validity({ configHash } | {...})`, `Condition.custom({ programId, criterionDataHash } | { programId, bind })`.
 - `nativeSol()`, `splToken({ mint, tokenProgram? })`, `toBaseUnits(human, decimals)`, `toDisplay(base, decimals)`, `minutesToSlots(min)`, `intentShareLink(pda, cluster)`, `mapLaplaceError(err, { program? })`, `criteria`/`getCriterion`/`tierOf` (registry).
-- `@laplace/sdk/raw`: `laplaceProgram`, `hashlockProgram`, `validityProgram` namespaces with builders `getInitializeInstruction`, `getCreateIntentInstruction`, `getFulfillWithCriterionInstruction`, `getRefundExpiredIntentInstruction`, `getCloseIntentInstruction`, `getCreateValidityInstruction`, `getVerifyCriterionInstruction`.
+- `@laplace-one/sdk/raw`: `laplaceProgram`, `hashlockProgram`, `validityProgram` namespaces with builders `getInitializeInstruction`, `getCreateIntentInstruction`, `getFulfillWithCriterionInstruction`, `getRefundExpiredIntentInstruction`, `getCloseIntentInstruction`, `getCreateValidityInstruction`, `getVerifyCriterionInstruction`.
 - Console CSS reference: `docs/design-reference/laplace-prototype/project/styles/app.css` (all `.statstrip`/`.toolbar`/`.segmented`/`.chips`/`.intent-grid`/`.detail-grid`/`.panel`/`.party`/`.timeline`/`.action-panel`/`.create-*`/`.recipe`/`.submode`/`.secret-box`/`.review-*`/`.manual-grid`/`.instr-*`/`.serialized` styles). Markup/flows: `…/app.js`. Feature spec: `docs/main-site-spec.md` §3–§8.
 
 ---
@@ -87,7 +87,7 @@ function isSolana(w: UiWallet): boolean {
 
 ```ts
 import { criterionLabel } from './criterionLabel';
-import { getCluster } from '@laplace/registry';
+import { getCluster } from '@laplace-one/registry';
 
 test('labels the hashlock program by its registry name + tier', () => {
   const hashlock = getCluster('devnet').programs.hashlock;
@@ -108,7 +108,7 @@ test('falls back to a short address for unknown programs', () => {
 `app/apps/main/src/intent/criterionLabel.ts`:
 
 ```ts
-import { criteria, type Cluster, type TrustTier } from '@laplace/registry';
+import { criteria, type Cluster, type TrustTier } from '@laplace-one/registry';
 
 export function criterionLabel(programId: string, cluster: Cluster): { name: string; tier: TrustTier | 'unknown' } {
   const entry = criteria.find((c) => c.programId?.[cluster] === programId);
@@ -120,7 +120,7 @@ export function criterionLabel(programId: string, cluster: Cluster): { name: str
 - [ ] **Step 5: Run, commit**
 
 ```bash
-cd app && npm run test -- --filter=@laplace/main
+cd app && npm run test -- --filter=@laplace-one/main
 git add app/apps/main/src/wallet app/apps/main/src/intent
 git commit -m "fix(main): use signing wallet signer for SDK; add criterionLabel helper"
 ```
@@ -140,8 +140,8 @@ Replace the Phase-2 minimal dashboard with the full surface:
 ```tsx
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { IntentCard, viewEffectiveStatus, type EffectiveStatus } from '@laplace/ui';
-import { useSlot } from '@laplace/sdk/react';
+import { IntentCard, viewEffectiveStatus, type EffectiveStatus } from '@laplace-one/ui';
+import { useSlot } from '@laplace-one/sdk/react';
 import { useWallet } from '../../wallet/WalletProvider';
 import { useIntentList, useStats } from '../../indexer/hooks';
 import { criterionLabel } from '../../intent/criterionLabel';
@@ -226,12 +226,12 @@ function Stat({ k, v }: { k: string; v: string }) {
 `app/apps/main/src/routes/console/Dashboard.test.tsx` — render `Dashboard` inside
 `<MemoryRouter>` with the wallet + sdk-react + indexer mocked (empty list, null stats) and
 assert the role tabs render ("Made by me", "To me") and the empty-state CTA shows. Mock
-`@laplace/sdk/react` `useSlot` → `0n` and `../../wallet/WalletProvider` `useWallet` →
+`@laplace-one/sdk/react` `useSlot` → `0n` and `../../wallet/WalletProvider` `useWallet` →
 `{ selectedAccount: undefined }`, and `../../indexer/hooks` `useIntentList`→`{data:[],loading:false}`,
 `useStats`→`null`.
 
 ```bash
-cd app && npm run test -- --filter=@laplace/main && (cd apps/main && npx vite build)
+cd app && npm run test -- --filter=@laplace-one/main && (cd apps/main && npx vite build)
 git add app/apps/main/src/routes/console/Dashboard.tsx app/apps/main/src/routes/console/Dashboard.module.css app/apps/main/src/routes/console/Dashboard.test.tsx
 git commit -m "feat(main): full console dashboard (stats, role/status filters, intent grid)"
 ```
@@ -251,9 +251,9 @@ git commit -m "feat(main): full console dashboard (stats, role/status filters, i
 
 ```ts
 import * as React from 'react';
-import { useClient, useIntent } from '@laplace/sdk/react';
-import { mapLaplaceError } from '@laplace/sdk';
-import { useToast } from '@laplace/ui';
+import { useClient, useIntent } from '@laplace-one/sdk/react';
+import { mapLaplaceError } from '@laplace-one/sdk';
+import { useToast } from '@laplace-one/ui';
 import type { Address } from '@solana/kit';
 
 export function useIntentActions(pda: string | undefined) {
@@ -322,7 +322,7 @@ in a `MemoryRouter` at `/app/intent/PDA`; assert the amount, a party row, and th
 render.
 
 ```bash
-cd app && npm run test -- --filter=@laplace/main && (cd apps/main && npx vite build)
+cd app && npm run test -- --filter=@laplace-one/main && (cd apps/main && npx vite build)
 git add app/apps/main/src/routes/console/IntentDetail.tsx app/apps/main/src/routes/console/IntentDetail.module.css app/apps/main/src/routes/console/PublicIntent.tsx app/apps/main/src/routes/console/useIntentActions.ts app/apps/main/src/routes/console/IntentDetail.test.tsx
 git commit -m "feat(main): intent detail + public share with fulfill/refund/close actions"
 ```
@@ -342,7 +342,7 @@ git commit -m "feat(main): intent detail + public share with fulfill/refund/clos
 
 ```ts
 import { initialCreate, validateStep1, buildCriterion, computeExpirySlot, toBytes32Hex } from './createState';
-import { toBaseUnits } from '@laplace/sdk';
+import { toBaseUnits } from '@laplace-one/sdk';
 
 test('computeExpirySlot adds minutesToSlots to current slot', () => {
   expect(computeExpirySlot(1000n, 10)).toBe(1000n + 1500n); // 10 min * 150 slots/min
@@ -371,7 +371,7 @@ test('toBaseUnits converts human amounts', () => {
 `app/apps/main/src/routes/console/createState.ts`:
 
 ```ts
-import { Condition, minutesToSlots, nativeSol, splToken, type CriterionSpec } from '@laplace/sdk';
+import { Condition, minutesToSlots, nativeSol, splToken, type CriterionSpec } from '@laplace-one/sdk';
 import { address } from '@solana/kit';
 
 export type Recipe = 'hashlock' | 'validity' | 'custom';
@@ -467,7 +467,7 @@ Rewrite `Create.tsx` as a 3-step wizard (`.create-wrap`, steps-bar) using a `use
 - [ ] **Step 4: Run, commit**
 
 ```bash
-cd app && npm run test -- --filter=@laplace/main && (cd apps/main && npx vite build)
+cd app && npm run test -- --filter=@laplace-one/main && (cd apps/main && npx vite build)
 git add app/apps/main/src/routes/console/Create.tsx app/apps/main/src/routes/console/Create.module.css app/apps/main/src/routes/console/createState.ts app/apps/main/src/routes/console/createState.test.ts
 git commit -m "feat(main): 3-step create-intent wizard (SOL/SPL, hashlock/validity/custom recipes)"
 ```
@@ -484,11 +484,11 @@ git commit -m "feat(main): 3-step create-intent wizard (SOL/SPL, hashlock/validi
 - [ ] **Step 1: Instruction registry**
 
 `manualInstructions.ts` — describe each program instruction as a field schema the generic form
-can render. Read each builder's input type from `@laplace/sdk/raw` (`laplaceProgram.*`,
+can render. Read each builder's input type from `@laplace-one/sdk/raw` (`laplaceProgram.*`,
 `validityProgram.*`, `hashlockProgram.*`) to list its account fields and arg fields. Shape:
 
 ```ts
-import { laplaceProgram, validityProgram, hashlockProgram } from '@laplace/sdk/raw';
+import { laplaceProgram, validityProgram, hashlockProgram } from '@laplace-one/sdk/raw';
 
 export interface Field { name: string; kind: 'address' | 'u64' | 'bytes' | 'u8'; account?: boolean }
 export interface ManualInstr { key: string; program: 'laplace' | 'validity' | 'hashlock'; label: string; fields: Field[]; build: (vals: Record<string, string>) => any }
@@ -524,9 +524,9 @@ exposed; instead build + `signTransactionMessageWithSigners` + `sendAndConfirm` 
 - [ ] **Step 3: Run, commit**
 
 ```bash
-cd app && npm run typecheck -- --filter=@laplace/main && (cd apps/main && npx vite build)
+cd app && npm run typecheck -- --filter=@laplace-one/main && (cd apps/main && npx vite build)
 git add app/apps/main/src/routes/console/Manual.tsx app/apps/main/src/routes/console/Manual.module.css app/apps/main/src/routes/console/manualInstructions.ts
-git commit -m "feat(main): manual per-instruction ops console via @laplace/sdk/raw"
+git commit -m "feat(main): manual per-instruction ops console via @laplace-one/sdk/raw"
 ```
 
 > Manual ops is the power-user escape hatch; correctness of the build/serialize path matters more
@@ -553,11 +553,11 @@ from `createState.ts`. `ValidityNew.module.css` ports the `.field*` form styles 
 - [ ] **Step 2: Full gate**
 
 ```bash
-cd app && npm run typecheck && npm run test -- --filter=@laplace/ui --filter=@laplace/main \
+cd app && npm run typecheck && npm run test -- --filter=@laplace-one/ui --filter=@laplace-one/main \
   && (cd apps/main && npx vite build)
 ```
 
-Expected: all packages typecheck; `@laplace/ui` + `@laplace/main` tests green; SPA builds. (Live
+Expected: all packages typecheck; `@laplace-one/ui` + `@laplace-one/main` tests green; SPA builds. (Live
 RPC not exercised in tests.)
 
 - [ ] **Step 3: Commit**
@@ -574,17 +574,17 @@ git commit -m "feat(main): validity config creation (create_validity)"
 - **Spec coverage (§6 console):** signer correctness ✓ Task 1; Dashboard (stats + role/status
   filters + grid + empty) ✓ Task 2; Detail + public share + fulfill/refund/close + timeline + warnings
   ✓ Task 3; Create wizard (SOL/SPL, hashlock generate/paste + save-secret gate, validity config,
-  custom + ack gate) ✓ Task 4; Manual per-instruction ops via `@laplace/sdk/raw` ✓ Task 5; Validity
+  custom + ack gate) ✓ Task 4; Manual per-instruction ops via `@laplace-one/sdk/raw` ✓ Task 5; Validity
   config creation ✓ Task 6. Slots-as-truth (`useSlot`), secret-free share links, irreversible-reveal
   warnings, error mapping all present.
 - **Placeholder scan:** SPL decimals come from a user input + small preset (real values, not a
   placeholder); validity proof generation stays caller-supplied (documented out-of-scope, the fulfill
   UI accepts a pasted proof). Manual-ops Step 1 requires reading the generated input types rather than
   guessing — the canonical `close_intent` is fully worked and the rest follow it. No "TBD" steps.
-- **Type consistency:** `IntentView`/`viewEffectiveStatus`/`viewActionFor` from `@laplace/ui`;
+- **Type consistency:** `IntentView`/`viewEffectiveStatus`/`viewActionFor` from `@laplace-one/ui`;
   `useIntentList`/`useIntentDetail`/`useStats` from Phase-2 hooks; `useClient`/`useIntent`/`useSlot`/
-  `useLaplaceContext` from `@laplace/sdk/react`; `Condition`/`nativeSol`/`splToken`/`toBaseUnits`/
-  `minutesToSlots`/`intentShareLink`/`mapLaplaceError` from `@laplace/sdk`; `criterionLabel` shared.
+  `useLaplaceContext` from `@laplace-one/sdk/react`; `Condition`/`nativeSol`/`splToken`/`toBaseUnits`/
+  `minutesToSlots`/`intentShareLink`/`mapLaplaceError` from `@laplace-one/sdk`; `criterionLabel` shared.
   `createState` helper names match across `createState.ts`, its tests, and `Create.tsx`.
 
 ## Risks / notes

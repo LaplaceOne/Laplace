@@ -1,1 +1,1 @@
-{ "extends": "@laplace/config/tsconfig.lib.json", "compilerOptions": { "rootDir": "src", "outDir": "dist", "types": ["node"] }, "include": ["src"] }
+{ "extends": "@laplace-one/config/tsconfig.lib.json", "compilerOptions": { "rootDir": "src", "outDir": "dist", "types": ["node"] }, "include": ["src"] }

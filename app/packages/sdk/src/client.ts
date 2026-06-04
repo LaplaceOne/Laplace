@@ -16,7 +16,7 @@ import {
   getSignatureFromTransaction,
   getBase58Decoder,
 } from '@solana/kit';
-import { getCluster, type Cluster } from '@laplace/registry';
+import { getCluster, type Cluster } from '@laplace-one/registry';
 import {
   buildCreateIntent,
   buildFulfillIntent,

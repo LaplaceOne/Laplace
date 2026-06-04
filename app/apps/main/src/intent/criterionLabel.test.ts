@@ -1,5 +1,5 @@
 import { criterionLabel } from './criterionLabel';
-import { getCluster } from '@laplace/registry';
+import { getCluster } from '@laplace-one/registry';
 
 test('labels the hashlock program by its registry name + tier', () => {
   const hashlock = getCluster('devnet').programs.hashlock;

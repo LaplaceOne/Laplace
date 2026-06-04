@@ -1,4 +1,4 @@
-import type { Cluster } from '@laplace/registry';
+import type { Cluster } from '@laplace-one/registry';
 import type { UiWalletAccount } from '@wallet-standard/react';
 
 /** Wallet Standard Solana chain ids. Note: our 'mainnet-beta' cluster maps to 'solana:mainnet'. */

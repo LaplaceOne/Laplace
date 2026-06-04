@@ -1,5 +1,5 @@
 import { Outlet, NavLink, Link } from 'react-router-dom';
-import { CursorRing, ThemeToggle } from '@laplace/ui';
+import { CursorRing, ThemeToggle } from '@laplace-one/ui';
 import { BrandMark } from '../components/BrandMark';
 import { WalletButton } from '../wallet/WalletButton';
 import { ClusterWarning } from '../wallet/ClusterWarning';

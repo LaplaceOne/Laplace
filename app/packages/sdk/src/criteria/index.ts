@@ -10,7 +10,7 @@ import {
   getU32Encoder,
 } from '@solana/kit';
 import { sha256 } from '@noble/hashes/sha256';
-import { getCluster, type Cluster } from '@laplace/registry';
+import { getCluster, type Cluster } from '@laplace-one/registry';
 import {
   HASH_FUNCTION_ID_SHA256,
 } from '../constants.js';

@@ -1,12 +1,12 @@
-# @laplace/indexer-worker
+# @laplace-one/indexer-worker
 
 The Laplace indexer as an **all-Cloudflare** deployment: a Worker with **D1** (SQLite) storage.
 
-- **`fetch`** serves the read API (`/health`, `/intents`, `/intents/:pda`, `/stats`, `/validity-configs`) — same shapes as `@laplace/indexer`.
+- **`fetch`** serves the read API (`/health`, `/intents`, `/intents/:pda`, `/stats`, `/validity-configs`) — same shapes as `@laplace-one/indexer`.
 - **`scheduled`** (cron) runs one ingest tick (`runOnce`) — replacing the Node poller's infinite loop.
 
 **No duplicated logic:** the projection, poller, queries, and API all come from
-`@laplace/indexer/core` (schema-parameterized) — the *same* code the Node/Postgres indexer runs.
+`@laplace-one/indexer/core` (schema-parameterized) — the *same* code the Node/Postgres indexer runs.
 This worker only adds the **SQLite schema** (`src/schema.ts`), the **D1 client** (`src/db.ts`), and
 the **entry** (`src/index.ts`), which passes the D1 tables into the shared core.
 
@@ -63,4 +63,4 @@ npx wrangler d1 migrations apply laplace-indexer --local
 
 The cron tails new signatures from the last cursor. To rebuild projections from the immutable
 `events` table after a logic change, run `reproject(makeDb(env.DB), TABLES)` (from
-`@laplace/indexer/core`) — e.g. via a temporary admin route.
+`@laplace-one/indexer/core`) — e.g. via a temporary admin route.

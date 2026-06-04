@@ -14,8 +14,8 @@ import {
   createSolanaRpc, createSolanaRpcSubscriptions, generateKeyPairSigner,
   createKeyPairSignerFromBytes, airdropFactory, lamports,
 } from '@solana/kit';
-import { Laplace, Condition, nativeSol, minutesToSlots, fetchIntent, mapLaplaceError } from '@laplace/sdk';
-import { getCluster } from '@laplace/registry';
+import { Laplace, Condition, nativeSol, minutesToSlots, fetchIntent, mapLaplaceError } from '@laplace-one/sdk';
+import { getCluster } from '@laplace-one/registry';
 
 const cluster = process.env.LAPLACE_CLUSTER ?? 'devnet';
 const url = process.env.LAPLACE_RPC_URL ?? getCluster(cluster).rpcUrl;

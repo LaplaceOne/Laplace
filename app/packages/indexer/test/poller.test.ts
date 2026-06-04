@@ -2,10 +2,10 @@ import { describe, it, expect } from 'vitest';
 import {
   getAddressEncoder, getStructEncoder, getBytesEncoder, fixEncoderSize, getU16Encoder, getU64Encoder,
 } from '@solana/kit';
-// `getEscrowAssetEncoder` is exposed namespaced under each program in @laplace/sdk/raw
+// `getEscrowAssetEncoder` is exposed namespaced under each program in @laplace-one/sdk/raw
 // (the generated barrel uses `export * as laplaceProgram`), not as a top-level export.
-import { laplaceProgram } from '@laplace/sdk/raw';
-import { EVENT_DISCRIMINATORS } from '@laplace/sdk';
+import { laplaceProgram } from '@laplace-one/sdk/raw';
+import { EVENT_DISCRIMINATORS } from '@laplace-one/sdk';
 import { makeDb } from '../src/db/client.js';
 import { runOnce } from '../src/ingest/poller.js';
 import type { ChainSource, SigInfo } from '../src/ingest/rpc.js';

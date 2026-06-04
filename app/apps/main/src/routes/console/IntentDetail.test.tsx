@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import type { IntentView } from '@laplace/ui';
+import type { IntentView } from '@laplace-one/ui';
 
 const VIEW: IntentView = {
   pda: 'PDA1111111111111111111111111111111111111111',
@@ -16,7 +16,7 @@ const VIEW: IntentView = {
   closed: false,
 };
 
-vi.mock('@laplace/sdk/react', () => ({
+vi.mock('@laplace-one/sdk/react', () => ({
   useSlot: () => 0n,
   useLaplaceContext: () => ({ signer: { address: 'ME' }, cluster: 'devnet' }),
   useClient: () => ({}),

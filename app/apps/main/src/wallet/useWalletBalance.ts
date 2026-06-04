@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useLaplaceContext } from '@laplace/sdk/react';
+import { useLaplaceContext } from '@laplace-one/sdk/react';
 
 export function useWalletBalance(): number | null {
   const { rpc, signer, currentSlot } = useLaplaceContext() as any;

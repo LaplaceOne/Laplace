@@ -33,7 +33,7 @@ Sections, top to bottom:
    close. Three steps in plain language.
 3. **Criteria** — cards for hashlock and validity; "many faces, one protocol"
    framing; links to Bridge / Disclosure as derived products.
-4. **For developers** — SDK quickstart snippet (`@laplace/sdk`), IDL/program-ID
+4. **For developers** — SDK quickstart snippet (`@laplace-one/sdk`), IDL/program-ID
    table per cluster, link to `/docs`.
 5. **Live protocol stats** — counts by status (Active / Fulfilled / Refunded),
    total value escrowed (best-effort from client indexing).
@@ -141,7 +141,7 @@ program, with no recipe abstraction:
 
 ## 7. Criterion catalog (`/criteria`, `/criteria/[key]`)
 
-- Catalog cards from `@laplace/registry`: name, status (official), program ID per
+- Catalog cards from `@laplace-one/registry`: name, status (official), program ID per
   cluster, stateful?, fulfillment kind, docs link.
 - Detail page: commitment scheme, fulfillment payload shape, account layout,
   `criterion_account_count`, and "Configure / Register" actions:

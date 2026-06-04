@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Emit Anchor lifecycle events from the laplace + validity programs and give `@laplace/sdk` a hand-written decoder, so an off-chain indexer (Design A) can reconstruct full history from logs.
+**Goal:** Emit Anchor lifecycle events from the laplace + validity programs and give `@laplace-one/sdk` a hand-written decoder, so an off-chain indexer (Design A) can reconstruct full history from logs.
 
 **Architecture:** Plain `emit!` (no `event-cpi`, no account-list/layout change) at handler-level emit points; a hand-written `events.ts` decoder mirroring the existing `validityFulfillment` codec (Codama drops events); behavioral coverage via litesvm e2e log assertions + TS round-trip + a localnet integration test; then a devnet upgrade-in-place.
 
@@ -466,12 +466,12 @@ Expected: each prints `1` (or more).
 
 - [ ] **Step 3: Re-run Codama codegen**
 
-Run: `npm run codegen -w @laplace/sdk`
+Run: `npm run codegen -w @laplace-one/sdk`
 Expected: completes; `app/packages/sdk/src/generated` may show no diff (Codama `renderers-js@2.2.0` does not render events — expected; the decoder is hand-written in Task 4).
 
 - [ ] **Step 4: Typecheck the SDK still builds**
 
-Run: `npm run -s typecheck -w @laplace/sdk`
+Run: `npm run -s typecheck -w @laplace-one/sdk`
 Expected: exit 0.
 
 - [ ] **Step 5: Commit (generated client only — the IDL is gitignored)**
@@ -557,7 +557,7 @@ describe('parseLaplaceEvents', () => {
 
 - [ ] **Step 2: Run the test — expect RED**
 
-Run: `npm run -s test -w @laplace/sdk -- events`
+Run: `npm run -s test -w @laplace-one/sdk -- events`
 Expected: FAIL — cannot resolve `../src/events.js`.
 
 - [ ] **Step 3: Implement the decoder**
@@ -695,12 +695,12 @@ export * from './events.js';
 
 - [ ] **Step 5: Run the test — expect GREEN**
 
-Run: `npm run -s test -w @laplace/sdk -- events`
+Run: `npm run -s test -w @laplace-one/sdk -- events`
 Expected: PASS (3 tests).
 
 - [ ] **Step 6: Typecheck**
 
-Run: `npm run -s typecheck -w @laplace/sdk`
+Run: `npm run -s typecheck -w @laplace-one/sdk`
 Expected: exit 0.
 
 - [ ] **Step 7: Commit**
@@ -741,13 +741,13 @@ describe.runIf(RUN)('events (localnet)', () => {
 
 - [ ] **Step 2: Run gated test (no validator → skipped)**
 
-Run: `npm run -s test -w @laplace/sdk -- integration/events`
+Run: `npm run -s test -w @laplace-one/sdk -- integration/events`
 Expected: PASS (0 ran / skipped) when `LAPLACE_LOCALNET` is unset — confirms it compiles and the gate works.
 
 - [ ] **Step 3 (optional, if a localnet validator is available): run live**
 
 Run (separate shell): `solana-test-validator` then deploy the rebuilt programs, then
-`LAPLACE_LOCALNET=1 npm run -s test -w @laplace/sdk -- integration/events`
+`LAPLACE_LOCALNET=1 npm run -s test -w @laplace-one/sdk -- integration/events`
 Expected: PASS — `IntentCreated` decodes with the correct intent PDA + maker.
 
 - [ ] **Step 4: Commit**

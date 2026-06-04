@@ -1,4 +1,4 @@
--- Laplace indexer — D1 (SQLite) schema. Mirrors @laplace/indexer's Postgres schema.
+-- Laplace indexer — D1 (SQLite) schema. Mirrors @laplace-one/indexer's Postgres schema.
 CREATE TABLE IF NOT EXISTS events (
   signature   TEXT NOT NULL,
   event_index INTEGER NOT NULL,

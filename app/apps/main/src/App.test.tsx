@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
-import { ThemeProvider } from '@laplace/ui';
+import { ThemeProvider } from '@laplace-one/ui';
 import { SiteLayout } from './layouts/SiteLayout';
 import Landing from './routes/Landing';
 import Docs from './routes/Docs';

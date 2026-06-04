@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { useClient, useLaplaceContext } from '@laplace/sdk/react';
-import { fetchIntent, mapLaplaceError, type ResolvedIntent } from '@laplace/sdk';
-import { useToast } from '@laplace/ui';
+import { useClient, useLaplaceContext } from '@laplace-one/sdk/react';
+import { fetchIntent, mapLaplaceError, type ResolvedIntent } from '@laplace-one/sdk';
+import { useToast } from '@laplace-one/ui';
 import type { Address } from '@solana/kit';
 
 export function useIntentActions(pda: string | undefined, onSuccess?: () => void) {

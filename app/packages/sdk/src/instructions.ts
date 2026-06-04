@@ -19,7 +19,7 @@ import { intentPda, validityConfigPda } from './pdas.js';
 import { hashConfig, type FulfillmentParts, type CriterionSpec } from './criteria/index.js';
 import type { EscrowAssetInput } from './asset.js';
 import { CRITERION_INTERFACE_VERSION } from './constants.js';
-import type { Cluster } from '@laplace/registry';
+import type { Cluster } from '@laplace-one/registry';
 import { withRemaining, W, R, type Meta } from './internal/remaining.js';
 
 export interface BuiltTx { instructions: Instruction[]; }

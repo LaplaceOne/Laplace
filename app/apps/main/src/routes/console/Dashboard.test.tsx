@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
-vi.mock('@laplace/sdk/react', () => ({
+vi.mock('@laplace-one/sdk/react', () => ({
   useSlot: () => 0n,
 }));
 

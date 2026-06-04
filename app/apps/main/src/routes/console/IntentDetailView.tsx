@@ -7,9 +7,9 @@ import {
   viewActionFor,
   viewEffectiveStatus,
   type IntentView,
-} from '@laplace/ui';
-import { intentShareLink } from '@laplace/sdk';
-import { getCluster, type Cluster } from '@laplace/registry';
+} from '@laplace-one/ui';
+import { intentShareLink } from '@laplace-one/sdk';
+import { getCluster, type Cluster } from '@laplace-one/registry';
 import type { TransactionSigner } from '@solana/kit';
 import { criterionLabel } from '../../intent/criterionLabel';
 import type { IntentTimelineItem } from '../../indexer/indexerClient';

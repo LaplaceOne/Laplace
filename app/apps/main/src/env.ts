@@ -1,4 +1,4 @@
-import type { Cluster } from '@laplace/registry';
+import type { Cluster } from '@laplace-one/registry';
 
 export const env = {
   cluster: (import.meta.env.VITE_CLUSTER ?? 'devnet') as Cluster,

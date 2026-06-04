@@ -1,4 +1,4 @@
-import { laplaceProgram, validityProgram, hashlockProgram } from '@laplace/sdk/raw';
+import { laplaceProgram, validityProgram, hashlockProgram } from '@laplace-one/sdk/raw';
 import { hexToBytes } from './createState';
 
 /**
@@ -17,7 +17,7 @@ export interface Field {
 /**
  * A program instruction exposed in the manual ops console. `build` consumes the
  * raw string form values and returns a `@solana/kit` Instruction via the
- * generated `@laplace/sdk/raw` builder for that program.
+ * generated `@laplace-one/sdk/raw` builder for that program.
  */
 export interface ManualInstr {
   key: string;

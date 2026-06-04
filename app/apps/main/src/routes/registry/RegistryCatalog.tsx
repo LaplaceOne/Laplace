@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { criteria, guests, type TrustTier } from '@laplace/registry';
-import { Icon } from '@laplace/ui';
+import { criteria, guests, type TrustTier } from '@laplace-one/registry';
+import { Icon } from '@laplace-one/ui';
 import { env } from '../../env';
 import styles from './RegistryCatalog.module.css';
 

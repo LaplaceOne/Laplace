@@ -18,7 +18,7 @@ registry program exists yet**.
      the intent's `criterion_data_hash = config_hash`. Per-intent binding comes from the
      adapter-injected `intent_binding_hash` prefix, not from `config_hash`.
 3. **Registry entry** — front-end metadata that maps a criterion to its program
-   IDs per cluster plus display/UX info. Lives off-chain in `@laplace/registry`.
+   IDs per cluster plus display/UX info. Lives off-chain in `@laplace-one/registry`.
 
 ## 2. The interface every criterion implements
 
@@ -81,7 +81,7 @@ accounts (intent, receiver, SPL vault) to the criterion.
 ### Future official criteria (named, not built)
 `Signature`, `EncryptedDisclosure`, `CrossChainLockProof`, `MultiCriterion`.
 
-## 4. Off-chain registry — `@laplace/registry` (ships now)
+## 4. Off-chain registry — `@laplace-one/registry` (ships now)
 
 Single source of truth for front-ends. No governance, no chain calls — a curated,
 versioned dataset reviewed in PRs.
@@ -150,7 +150,7 @@ validity = EQfH4VFdxcFYh8prdAsB4XwKCZiiR5uta594bfiwhLsB
 ```
 
 > Status: deployed to devnet (upgrade authority `D32VrfY9JEbXKLcbGkuTeJEoWkV24AhbzbLP3Duo1Ek7`)
-> and recorded in `@laplace/registry` under every cluster.
+> and recorded in `@laplace-one/registry` under every cluster.
 
 ## 6. On-chain registry program (future, not MVP)
 
@@ -158,7 +158,7 @@ When curation needs to be trust-minimized or governed, add a Laplace registry
 program holding criterion entries (program ID, interface version, status, metadata
 hash) with an admin/governance authority. Front-ends would then read the registry
 account set instead of (or in addition to) the curated file, behind the **same**
-`@laplace/registry` interface so app code does not change. Open questions: who
+`@laplace-one/registry` interface so app code does not change. Open questions: who
 governs listings, how versions/deprecations are signaled, and whether entries are
 permissionless-with-reputation or admin-gated.
 
@@ -167,10 +167,10 @@ permissionless-with-reputation or admin-gated.
 1. Author + deploy the criterion program implementing `verify_criterion`
    (out-of-band).
 2. For stateful criteria, define the config account + commitment hashing.
-3. Add a `CriterionDescriptor` to `@laplace/registry` (per-cluster program IDs,
+3. Add a `CriterionDescriptor` to `@laplace-one/registry` (per-cluster program IDs,
    flags, warnings, docs).
 4. If it needs a bespoke create/fulfill UX, add a recipe to `/app/create` and a
-   fulfillment plugin in `@laplace/sdk`; otherwise it is still usable via
+   fulfillment plugin in `@laplace-one/sdk`; otherwise it is still usable via
    `/app/manual`.
 5. Optionally spin off a dedicated product (e.g. Disclosure for encrypted
    disclosure).

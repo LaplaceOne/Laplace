@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CopyButton, Icon, useToast } from '@laplace/ui';
-import { useClient, useSlot, useLaplaceContext } from '@laplace/sdk/react';
+import { CopyButton, Icon, useToast } from '@laplace-one/ui';
+import { useClient, useSlot, useLaplaceContext } from '@laplace-one/sdk/react';
 import {
   mapLaplaceError,
   toBaseUnits,
   slotToApproxTime,
   type Cluster,
-} from '@laplace/sdk';
+} from '@laplace-one/sdk';
 import { address } from '@solana/kit';
 import { useValidityConfigs } from '../../indexer/hooks';
 import { env } from '../../env';

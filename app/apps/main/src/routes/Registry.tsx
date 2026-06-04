@@ -1,4 +1,4 @@
-import { Button, ArrowLink, Icon, Reveal } from '@laplace/ui';
+import { Button, ArrowLink, Icon, Reveal } from '@laplace-one/ui';
 import { PageHead } from '../marketing/PageHead';
 import { SecHead } from '../marketing/SecHead';
 import { Cta } from '../marketing/Cta';

@@ -14,10 +14,10 @@ How to deploy the three on-chain programs (`laplace`, `hashlock`, `validity`) to
 | hashlock | `DNotXVWh1ifzp9MHSd5H4F78SRHptF9p8vGfMmjtuWX2` | `target/deploy/hashlock-keypair.json` |
 | validity | `EQfH4VFdxcFYh8prdAsB4XwKCZiiR5uta594bfiwhLsB` | `target/deploy/validity-keypair.json` |
 
-These match `declare_id!`, `Anchor.toml`, and `@laplace/registry`. **The program keypairs in
+These match `declare_id!`, `Anchor.toml`, and `@laplace-one/registry`. **The program keypairs in
 `target/deploy/` are the program identities — `target/` is git-ignored, so back them up offline before any
 deploy.** To deploy at *different* production addresses, replace those keypair files and re-run
-`anchor keys sync`, then rebuild and update `@laplace/registry`.
+`anchor keys sync`, then rebuild and update `@laplace-one/registry`.
 
 > The program keypair only authorizes the *initial* deploy to that address. After deploy, all upgrades are
 > gated by the separate **upgrade authority** (the multisig).
@@ -58,7 +58,7 @@ scripts/verify-deploy.sh devnet     # prints Program Id, Authority, Data Length 
 ## 4. Record the deployed IDs in the registry
 
 If the production IDs differ from §0, update `app/packages/registry/src/constants.ts` (`PROGRAM_IDS`) and the
-per-cluster `clusters.ts`/`criteria.ts`, then `npm run build -w @laplace/registry` and re-publish. Switching
+per-cluster `clusters.ts`/`criteria.ts`, then `npm run build -w @laplace-one/registry` and re-publish. Switching
 clusters/addresses is a registry edit — app code does not change.
 
 ## 5. Transfer upgrade authority to the multisig (Squads)

@@ -1,4 +1,4 @@
-// SQLite (Cloudflare D1) schema — column names mirror the Postgres schema in @laplace/indexer
+// SQLite (Cloudflare D1) schema — column names mirror the Postgres schema in @laplace-one/indexer
 // so the projection/query logic is a 1:1 port. jsonb → text(json); boolean → integer(boolean);
 // bigint(number) → integer(number).
 import { sqliteTable, text, integer, primaryKey, index } from 'drizzle-orm/sqlite-core';
